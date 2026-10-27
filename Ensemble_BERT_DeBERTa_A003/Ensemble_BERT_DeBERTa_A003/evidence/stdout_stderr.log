@@ -1,0 +1,16 @@
+[colab] Parsing notebook '/workspace/task_model_run/runs/V005_N1_N2_CPU_A003/input.ipynb'...
+[colab] Executing cell 1/1 - fresh-kernel-execution...
+CompletedProcess(args=['/usr/bin/python3', '-c', "import sys, json\nfrom pathlib
+import Path\nimport nbformat\nfrom nbclient import 
+NotebookClient\nnb=nbformat.reads(sys.stdin.read(),as_version=4)\ntarget=Path('/
+content/mla_task_runs/V005_N1_N2_CPU_A003')/'kernel_output.ipynb'\nassert not 
+target.exists(), 'Child notebook already 
+executed'\ntarget.parent.mkdir(parents=True,exist_ok=True)\ntry:\n    
+NotebookClient(nb,timeout=None,kernel_name='python3').execute()\nfinally:\n    
+with target.open('x',encoding='utf-8') as f:nbformat.write(nb,f)\n    for c in 
+nb.cells:\n        for o in c.get('outputs',[]):\n            if 
+o.output_type=='stream':print(o.text,flush=True)\n            elif 
+o.output_type=='error':print(o.ename+': 
+'+o.evalue,flush=True)\nprint('FRESH_KERNEL_NOTEBOOK_COMPLETE',target,flush=True
+)\n"], returncode=0)
+[colab] Saving notebook with outputs to '/workspace/task_model_run/runs/V005_N1_N2_CPU_A003/input_output.ipynb'...

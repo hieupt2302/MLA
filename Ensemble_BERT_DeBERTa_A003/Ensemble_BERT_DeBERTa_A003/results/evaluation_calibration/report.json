@@ -1,0 +1,4056 @@
+{
+  "macro_f1": 0.5926376322529247,
+  "accuracy": 0.771116789833552,
+  "qwk": 0.46823281985258436,
+  "precision_ineffective": 0.3203991130820399,
+  "recall_ineffective": 0.4609250398724083,
+  "per_class": {
+    "Ineffective": {
+      "precision": 0.3203991130820399,
+      "recall": 0.4609250398724083,
+      "f1": 0.37802485284499676,
+      "support": 627
+    },
+    "Adequate": {
+      "precision": 0.8795821285327862,
+      "recall": 0.8244448330127645,
+      "f1": 0.8511214404982175,
+      "support": 11438
+    },
+    "Effective": {
+      "precision": 0.5063025210084033,
+      "recall": 0.5990057995028998,
+      "f1": 0.5487666034155597,
+      "support": 2414
+    }
+  },
+  "n": 14479,
+  "confusion_matrix": [
+    [
+      289,
+      329,
+      9
+    ],
+    [
+      607,
+      9430,
+      1401
+    ],
+    [
+      6,
+      962,
+      1446
+    ]
+  ],
+  "log_loss": 0.5306821518467795,
+  "brier_sum_classes": 0.3248751172480747,
+  "ece_10_bins": 0.010364753665793277,
+  "recall_at_precision_0.4": 0.3349282296650718,
+  "average_precision_ineffective": 0.3400992609655366,
+  "average_precision_per_class": [
+    0.3400992609655366,
+    0.9151416189363553,
+    0.5919022807571724
+  ],
+  "macro_average_precision": 0.6157143868863547,
+  "ineffective_prevalence": 0.04330409558671179,
+  "review_budget_curve": {
+    "0.05": {
+      "reviewed": 724,
+      "ineffective_found": 253,
+      "precision": 0.3494475138121547,
+      "recall": 0.40350877192982454,
+      "boundary_score": 0.55064932385142,
+      "boundary_tie_count": 1
+    },
+    "0.1": {
+      "reviewed": 1448,
+      "ineffective_found": 360,
+      "precision": 0.24861878453038674,
+      "recall": 0.5741626794258373,
+      "boundary_score": 0.34185667391326485,
+      "boundary_tie_count": 1
+    },
+    "0.2": {
+      "reviewed": 2896,
+      "ineffective_found": 478,
+      "precision": 0.16505524861878454,
+      "recall": 0.7623604465709729,
+      "boundary_score": 0.15986137614388013,
+      "boundary_tie_count": 1
+    }
+  },
+  "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+  "review_tie_break": "segment_id",
+  "fixed_calibration_warning_policy": {
+    "flagged": 525,
+    "true_positives": 210,
+    "precision": 0.4,
+    "recall": 0.3349282296650718
+  },
+  "essay_bootstrap_95": {
+    "macro_f1": {
+      "low": 0.5754311395904507,
+      "high": 0.6084831630340629,
+      "valid_resamples": 2000
+    },
+    "recall_ineffective": {
+      "low": 0.4040827795897217,
+      "high": 0.5132459418193506,
+      "valid_resamples": 2000
+    },
+    "precision_ineffective": {
+      "low": 0.2806312284500883,
+      "high": 0.36107711138310894,
+      "valid_resamples": 2000
+    },
+    "qwk": {
+      "low": 0.4443538892194069,
+      "high": 0.4907833835531434,
+      "valid_resamples": 2000
+    }
+  },
+  "ELL_by_prompt": {
+    "\"A Cowboy Who Rode the Waves\"": {
+      "Missing": {
+        "n": 8,
+        "essays": 1,
+        "class_counts": {
+          "0": 0,
+          "1": 8,
+          "2": 0
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "No": {
+        "n": 492,
+        "essays": 63,
+        "class_counts": {
+          "0": 16,
+          "1": 444,
+          "2": 32
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Yes": {
+        "n": 5,
+        "essays": 1,
+        "class_counts": {
+          "0": 0,
+          "1": 5,
+          "2": 0
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Car-free cities": {
+      "No": {
+        "n": 724,
+        "essays": 83,
+        "class_counts": {
+          "0": 16,
+          "1": 624,
+          "2": 84
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Yes": {
+        "n": 25,
+        "essays": 5,
+        "class_counts": {
+          "0": 5,
+          "1": 20,
+          "2": 0
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Cell phones at school": {
+      "No": {
+        "n": 812,
+        "essays": 94,
+        "class_counts": {
+          "0": 23,
+          "1": 725,
+          "2": 64
+        },
+        "macro_f1": 0.4957921409534313,
+        "accuracy": 0.8817733990147784,
+        "qwk": 0.2914871571140317,
+        "precision_ineffective": 0.22727272727272727,
+        "recall_ineffective": 0.21739130434782608,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.22727272727272727,
+            "recall": 0.21739130434782608,
+            "f1": 0.22222222222222224,
+            "support": 23
+          },
+          "Adequate": {
+            "precision": 0.9121887287024901,
+            "recall": 0.96,
+            "f1": 0.935483870967742,
+            "support": 725
+          },
+          "Effective": {
+            "precision": 0.5555555555555556,
+            "recall": 0.234375,
+            "f1": 0.32967032967032966,
+            "support": 64
+          }
+        },
+        "confusion_matrix": [
+          [
+            5,
+            18,
+            0
+          ],
+          [
+            17,
+            696,
+            12
+          ],
+          [
+            0,
+            49,
+            15
+          ]
+        ],
+        "log_loss": 0.39362705703546513,
+        "brier_sum_classes": 0.2072438563684166,
+        "ece_10_bins": 0.05174151075311246,
+        "recall_at_precision_0.4": 0.08695652173913043,
+        "average_precision_ineffective": 0.17251277537490162,
+        "average_precision_per_class": [
+          0.17251277537490162,
+          0.9101447379151197,
+          0.34964900579529257
+        ],
+        "macro_average_precision": 0.4774355063617713,
+        "ineffective_prevalence": 0.02832512315270936,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 41,
+            "ineffective_found": 7,
+            "precision": 0.17073170731707318,
+            "recall": 0.30434782608695654,
+            "boundary_score": 0.4015180158485087,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 82,
+            "ineffective_found": 11,
+            "precision": 0.13414634146341464,
+            "recall": 0.4782608695652174,
+            "boundary_score": 0.2863824071105875,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 163,
+            "ineffective_found": 15,
+            "precision": 0.09202453987730061,
+            "recall": 0.6521739130434783,
+            "boundary_score": 0.16397796900768863,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.4123499141710334,
+            "high": 0.5786022470903811,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.037587657784011234,
+            "high": 0.4202461799660441,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.04084448160535118,
+            "high": 0.4189692982456139,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.17320458435429106,
+            "high": 0.41726724411207927,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Yes": {
+        "n": 5,
+        "essays": 1,
+        "class_counts": {
+          "0": 1,
+          "1": 4,
+          "2": 0
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Community service": {
+      "No": {
+        "n": 537,
+        "essays": 63,
+        "class_counts": {
+          "0": 32,
+          "1": 407,
+          "2": 98
+        },
+        "macro_f1": 0.44095688733049215,
+        "accuracy": 0.5679702048417132,
+        "qwk": 0.2806146572104019,
+        "precision_ineffective": 0.28,
+        "recall_ineffective": 0.21875,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.28,
+            "recall": 0.21875,
+            "f1": 0.2456140350877193,
+            "support": 32
+          },
+          "Adequate": {
+            "precision": 0.8083623693379791,
+            "recall": 0.5700245700245701,
+            "f1": 0.6685878962536024,
+            "support": 407
+          },
+          "Effective": {
+            "precision": 0.29333333333333333,
+            "recall": 0.673469387755102,
+            "f1": 0.4086687306501548,
+            "support": 98
+          }
+        },
+        "confusion_matrix": [
+          [
+            7,
+            23,
+            2
+          ],
+          [
+            18,
+            232,
+            157
+          ],
+          [
+            0,
+            32,
+            66
+          ]
+        ],
+        "log_loss": 0.8211804059169704,
+        "brier_sum_classes": 0.5363516616258213,
+        "ece_10_bins": 0.07573776832673466,
+        "recall_at_precision_0.4": 0.15625,
+        "average_precision_ineffective": 0.24700892635767946,
+        "average_precision_per_class": [
+          0.24700892635767946,
+          0.8327852675607802,
+          0.4040914932388821
+        ],
+        "macro_average_precision": 0.4946285623857806,
+        "ineffective_prevalence": 0.0595903165735568,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 27,
+            "ineffective_found": 8,
+            "precision": 0.2962962962962963,
+            "recall": 0.25,
+            "boundary_score": 0.4414724691982057,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 54,
+            "ineffective_found": 12,
+            "precision": 0.2222222222222222,
+            "recall": 0.375,
+            "boundary_score": 0.3010278145820282,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 108,
+            "ineffective_found": 19,
+            "precision": 0.17592592592592593,
+            "recall": 0.59375,
+            "boundary_score": 0.1528234853172627,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.3624146107551864,
+            "high": 0.5028259612057236,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.04648268398268399,
+            "high": 0.42105263157894735,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.125,
+            "high": 0.4117647058823529,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.1898419504960969,
+            "high": 0.3632182421152387,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Yes": {
+        "n": 21,
+        "essays": 3,
+        "class_counts": {
+          "0": 1,
+          "1": 19,
+          "2": 1
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Distance learning": {
+      "No": {
+        "n": 1332,
+        "essays": 101,
+        "class_counts": {
+          "0": 5,
+          "1": 941,
+          "2": 386
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Yes": {
+        "n": 377,
+        "essays": 39,
+        "class_counts": {
+          "0": 13,
+          "1": 343,
+          "2": 21
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Does the electoral college work?": {
+      "No": {
+        "n": 1466,
+        "essays": 160,
+        "class_counts": {
+          "0": 160,
+          "1": 1029,
+          "2": 277
+        },
+        "macro_f1": 0.5877097170104939,
+        "accuracy": 0.669849931787176,
+        "qwk": 0.496768003027252,
+        "precision_ineffective": 0.3629032258064516,
+        "recall_ineffective": 0.5625,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.3629032258064516,
+            "recall": 0.5625,
+            "f1": 0.4411764705882353,
+            "support": 160
+          },
+          "Adequate": {
+            "precision": 0.8145620022753128,
+            "recall": 0.6958211856171039,
+            "f1": 0.750524109014675,
+            "support": 1029
+          },
+          "Effective": {
+            "precision": 0.5191740412979351,
+            "recall": 0.6353790613718412,
+            "f1": 0.5714285714285715,
+            "support": 277
+          }
+        },
+        "confusion_matrix": [
+          [
+            90,
+            66,
+            4
+          ],
+          [
+            154,
+            716,
+            159
+          ],
+          [
+            4,
+            97,
+            176
+          ]
+        ],
+        "log_loss": 0.73056298689245,
+        "brier_sum_classes": 0.45595290471673605,
+        "ece_10_bins": 0.055087874928283945,
+        "recall_at_precision_0.4": 0.44375,
+        "average_precision_ineffective": 0.3954145169858523,
+        "average_precision_per_class": [
+          0.3954145169858523,
+          0.8492931397992095,
+          0.5990165331993564
+        ],
+        "macro_average_precision": 0.6145747299948061,
+        "ineffective_prevalence": 0.10914051841746249,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 74,
+            "ineffective_found": 38,
+            "precision": 0.5135135135135135,
+            "recall": 0.2375,
+            "boundary_score": 0.825184229514477,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 147,
+            "ineffective_found": 61,
+            "precision": 0.41496598639455784,
+            "recall": 0.38125,
+            "boundary_score": 0.6482307200785808,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 294,
+            "ineffective_found": 102,
+            "precision": 0.3469387755102041,
+            "recall": 0.6375,
+            "boundary_score": 0.41738362829206305,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5483288643776079,
+            "high": 0.6212577754594694,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.4667384665721453,
+            "high": 0.6548499329309189,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.2926845498639536,
+            "high": 0.4262549490950226,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.4340461211446551,
+            "high": 0.5493490917376934,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Yes": {
+        "n": 69,
+        "essays": 9,
+        "class_counts": {
+          "0": 17,
+          "1": 49,
+          "2": 3
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Driverless cars": {
+      "Missing": {
+        "n": 98,
+        "essays": 10,
+        "class_counts": {
+          "0": 4,
+          "1": 80,
+          "2": 14
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "No": {
+        "n": 1221,
+        "essays": 137,
+        "class_counts": {
+          "0": 18,
+          "1": 1015,
+          "2": 188
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Yes": {
+        "n": 67,
+        "essays": 10,
+        "class_counts": {
+          "0": 5,
+          "1": 59,
+          "2": 3
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Exploring Venus": {
+      "No": {
+        "n": 583,
+        "essays": 71,
+        "class_counts": {
+          "0": 51,
+          "1": 432,
+          "2": 100
+        },
+        "macro_f1": 0.5712250071423915,
+        "accuracy": 0.7169811320754716,
+        "qwk": 0.46356157781161345,
+        "precision_ineffective": 0.27380952380952384,
+        "recall_ineffective": 0.45098039215686275,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.27380952380952384,
+            "recall": 0.45098039215686275,
+            "f1": 0.34074074074074073,
+            "support": 51
+          },
+          "Adequate": {
+            "precision": 0.8175355450236966,
+            "recall": 0.7986111111111112,
+            "f1": 0.8079625292740046,
+            "support": 432
+          },
+          "Effective": {
+            "precision": 0.6493506493506493,
+            "recall": 0.5,
+            "f1": 0.5649717514124294,
+            "support": 100
+          }
+        },
+        "confusion_matrix": [
+          [
+            23,
+            28,
+            0
+          ],
+          [
+            60,
+            345,
+            27
+          ],
+          [
+            1,
+            49,
+            50
+          ]
+        ],
+        "log_loss": 0.6494642511582857,
+        "brier_sum_classes": 0.4026042068139517,
+        "ece_10_bins": 0.045931728176706516,
+        "recall_at_precision_0.4": 0.23529411764705882,
+        "average_precision_ineffective": 0.3332693863894115,
+        "average_precision_per_class": [
+          0.3332693863894115,
+          0.836750083517698,
+          0.6539112551855052
+        ],
+        "macro_average_precision": 0.6079769083642049,
+        "ineffective_prevalence": 0.08747855917667238,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 30,
+            "ineffective_found": 12,
+            "precision": 0.4,
+            "recall": 0.23529411764705882,
+            "boundary_score": 0.752534163589538,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 59,
+            "ineffective_found": 18,
+            "precision": 0.3050847457627119,
+            "recall": 0.35294117647058826,
+            "boundary_score": 0.61655501577757,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 117,
+            "ineffective_found": 30,
+            "precision": 0.2564102564102564,
+            "recall": 0.5882352941176471,
+            "boundary_score": 0.4255148199475902,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.49140251762242937,
+            "high": 0.6325766886372965,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.2392314436002338,
+            "high": 0.6773447676943116,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.13409704514774262,
+            "high": 0.4409924937447873,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.3397038155430876,
+            "high": 0.5590689329884746,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Yes": {
+        "n": 210,
+        "essays": 26,
+        "class_counts": {
+          "0": 26,
+          "1": 167,
+          "2": 17
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Facial action coding system": {
+      "Missing": {
+        "n": 17,
+        "essays": 2,
+        "class_counts": {
+          "0": 0,
+          "1": 12,
+          "2": 5
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "No": {
+        "n": 676,
+        "essays": 79,
+        "class_counts": {
+          "0": 35,
+          "1": 567,
+          "2": 74
+        },
+        "macro_f1": 0.5741487666396922,
+        "accuracy": 0.7943786982248521,
+        "qwk": 0.4269750116405402,
+        "precision_ineffective": 0.2786885245901639,
+        "recall_ineffective": 0.4857142857142857,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.2786885245901639,
+            "recall": 0.4857142857142857,
+            "f1": 0.35416666666666663,
+            "support": 35
+          },
+          "Adequate": {
+            "precision": 0.9009345794392524,
+            "recall": 0.8500881834215167,
+            "f1": 0.8747731397459165,
+            "support": 567
+          },
+          "Effective": {
+            "precision": 0.475,
+            "recall": 0.5135135135135135,
+            "f1": 0.4935064935064935,
+            "support": 74
+          }
+        },
+        "confusion_matrix": [
+          [
+            17,
+            17,
+            1
+          ],
+          [
+            44,
+            482,
+            41
+          ],
+          [
+            0,
+            36,
+            38
+          ]
+        ],
+        "log_loss": 0.47390255057434144,
+        "brier_sum_classes": 0.2911554977168603,
+        "ece_10_bins": 0.021339885170816128,
+        "recall_at_precision_0.4": 0.34285714285714286,
+        "average_precision_ineffective": 0.34384604819562725,
+        "average_precision_per_class": [
+          0.34384604819562725,
+          0.9374329886586591,
+          0.5045096979148915
+        ],
+        "macro_average_precision": 0.595262911589726,
+        "ineffective_prevalence": 0.051775147928994084,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 34,
+            "ineffective_found": 12,
+            "precision": 0.35294117647058826,
+            "recall": 0.34285714285714286,
+            "boundary_score": 0.6465060491353557,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 68,
+            "ineffective_found": 18,
+            "precision": 0.2647058823529412,
+            "recall": 0.5142857142857142,
+            "boundary_score": 0.4720555941887837,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 136,
+            "ineffective_found": 24,
+            "precision": 0.17647058823529413,
+            "recall": 0.6857142857142857,
+            "boundary_score": 0.2739891504144608,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.49812243796286404,
+            "high": 0.6439677249661231,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.2837912087912088,
+            "high": 0.6888888888888889,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.13333333333333333,
+            "high": 0.46001602564102556,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.3073210302378226,
+            "high": 0.5346988451546831,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Yes": {
+        "n": 259,
+        "essays": 33,
+        "class_counts": {
+          "0": 46,
+          "1": 206,
+          "2": 7
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Grades for extracurricular activities": {
+      "No": {
+        "n": 615,
+        "essays": 81,
+        "class_counts": {
+          "0": 10,
+          "1": 529,
+          "2": 76
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Yes": {
+        "n": 31,
+        "essays": 4,
+        "class_counts": {
+          "0": 3,
+          "1": 27,
+          "2": 1
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Mandatory extracurricular activities": {
+      "No": {
+        "n": 821,
+        "essays": 81,
+        "class_counts": {
+          "0": 31,
+          "1": 615,
+          "2": 175
+        },
+        "macro_f1": 0.5130558305309249,
+        "accuracy": 0.7490864799025578,
+        "qwk": 0.4398169002888259,
+        "precision_ineffective": 0.21428571428571427,
+        "recall_ineffective": 0.0967741935483871,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.21428571428571427,
+            "recall": 0.0967741935483871,
+            "f1": 0.13333333333333333,
+            "support": 31
+          },
+          "Adequate": {
+            "precision": 0.848381601362862,
+            "recall": 0.8097560975609757,
+            "f1": 0.8286189683860233,
+            "support": 615
+          },
+          "Effective": {
+            "precision": 0.5181818181818182,
+            "recall": 0.6514285714285715,
+            "f1": 0.5772151898734177,
+            "support": 175
+          }
+        },
+        "confusion_matrix": [
+          [
+            3,
+            28,
+            0
+          ],
+          [
+            11,
+            498,
+            106
+          ],
+          [
+            0,
+            61,
+            114
+          ]
+        ],
+        "log_loss": 0.57165653403176,
+        "brier_sum_classes": 0.33982824689048013,
+        "ece_10_bins": 0.0356157914301366,
+        "recall_at_precision_0.4": 0.0,
+        "average_precision_ineffective": 0.10283521223534081,
+        "average_precision_per_class": [
+          0.10283521223534081,
+          0.8913600916703346,
+          0.6881199803675057
+        ],
+        "macro_average_precision": 0.5607717614243937,
+        "ineffective_prevalence": 0.037758830694275276,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 42,
+            "ineffective_found": 5,
+            "precision": 0.11904761904761904,
+            "recall": 0.16129032258064516,
+            "boundary_score": 0.2678063026178659,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 83,
+            "ineffective_found": 12,
+            "precision": 0.14457831325301204,
+            "recall": 0.3870967741935484,
+            "boundary_score": 0.15574487700974804,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 165,
+            "ineffective_found": 14,
+            "precision": 0.08484848484848485,
+            "recall": 0.45161290322580644,
+            "boundary_score": 0.0661234301175737,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.4537213351302217,
+            "high": 0.5759072739079444,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.0,
+            "high": 0.25336538461538444,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.0,
+            "high": 0.6,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.3524410601206287,
+            "high": 0.5086405439450106,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Yes": {
+        "n": 64,
+        "essays": 6,
+        "class_counts": {
+          "0": 2,
+          "1": 57,
+          "2": 5
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Phones and driving": {
+      "Missing": {
+        "n": 650,
+        "essays": 71,
+        "class_counts": {
+          "0": 5,
+          "1": 527,
+          "2": 118
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Seeking multiple opinions": {
+      "No": {
+        "n": 1347,
+        "essays": 143,
+        "class_counts": {
+          "0": 11,
+          "1": 1034,
+          "2": 302
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Yes": {
+        "n": 76,
+        "essays": 9,
+        "class_counts": {
+          "0": 2,
+          "1": 72,
+          "2": 2
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "Summer projects": {
+      "No": {
+        "n": 1011,
+        "essays": 89,
+        "class_counts": {
+          "0": 4,
+          "1": 696,
+          "2": 311
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Yes": {
+        "n": 20,
+        "essays": 2,
+        "class_counts": {
+          "0": 0,
+          "1": 20,
+          "2": 0
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "The Face on Mars": {
+      "No": {
+        "n": 806,
+        "essays": 86,
+        "class_counts": {
+          "0": 83,
+          "1": 676,
+          "2": 47
+        },
+        "macro_f1": 0.6181471187625853,
+        "accuracy": 0.7965260545905707,
+        "qwk": 0.4583202543361906,
+        "precision_ineffective": 0.36923076923076925,
+        "recall_ineffective": 0.5783132530120482,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.36923076923076925,
+            "recall": 0.5783132530120482,
+            "f1": 0.4507042253521127,
+            "support": 83
+          },
+          "Adequate": {
+            "precision": 0.9130434782608695,
+            "recall": 0.8387573964497042,
+            "f1": 0.874325366229761,
+            "support": 676
+          },
+          "Effective": {
+            "precision": 0.4909090909090909,
+            "recall": 0.574468085106383,
+            "f1": 0.5294117647058822,
+            "support": 47
+          }
+        },
+        "confusion_matrix": [
+          [
+            48,
+            35,
+            0
+          ],
+          [
+            81,
+            567,
+            28
+          ],
+          [
+            1,
+            19,
+            27
+          ]
+        ],
+        "log_loss": 0.48505073677081134,
+        "brier_sum_classes": 0.2965381688369652,
+        "ece_10_bins": 0.03594215357003957,
+        "recall_at_precision_0.4": 0.5542168674698795,
+        "average_precision_ineffective": 0.49359404506733545,
+        "average_precision_per_class": [
+          0.49359404506733545,
+          0.9487252607921539,
+          0.4892238798490843
+        ],
+        "macro_average_precision": 0.6438477285695245,
+        "ineffective_prevalence": 0.10297766749379653,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 41,
+            "ineffective_found": 25,
+            "precision": 0.6097560975609756,
+            "recall": 0.30120481927710846,
+            "boundary_score": 0.7868547787011475,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 81,
+            "ineffective_found": 38,
+            "precision": 0.4691358024691358,
+            "recall": 0.4578313253012048,
+            "boundary_score": 0.6789815925809426,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 162,
+            "ineffective_found": 53,
+            "precision": 0.3271604938271605,
+            "recall": 0.6385542168674698,
+            "boundary_score": 0.40350564140743755,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5486982675852943,
+            "high": 0.6731832418389139,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.4408837209302326,
+            "high": 0.7009851623470469,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.2703125,
+            "high": 0.47906561523582786,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.36149100763395325,
+            "high": 0.5502830683027964,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Yes": {
+        "n": 34,
+        "essays": 4,
+        "class_counts": {
+          "0": 2,
+          "1": 29,
+          "2": 3
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    }
+  },
+  "slices": {
+    "discourse_type": {
+      "Claim": {
+        "n": 5050,
+        "essays": 1511,
+        "class_counts": {
+          "0": 143,
+          "1": 4095,
+          "2": 812
+        },
+        "macro_f1": 0.5213699314606457,
+        "accuracy": 0.761980198019802,
+        "qwk": 0.3519809769193736,
+        "precision_ineffective": 0.25161290322580643,
+        "recall_ineffective": 0.2727272727272727,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.25161290322580643,
+            "recall": 0.2727272727272727,
+            "f1": 0.261744966442953,
+            "support": 143
+          },
+          "Adequate": {
+            "precision": 0.8709677419354839,
+            "recall": 0.8307692307692308,
+            "f1": 0.8503937007874016,
+            "support": 4095
+          },
+          "Effective": {
+            "precision": 0.4115267947421638,
+            "recall": 0.5012315270935961,
+            "f1": 0.45197112715158244,
+            "support": 812
+          }
+        },
+        "confusion_matrix": [
+          [
+            39,
+            99,
+            5
+          ],
+          [
+            116,
+            3402,
+            577
+          ],
+          [
+            0,
+            405,
+            407
+          ]
+        ],
+        "log_loss": 0.5402558302337023,
+        "brier_sum_classes": 0.3318503076797839,
+        "ece_10_bins": 0.012178117957063625,
+        "recall_at_precision_0.4": 0.14685314685314685,
+        "average_precision_ineffective": 0.23730474126386492,
+        "average_precision_per_class": [
+          0.23730474126386492,
+          0.9071482950335963,
+          0.4662880331410957
+        ],
+        "macro_average_precision": 0.5369136898128523,
+        "ineffective_prevalence": 0.028316831683168318,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 253,
+            "ineffective_found": 54,
+            "precision": 0.2134387351778656,
+            "recall": 0.3776223776223776,
+            "boundary_score": 0.3629942539900692,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 505,
+            "ineffective_found": 78,
+            "precision": 0.15445544554455445,
+            "recall": 0.5454545454545454,
+            "boundary_score": 0.18218692844958462,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 1010,
+            "ineffective_found": 102,
+            "precision": 0.100990099009901,
+            "recall": 0.7132867132867133,
+            "boundary_score": 0.0686069383979805,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.49001468828667255,
+            "high": 0.5546970036949725,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.1850227963525836,
+            "high": 0.36428132678132674,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.16977207977207978,
+            "high": 0.34473943254198025,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.31078484601250617,
+            "high": 0.3909594982125734,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Concluding Statement": {
+        "n": 1366,
+        "essays": 1360,
+        "class_counts": {
+          "0": 54,
+          "1": 1060,
+          "2": 252
+        },
+        "macro_f1": 0.6244613883546545,
+        "accuracy": 0.7920937042459737,
+        "qwk": 0.528910048281547,
+        "precision_ineffective": 0.30612244897959184,
+        "recall_ineffective": 0.5555555555555556,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.30612244897959184,
+            "recall": 0.5555555555555556,
+            "f1": 0.3947368421052632,
+            "support": 54
+          },
+          "Adequate": {
+            "precision": 0.8812561334641805,
+            "recall": 0.8471698113207548,
+            "f1": 0.8638768638768639,
+            "support": 1060
+          },
+          "Effective": {
+            "precision": 0.6184738955823293,
+            "recall": 0.6111111111111112,
+            "f1": 0.6147704590818364,
+            "support": 252
+          }
+        },
+        "confusion_matrix": [
+          [
+            30,
+            24,
+            0
+          ],
+          [
+            67,
+            898,
+            95
+          ],
+          [
+            1,
+            97,
+            154
+          ]
+        ],
+        "log_loss": 0.4806961677810279,
+        "brier_sum_classes": 0.2966848160362206,
+        "ece_10_bins": 0.01624498916073804,
+        "recall_at_precision_0.4": 0.3888888888888889,
+        "average_precision_ineffective": 0.3737617617931761,
+        "average_precision_per_class": [
+          0.3737617617931761,
+          0.9261229489085652,
+          0.6931451547669468
+        ],
+        "macro_average_precision": 0.6643432884895627,
+        "ineffective_prevalence": 0.03953147877013177,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 69,
+            "ineffective_found": 23,
+            "precision": 0.3333333333333333,
+            "recall": 0.42592592592592593,
+            "boundary_score": 0.586502232135652,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 137,
+            "ineffective_found": 35,
+            "precision": 0.25547445255474455,
+            "recall": 0.6481481481481481,
+            "boundary_score": 0.40632299015179213,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 274,
+            "ineffective_found": 41,
+            "precision": 0.14963503649635038,
+            "recall": 0.7592592592592593,
+            "boundary_score": 0.2279379040798369,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5803196805347562,
+            "high": 0.664034769234066,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.423359375,
+            "high": 0.6923076923076923,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.21314935064935064,
+            "high": 0.40339215925744987,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.4743195855708812,
+            "high": 0.5754115483419352,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Counterclaim": {
+        "n": 577,
+        "essays": 451,
+        "class_counts": {
+          "0": 23,
+          "1": 467,
+          "2": 87
+        },
+        "macro_f1": 0.47584619749687374,
+        "accuracy": 0.7261698440207972,
+        "qwk": 0.30848933523468547,
+        "precision_ineffective": 0.2222222222222222,
+        "recall_ineffective": 0.17391304347826086,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.2222222222222222,
+            "recall": 0.17391304347826086,
+            "f1": 0.1951219512195122,
+            "support": 23
+          },
+          "Adequate": {
+            "precision": 0.8551724137931035,
+            "recall": 0.7965738758029979,
+            "f1": 0.8248337028824834,
+            "support": 467
+          },
+          "Effective": {
+            "precision": 0.3467741935483871,
+            "recall": 0.4942528735632184,
+            "f1": 0.4075829383886256,
+            "support": 87
+          }
+        },
+        "confusion_matrix": [
+          [
+            4,
+            19,
+            0
+          ],
+          [
+            14,
+            372,
+            81
+          ],
+          [
+            0,
+            44,
+            43
+          ]
+        ],
+        "log_loss": 0.606128566334617,
+        "brier_sum_classes": 0.3858977347156927,
+        "ece_10_bins": 0.07893861033066489,
+        "recall_at_precision_0.4": 0.17391304347826086,
+        "average_precision_ineffective": 0.2147609717481577,
+        "average_precision_per_class": [
+          0.2147609717481577,
+          0.896666713675315,
+          0.39525656063549874
+        ],
+        "macro_average_precision": 0.5022280820196572,
+        "ineffective_prevalence": 0.03986135181975736,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 29,
+            "ineffective_found": 6,
+            "precision": 0.20689655172413793,
+            "recall": 0.2608695652173913,
+            "boundary_score": 0.35095391682953064,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 58,
+            "ineffective_found": 11,
+            "precision": 0.1896551724137931,
+            "recall": 0.4782608695652174,
+            "boundary_score": 0.23874274001039492,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 116,
+            "ineffective_found": 12,
+            "precision": 0.10344827586206896,
+            "recall": 0.5217391304347826,
+            "boundary_score": 0.1068612669904475,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.4118941014755753,
+            "high": 0.5448975695437184,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.03919230769230769,
+            "high": 0.34208333333333296,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.05263157894736842,
+            "high": 0.4345714285714283,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.22127476105845295,
+            "high": 0.3919938383176673,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Evidence": {
+        "n": 4563,
+        "essays": 1564,
+        "class_counts": {
+          "0": 296,
+          "1": 3456,
+          "2": 811
+        },
+        "macro_f1": 0.6359875355678025,
+        "accuracy": 0.7595879903572211,
+        "qwk": 0.5528234051725842,
+        "precision_ineffective": 0.34296724470134876,
+        "recall_ineffective": 0.6013513513513513,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.34296724470134876,
+            "recall": 0.6013513513513513,
+            "f1": 0.4368098159509202,
+            "support": 296
+          },
+          "Adequate": {
+            "precision": 0.8845528455284553,
+            "recall": 0.7870370370370371,
+            "f1": 0.8329505435614761,
+            "support": 3456
+          },
+          "Effective": {
+            "precision": 0.586171310629515,
+            "recall": 0.7003699136868065,
+            "f1": 0.6382022471910113,
+            "support": 811
+          }
+        },
+        "confusion_matrix": [
+          [
+            178,
+            114,
+            4
+          ],
+          [
+            339,
+            2720,
+            397
+          ],
+          [
+            2,
+            241,
+            568
+          ]
+        ],
+        "log_loss": 0.5530242814933476,
+        "brier_sum_classes": 0.33959422230188724,
+        "ece_10_bins": 0.024005952449055835,
+        "recall_at_precision_0.4": 0.5033783783783784,
+        "average_precision_ineffective": 0.42744352978875416,
+        "average_precision_per_class": [
+          0.42744352978875416,
+          0.9164883194773703,
+          0.7061988697557432
+        ],
+        "macro_average_precision": 0.6833769063406225,
+        "ineffective_prevalence": 0.06486960333114179,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 229,
+            "ineffective_found": 107,
+            "precision": 0.4672489082969432,
+            "recall": 0.3614864864864865,
+            "boundary_score": 0.7366714205538716,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 457,
+            "ineffective_found": 169,
+            "precision": 0.36980306345733044,
+            "recall": 0.5709459459459459,
+            "boundary_score": 0.5349975999490972,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 913,
+            "ineffective_found": 222,
+            "precision": 0.24315443592552027,
+            "recall": 0.75,
+            "boundary_score": 0.29409142603993815,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.614142833418638,
+            "high": 0.6572628781090184,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.5292009636619153,
+            "high": 0.6598159962818996,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.2935216718266254,
+            "high": 0.38719966511655113,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.5239362330216569,
+            "high": 0.5801441645267474,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Lead": {
+        "n": 916,
+        "essays": 916,
+        "class_counts": {
+          "0": 39,
+          "1": 685,
+          "2": 192
+        },
+        "macro_f1": 0.60206063605004,
+        "accuracy": 0.7783842794759825,
+        "qwk": 0.5391733022655716,
+        "precision_ineffective": 0.26,
+        "recall_ineffective": 0.3333333333333333,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.26,
+            "recall": 0.3333333333333333,
+            "f1": 0.2921348314606742,
+            "support": 39
+          },
+          "Adequate": {
+            "precision": 0.8829113924050633,
+            "recall": 0.8145985401459854,
+            "f1": 0.8473804100227791,
+            "support": 685
+          },
+          "Effective": {
+            "precision": 0.6068376068376068,
+            "recall": 0.7395833333333334,
+            "f1": 0.6666666666666666,
+            "support": 192
+          }
+        },
+        "confusion_matrix": [
+          [
+            13,
+            26,
+            0
+          ],
+          [
+            35,
+            558,
+            92
+          ],
+          [
+            2,
+            48,
+            142
+          ]
+        ],
+        "log_loss": 0.5368733243613902,
+        "brier_sum_classes": 0.3228222809902407,
+        "ece_10_bins": 0.028648995996782792,
+        "recall_at_precision_0.4": 0.1794871794871795,
+        "average_precision_ineffective": 0.25937009591753935,
+        "average_precision_per_class": [
+          0.25937009591753935,
+          0.904034385155795,
+          0.6846070234379098
+        ],
+        "macro_average_precision": 0.6160038348370814,
+        "ineffective_prevalence": 0.0425764192139738,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 46,
+            "ineffective_found": 13,
+            "precision": 0.2826086956521739,
+            "recall": 0.3333333333333333,
+            "boundary_score": 0.5075671486758181,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 92,
+            "ineffective_found": 19,
+            "precision": 0.20652173913043478,
+            "recall": 0.48717948717948717,
+            "boundary_score": 0.3245880929498102,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 184,
+            "ineffective_found": 30,
+            "precision": 0.16304347826086957,
+            "recall": 0.7692307692307693,
+            "boundary_score": 0.1842889457518484,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5506878706106173,
+            "high": 0.6461621884704896,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.1935483870967742,
+            "high": 0.4864864864864865,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.14,
+            "high": 0.3977906976744185,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.48267245486684834,
+            "high": 0.5932976555434768,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Position": {
+        "n": 1560,
+        "essays": 1553,
+        "class_counts": {
+          "0": 47,
+          "1": 1324,
+          "2": 189
+        },
+        "macro_f1": 0.5690892327251265,
+        "accuracy": 0.8294871794871795,
+        "qwk": 0.41380557376308114,
+        "precision_ineffective": 0.40625,
+        "recall_ineffective": 0.2765957446808511,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.40625,
+            "recall": 0.2765957446808511,
+            "f1": 0.3291139240506329,
+            "support": 47
+          },
+          "Adequate": {
+            "precision": 0.904434250764526,
+            "recall": 0.8935045317220544,
+            "f1": 0.898936170212766,
+            "support": 1324
+          },
+          "Effective": {
+            "precision": 0.44545454545454544,
+            "recall": 0.5185185185185185,
+            "f1": 0.4792176039119804,
+            "support": 189
+          }
+        },
+        "confusion_matrix": [
+          [
+            13,
+            34,
+            0
+          ],
+          [
+            19,
+            1183,
+            122
+          ],
+          [
+            0,
+            91,
+            98
+          ]
+        ],
+        "log_loss": 0.4361655326055282,
+        "brier_sum_classes": 0.2570138412980583,
+        "ece_10_bins": 0.030278570940356,
+        "recall_at_precision_0.4": 0.3617021276595745,
+        "average_precision_ineffective": 0.33066530356856355,
+        "average_precision_per_class": [
+          0.33066530356856355,
+          0.9424162324514049,
+          0.47208898248987224
+        ],
+        "macro_average_precision": 0.581723506169947,
+        "ineffective_prevalence": 0.03012820512820513,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 78,
+            "ineffective_found": 21,
+            "precision": 0.2692307692307692,
+            "recall": 0.44680851063829785,
+            "boundary_score": 0.303516661364051,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 156,
+            "ineffective_found": 24,
+            "precision": 0.15384615384615385,
+            "recall": 0.5106382978723404,
+            "boundary_score": 0.1679388248401483,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 312,
+            "ineffective_found": 31,
+            "precision": 0.09935897435897435,
+            "recall": 0.6595744680851063,
+            "boundary_score": 0.08535402948734921,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5193462370541458,
+            "high": 0.6151964806733458,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.1339423076923077,
+            "high": 0.4,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.23868092691622106,
+            "high": 0.5633413461538461,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.3552239276596926,
+            "high": 0.462068080355879,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Rebuttal": {
+        "n": 447,
+        "essays": 366,
+        "class_counts": {
+          "0": 25,
+          "1": 351,
+          "2": 71
+        },
+        "macro_f1": 0.5891535640520222,
+        "accuracy": 0.767337807606264,
+        "qwk": 0.4325459442144103,
+        "precision_ineffective": 0.4,
+        "recall_ineffective": 0.48,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.4,
+            "recall": 0.48,
+            "f1": 0.4363636363636364,
+            "support": 25
+          },
+          "Adequate": {
+            "precision": 0.8583815028901735,
+            "recall": 0.8461538461538461,
+            "f1": 0.8522238163558106,
+            "support": 351
+          },
+          "Effective": {
+            "precision": 0.4788732394366197,
+            "recall": 0.4788732394366197,
+            "f1": 0.4788732394366197,
+            "support": 71
+          }
+        },
+        "confusion_matrix": [
+          [
+            12,
+            13,
+            0
+          ],
+          [
+            17,
+            297,
+            37
+          ],
+          [
+            1,
+            36,
+            34
+          ]
+        ],
+        "log_loss": 0.5669883523748591,
+        "brier_sum_classes": 0.34423507615210175,
+        "ece_10_bins": 0.037310073042482364,
+        "recall_at_precision_0.4": 0.48,
+        "average_precision_ineffective": 0.2860870933023565,
+        "average_precision_per_class": [
+          0.2860870933023565,
+          0.895659834640552,
+          0.4888772709714427
+        ],
+        "macro_average_precision": 0.5568747329714504,
+        "ineffective_prevalence": 0.05592841163310962,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 23,
+            "ineffective_found": 8,
+            "precision": 0.34782608695652173,
+            "recall": 0.32,
+            "boundary_score": 0.5289322358460531,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 45,
+            "ineffective_found": 12,
+            "precision": 0.26666666666666666,
+            "recall": 0.48,
+            "boundary_score": 0.401550978317167,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 90,
+            "ineffective_found": 20,
+            "precision": 0.2222222222222222,
+            "recall": 0.8,
+            "boundary_score": 0.20598151972239262,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5160625545579249,
+            "high": 0.6637404796266044,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.24,
+            "high": 0.7142857142857143,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.21739130434782608,
+            "high": 0.5769230769230769,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.33780957129535044,
+            "high": 0.5358526371902805,
+            "valid_resamples": 500
+          }
+        }
+      }
+    },
+    "prompt_name": {
+      "\"A Cowboy Who Rode the Waves\"": {
+        "n": 505,
+        "essays": 65,
+        "class_counts": {
+          "0": 16,
+          "1": 457,
+          "2": 32
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Car-free cities": {
+        "n": 749,
+        "essays": 88,
+        "class_counts": {
+          "0": 21,
+          "1": 644,
+          "2": 84
+        },
+        "macro_f1": 0.6805200341005967,
+        "accuracy": 0.8691588785046729,
+        "qwk": 0.5068660647103085,
+        "precision_ineffective": 0.631578947368421,
+        "recall_ineffective": 0.5714285714285714,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.631578947368421,
+            "recall": 0.5714285714285714,
+            "f1": 0.6,
+            "support": 21
+          },
+          "Adequate": {
+            "precision": 0.9239130434782609,
+            "recall": 0.9239130434782609,
+            "f1": 0.9239130434782609,
+            "support": 644
+          },
+          "Effective": {
+            "precision": 0.5116279069767442,
+            "recall": 0.5238095238095238,
+            "f1": 0.5176470588235295,
+            "support": 84
+          }
+        },
+        "confusion_matrix": [
+          [
+            12,
+            9,
+            0
+          ],
+          [
+            7,
+            595,
+            42
+          ],
+          [
+            0,
+            40,
+            44
+          ]
+        ],
+        "log_loss": 0.3829759168824479,
+        "brier_sum_classes": 0.21509261736080246,
+        "ece_10_bins": 0.06979300916167844,
+        "recall_at_precision_0.4": 0.7142857142857143,
+        "average_precision_ineffective": 0.5502936473417435,
+        "average_precision_per_class": [
+          0.5502936473417435,
+          0.9498987329272617,
+          0.5007718499253251
+        ],
+        "macro_average_precision": 0.6669880767314433,
+        "ineffective_prevalence": 0.028037383177570093,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 38,
+            "ineffective_found": 15,
+            "precision": 0.39473684210526316,
+            "recall": 0.7142857142857143,
+            "boundary_score": 0.31209902882898927,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 75,
+            "ineffective_found": 17,
+            "precision": 0.22666666666666666,
+            "recall": 0.8095238095238095,
+            "boundary_score": 0.1960502782921769,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 150,
+            "ineffective_found": 17,
+            "precision": 0.11333333333333333,
+            "recall": 0.8095238095238095,
+            "boundary_score": 0.113684494397518,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5736349686116892,
+            "high": 0.7473909550807404,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.26482456140350874,
+            "high": 0.7803140096618356,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.3659090909090909,
+            "high": 0.9230769230769231,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.3663579614696913,
+            "high": 0.6076522087795392,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Cell phones at school": {
+        "n": 817,
+        "essays": 95,
+        "class_counts": {
+          "0": 24,
+          "1": 729,
+          "2": 64
+        },
+        "macro_f1": 0.49230942190892124,
+        "accuracy": 0.8800489596083231,
+        "qwk": 0.28783377510540264,
+        "precision_ineffective": 0.21739130434782608,
+        "recall_ineffective": 0.20833333333333334,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.21739130434782608,
+            "recall": 0.20833333333333334,
+            "f1": 0.2127659574468085,
+            "support": 24
+          },
+          "Adequate": {
+            "precision": 0.9113428943937418,
+            "recall": 0.9588477366255144,
+            "f1": 0.9344919786096256,
+            "support": 729
+          },
+          "Effective": {
+            "precision": 0.5555555555555556,
+            "recall": 0.234375,
+            "f1": 0.32967032967032966,
+            "support": 64
+          }
+        },
+        "confusion_matrix": [
+          [
+            5,
+            19,
+            0
+          ],
+          [
+            18,
+            699,
+            12
+          ],
+          [
+            0,
+            49,
+            15
+          ]
+        ],
+        "log_loss": 0.3958037453918912,
+        "brier_sum_classes": 0.2091893455007618,
+        "ece_10_bins": 0.05089301345213339,
+        "recall_at_precision_0.4": 0.08333333333333333,
+        "average_precision_ineffective": 0.16624671959410497,
+        "average_precision_per_class": [
+          0.16624671959410497,
+          0.9098442940865699,
+          0.349643298071056
+        ],
+        "macro_average_precision": 0.47524477058391024,
+        "ineffective_prevalence": 0.02937576499388005,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 41,
+            "ineffective_found": 7,
+            "precision": 0.17073170731707318,
+            "recall": 0.2916666666666667,
+            "boundary_score": 0.41962546865835443,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 82,
+            "ineffective_found": 10,
+            "precision": 0.12195121951219512,
+            "recall": 0.4166666666666667,
+            "boundary_score": 0.2892794527974205,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 164,
+            "ineffective_found": 15,
+            "precision": 0.09146341463414634,
+            "recall": 0.625,
+            "boundary_score": 0.1651251609386219,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.4007729041164515,
+            "high": 0.569743051346136,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.033879310344827586,
+            "high": 0.4,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.043478260869565216,
+            "high": 0.375,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.14102756778854536,
+            "high": 0.4060606731215259,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Community service": {
+        "n": 558,
+        "essays": 66,
+        "class_counts": {
+          "0": 33,
+          "1": 426,
+          "2": 99
+        },
+        "macro_f1": 0.4471530454345604,
+        "accuracy": 0.5716845878136201,
+        "qwk": 0.2856694986989372,
+        "precision_ineffective": 0.2857142857142857,
+        "recall_ineffective": 0.24242424242424243,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.2857142857142857,
+            "recall": 0.24242424242424243,
+            "f1": 0.26229508196721313,
+            "support": 33
+          },
+          "Adequate": {
+            "precision": 0.8160535117056856,
+            "recall": 0.5727699530516432,
+            "f1": 0.673103448275862,
+            "support": 426
+          },
+          "Effective": {
+            "precision": 0.29004329004329005,
+            "recall": 0.6767676767676768,
+            "f1": 0.4060606060606061,
+            "support": 99
+          }
+        },
+        "confusion_matrix": [
+          [
+            8,
+            23,
+            2
+          ],
+          [
+            20,
+            244,
+            162
+          ],
+          [
+            0,
+            32,
+            67
+          ]
+        ],
+        "log_loss": 0.8152191791243073,
+        "brier_sum_classes": 0.5320134237053179,
+        "ece_10_bins": 0.0709231830363873,
+        "recall_at_precision_0.4": 0.18181818181818182,
+        "average_precision_ineffective": 0.25751861030851836,
+        "average_precision_per_class": [
+          0.25751861030851836,
+          0.8387431975158555,
+          0.4004344139998454
+        ],
+        "macro_average_precision": 0.4988987406080731,
+        "ineffective_prevalence": 0.05913978494623656,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 28,
+            "ineffective_found": 9,
+            "precision": 0.32142857142857145,
+            "recall": 0.2727272727272727,
+            "boundary_score": 0.4591306263814256,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 56,
+            "ineffective_found": 12,
+            "precision": 0.21428571428571427,
+            "recall": 0.36363636363636365,
+            "boundary_score": 0.3147180790183985,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 112,
+            "ineffective_found": 20,
+            "precision": 0.17857142857142858,
+            "recall": 0.6060606060606061,
+            "boundary_score": 0.15574398313339682,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.3707101954276741,
+            "high": 0.5071141914710342,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.06892857142857144,
+            "high": 0.45238636363636353,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.14285714285714285,
+            "high": 0.40914522058823516,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.2054036134794863,
+            "high": 0.3619129822316286,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Distance learning": {
+        "n": 1709,
+        "essays": 140,
+        "class_counts": {
+          "0": 18,
+          "1": 1284,
+          "2": 407
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Does the electoral college work?": {
+        "n": 1535,
+        "essays": 169,
+        "class_counts": {
+          "0": 177,
+          "1": 1078,
+          "2": 280
+        },
+        "macro_f1": 0.5930748147336912,
+        "accuracy": 0.6684039087947883,
+        "qwk": 0.5049594512746693,
+        "precision_ineffective": 0.37809187279151946,
+        "recall_ineffective": 0.6045197740112994,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.37809187279151946,
+            "recall": 0.6045197740112994,
+            "f1": 0.46521739130434786,
+            "support": 177
+          },
+          "Adequate": {
+            "precision": 0.8180815876515987,
+            "recall": 0.6883116883116883,
+            "f1": 0.7476070528967255,
+            "support": 1078
+          },
+          "Effective": {
+            "precision": 0.5130434782608696,
+            "recall": 0.6321428571428571,
+            "f1": 0.5664,
+            "support": 280
+          }
+        },
+        "confusion_matrix": [
+          [
+            107,
+            66,
+            4
+          ],
+          [
+            172,
+            742,
+            164
+          ],
+          [
+            4,
+            99,
+            177
+          ]
+        ],
+        "log_loss": 0.7284413435346313,
+        "brier_sum_classes": 0.4558814870877891,
+        "ece_10_bins": 0.05552866330828833,
+        "recall_at_precision_0.4": 0.615819209039548,
+        "average_precision_ineffective": 0.4625987857466558,
+        "average_precision_per_class": [
+          0.4625987857466558,
+          0.8523200204734324,
+          0.5933697293843694
+        ],
+        "macro_average_precision": 0.6360961785348191,
+        "ineffective_prevalence": 0.11530944625407166,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 77,
+            "ineffective_found": 45,
+            "precision": 0.5844155844155844,
+            "recall": 0.2542372881355932,
+            "boundary_score": 0.8634589807799938,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 154,
+            "ineffective_found": 73,
+            "precision": 0.474025974025974,
+            "recall": 0.4124293785310734,
+            "boundary_score": 0.6951123478949442,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 307,
+            "ineffective_found": 115,
+            "precision": 0.3745928338762215,
+            "recall": 0.6497175141242938,
+            "boundary_score": 0.44725265064401565,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.55035992901726,
+            "high": 0.6282685035389667,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.5103497536945814,
+            "high": 0.6927350427350427,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.30357142857142855,
+            "high": 0.4415956795933735,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.4400092713598521,
+            "high": 0.5577330366154126,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Driverless cars": {
+        "n": 1386,
+        "essays": 157,
+        "class_counts": {
+          "0": 27,
+          "1": 1154,
+          "2": 205
+        },
+        "macro_f1": 0.45141895405717253,
+        "accuracy": 0.7886002886002886,
+        "qwk": 0.3129718599862731,
+        "precision_ineffective": 0.05555555555555555,
+        "recall_ineffective": 0.037037037037037035,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.05555555555555555,
+            "recall": 0.037037037037037035,
+            "f1": 0.04444444444444444,
+            "support": 27
+          },
+          "Adequate": {
+            "precision": 0.8835555555555555,
+            "recall": 0.8613518197573656,
+            "f1": 0.8723124177270732,
+            "support": 1154
+          },
+          "Effective": {
+            "precision": 0.40329218106995884,
+            "recall": 0.47804878048780486,
+            "f1": 0.43750000000000006,
+            "support": 205
+          }
+        },
+        "confusion_matrix": [
+          [
+            1,
+            24,
+            2
+          ],
+          [
+            17,
+            994,
+            143
+          ],
+          [
+            0,
+            107,
+            98
+          ]
+        ],
+        "log_loss": 0.5006668131353791,
+        "brier_sum_classes": 0.3023735500310866,
+        "ece_10_bins": 0.011773655941109452,
+        "recall_at_precision_0.4": 0.0,
+        "average_precision_ineffective": 0.08870227205248207,
+        "average_precision_per_class": [
+          0.08870227205248207,
+          0.9169391775174428,
+          0.40334837464655293
+        ],
+        "macro_average_precision": 0.4696632747388259,
+        "ineffective_prevalence": 0.01948051948051948,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 70,
+            "ineffective_found": 9,
+            "precision": 0.12857142857142856,
+            "recall": 0.3333333333333333,
+            "boundary_score": 0.2860969101490938,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 139,
+            "ineffective_found": 11,
+            "precision": 0.07913669064748201,
+            "recall": 0.4074074074074074,
+            "boundary_score": 0.1838033189767123,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 278,
+            "ineffective_found": 18,
+            "precision": 0.06474820143884892,
+            "recall": 0.6666666666666666,
+            "boundary_score": 0.0997360420448337,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.4105937202025746,
+            "high": 0.4961715102045925,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.0,
+            "high": 0.125,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.0,
+            "high": 0.23076923076923078,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.22434221352954456,
+            "high": 0.4016776272147252,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Exploring Venus": {
+        "n": 793,
+        "essays": 97,
+        "class_counts": {
+          "0": 77,
+          "1": 599,
+          "2": 117
+        },
+        "macro_f1": 0.5659056181685492,
+        "accuracy": 0.6986128625472888,
+        "qwk": 0.4510729343653641,
+        "precision_ineffective": 0.2792207792207792,
+        "recall_ineffective": 0.5584415584415584,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.2792207792207792,
+            "recall": 0.5584415584415584,
+            "f1": 0.3722943722943723,
+            "support": 77
+          },
+          "Adequate": {
+            "precision": 0.8264014466546112,
+            "recall": 0.7629382303839732,
+            "f1": 0.7934027777777777,
+            "support": 599
+          },
+          "Effective": {
+            "precision": 0.627906976744186,
+            "recall": 0.46153846153846156,
+            "f1": 0.5320197044334976,
+            "support": 117
+          }
+        },
+        "confusion_matrix": [
+          [
+            43,
+            34,
+            0
+          ],
+          [
+            110,
+            457,
+            32
+          ],
+          [
+            1,
+            62,
+            54
+          ]
+        ],
+        "log_loss": 0.6917770078474825,
+        "brier_sum_classes": 0.4338037895553238,
+        "ece_10_bins": 0.07064473680570146,
+        "recall_at_precision_0.4": 0.3246753246753247,
+        "average_precision_ineffective": 0.37900765617554477,
+        "average_precision_per_class": [
+          0.37900765617554477,
+          0.8421970067033644,
+          0.6196853502442724
+        ],
+        "macro_average_precision": 0.6136300043743939,
+        "ineffective_prevalence": 0.09709962168978563,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 40,
+            "ineffective_found": 21,
+            "precision": 0.525,
+            "recall": 0.2727272727272727,
+            "boundary_score": 0.883791299279159,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 80,
+            "ineffective_found": 29,
+            "precision": 0.3625,
+            "recall": 0.37662337662337664,
+            "boundary_score": 0.7272516089529829,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 159,
+            "ineffective_found": 43,
+            "precision": 0.27044025157232704,
+            "recall": 0.5584415584415584,
+            "boundary_score": 0.4847394257805397,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5022522570217224,
+            "high": 0.6227022085534866,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.4,
+            "high": 0.7422364672364672,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.17847953484113177,
+            "high": 0.3994508670520231,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.34534884857403936,
+            "high": 0.5365585065743121,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Facial action coding system": {
+        "n": 952,
+        "essays": 114,
+        "class_counts": {
+          "0": 81,
+          "1": 785,
+          "2": 86
+        },
+        "macro_f1": 0.5877279656445192,
+        "accuracy": 0.773109243697479,
+        "qwk": 0.4465410140695514,
+        "precision_ineffective": 0.3401360544217687,
+        "recall_ineffective": 0.6172839506172839,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.3401360544217687,
+            "recall": 0.6172839506172839,
+            "f1": 0.43859649122807015,
+            "support": 81
+          },
+          "Adequate": {
+            "precision": 0.893646408839779,
+            "recall": 0.824203821656051,
+            "f1": 0.8575215374420146,
+            "support": 785
+          },
+          "Effective": {
+            "precision": 0.48148148148148145,
+            "recall": 0.45348837209302323,
+            "f1": 0.467065868263473,
+            "support": 86
+          }
+        },
+        "confusion_matrix": [
+          [
+            50,
+            30,
+            1
+          ],
+          [
+            97,
+            647,
+            41
+          ],
+          [
+            0,
+            47,
+            39
+          ]
+        ],
+        "log_loss": 0.5117763909451627,
+        "brier_sum_classes": 0.31754029521880045,
+        "ece_10_bins": 0.01795672423880122,
+        "recall_at_precision_0.4": 0.4691358024691358,
+        "average_precision_ineffective": 0.3941009776463529,
+        "average_precision_per_class": [
+          0.3941009776463529,
+          0.918516951509163,
+          0.48343538577066975
+        ],
+        "macro_average_precision": 0.5986844383087285,
+        "ineffective_prevalence": 0.08508403361344538,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 48,
+            "ineffective_found": 24,
+            "precision": 0.5,
+            "recall": 0.2962962962962963,
+            "boundary_score": 0.7730600335132148,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 96,
+            "ineffective_found": 38,
+            "precision": 0.3958333333333333,
+            "recall": 0.4691358024691358,
+            "boundary_score": 0.6407048809087488,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 191,
+            "ineffective_found": 57,
+            "precision": 0.29842931937172773,
+            "recall": 0.7037037037037037,
+            "boundary_score": 0.4007874123056221,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5226908371863949,
+            "high": 0.6417890307628565,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.4673404255319149,
+            "high": 0.7455882352941177,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.22476047382632175,
+            "high": 0.441442748091603,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.35259063057958967,
+            "high": 0.5236757673079753,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Grades for extracurricular activities": {
+        "n": 646,
+        "essays": 85,
+        "class_counts": {
+          "0": 13,
+          "1": 556,
+          "2": 77
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Mandatory extracurricular activities": {
+        "n": 885,
+        "essays": 87,
+        "class_counts": {
+          "0": 33,
+          "1": 672,
+          "2": 180
+        },
+        "macro_f1": 0.5108108573197853,
+        "accuracy": 0.7570621468926554,
+        "qwk": 0.4409283630241434,
+        "precision_ineffective": 0.17647058823529413,
+        "recall_ineffective": 0.09090909090909091,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.17647058823529413,
+            "recall": 0.09090909090909091,
+            "f1": 0.12000000000000001,
+            "support": 33
+          },
+          "Adequate": {
+            "precision": 0.8542635658914729,
+            "recall": 0.8199404761904762,
+            "f1": 0.8367501898253606,
+            "support": 672
+          },
+          "Effective": {
+            "precision": 0.5201793721973094,
+            "recall": 0.6444444444444445,
+            "f1": 0.575682382133995,
+            "support": 180
+          }
+        },
+        "confusion_matrix": [
+          [
+            3,
+            30,
+            0
+          ],
+          [
+            14,
+            551,
+            107
+          ],
+          [
+            0,
+            64,
+            116
+          ]
+        ],
+        "log_loss": 0.572388325240494,
+        "brier_sum_classes": 0.33647598847363713,
+        "ece_10_bins": 0.026741254846635018,
+        "recall_at_precision_0.4": 0.0,
+        "average_precision_ineffective": 0.08266531455343874,
+        "average_precision_per_class": [
+          0.08266531455343874,
+          0.8879644074750522,
+          0.6793173062799072
+        ],
+        "macro_average_precision": 0.549982342769466,
+        "ineffective_prevalence": 0.03728813559322034,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 45,
+            "ineffective_found": 4,
+            "precision": 0.08888888888888889,
+            "recall": 0.12121212121212122,
+            "boundary_score": 0.3199642712819123,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 89,
+            "ineffective_found": 11,
+            "precision": 0.12359550561797752,
+            "recall": 0.3333333333333333,
+            "boundary_score": 0.172968487672508,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 177,
+            "ineffective_found": 13,
+            "precision": 0.07344632768361582,
+            "recall": 0.3939393939393939,
+            "boundary_score": 0.07996042138092381,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.4557921579342731,
+            "high": 0.5675103654459612,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.0,
+            "high": 0.23637681159420276,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.0,
+            "high": 0.46090909090909066,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.35866205241403026,
+            "high": 0.5111173302246188,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Phones and driving": {
+        "n": 650,
+        "essays": 71,
+        "class_counts": {
+          "0": 5,
+          "1": 527,
+          "2": 118
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Seeking multiple opinions": {
+        "n": 1423,
+        "essays": 152,
+        "class_counts": {
+          "0": 13,
+          "1": 1106,
+          "2": 304
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Summer projects": {
+        "n": 1031,
+        "essays": 91,
+        "class_counts": {
+          "0": 4,
+          "1": 716,
+          "2": 311
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "The Face on Mars": {
+        "n": 840,
+        "essays": 90,
+        "class_counts": {
+          "0": 85,
+          "1": 705,
+          "2": 50
+        },
+        "macro_f1": 0.6010465674966613,
+        "accuracy": 0.7880952380952381,
+        "qwk": 0.4425051334702258,
+        "precision_ineffective": 0.3602941176470588,
+        "recall_ineffective": 0.5764705882352941,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.3602941176470588,
+            "recall": 0.5764705882352941,
+            "f1": 0.4434389140271493,
+            "support": 85
+          },
+          "Adequate": {
+            "precision": 0.9099378881987578,
+            "recall": 0.8312056737588652,
+            "f1": 0.8687916975537435,
+            "support": 705
+          },
+          "Effective": {
+            "precision": 0.45,
+            "recall": 0.54,
+            "f1": 0.49090909090909096,
+            "support": 50
+          }
+        },
+        "confusion_matrix": [
+          [
+            49,
+            36,
+            0
+          ],
+          [
+            86,
+            586,
+            33
+          ],
+          [
+            1,
+            22,
+            27
+          ]
+        ],
+        "log_loss": 0.5026460128940451,
+        "brier_sum_classes": 0.3060032427978835,
+        "ece_10_bins": 0.032379287360989,
+        "recall_at_precision_0.4": 0.5411764705882353,
+        "average_precision_ineffective": 0.48218866168487096,
+        "average_precision_per_class": [
+          0.48218866168487096,
+          0.9465150957826642,
+          0.4506024207726196
+        ],
+        "macro_average_precision": 0.6264353927467182,
+        "ineffective_prevalence": 0.10119047619047619,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 42,
+            "ineffective_found": 25,
+            "precision": 0.5952380952380952,
+            "recall": 0.29411764705882354,
+            "boundary_score": 0.7854568224614428,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 84,
+            "ineffective_found": 38,
+            "precision": 0.4523809523809524,
+            "recall": 0.4470588235294118,
+            "boundary_score": 0.6692743025379111,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 168,
+            "ineffective_found": 54,
+            "precision": 0.32142857142857145,
+            "recall": 0.6352941176470588,
+            "boundary_score": 0.41456975067029656,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5278297645371299,
+            "high": 0.6602375267205137,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.4383996212121212,
+            "high": 0.7006818181818182,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.25330257284718394,
+            "high": 0.451338139443018,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.3367374767452714,
+            "high": 0.5303500850045955,
+            "valid_resamples": 500
+          }
+        }
+      }
+    },
+    "ell_status": {
+      " ": {
+        "n": 106,
+        "essays": 11,
+        "class_counts": {
+          "0": 4,
+          "1": 88,
+          "2": 14
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "No": {
+        "n": 12443,
+        "essays": 1331,
+        "class_counts": {
+          "0": 495,
+          "1": 9734,
+          "2": 2214
+        },
+        "macro_f1": 0.586160702530413,
+        "accuracy": 0.766776500843848,
+        "qwk": 0.46175201855893766,
+        "precision_ineffective": 0.31587057010785824,
+        "recall_ineffective": 0.41414141414141414,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.31587057010785824,
+            "recall": 0.41414141414141414,
+            "f1": 0.3583916083916084,
+            "support": 495
+          },
+          "Adequate": {
+            "precision": 0.8751644015782551,
+            "recall": 0.8203205259913705,
+            "f1": 0.8468554459645774,
+            "support": 9734
+          },
+          "Effective": {
+            "precision": 0.5059925093632959,
+            "recall": 0.6102077687443541,
+            "f1": 0.5532350532350533,
+            "support": 2214
+          }
+        },
+        "confusion_matrix": [
+          [
+            205,
+            282,
+            8
+          ],
+          [
+            438,
+            7985,
+            1311
+          ],
+          [
+            6,
+            857,
+            1351
+          ]
+        ],
+        "log_loss": 0.5371066499762297,
+        "brier_sum_classes": 0.33006183881199935,
+        "ece_10_bins": 0.011133678688658067,
+        "recall_at_precision_0.4": 0.2686868686868687,
+        "average_precision_ineffective": 0.3080561129596892,
+        "average_precision_per_class": [
+          0.3080561129596892,
+          0.91053412503048,
+          0.5989281125713026
+        ],
+        "macro_average_precision": 0.6058394501871572,
+        "ineffective_prevalence": 0.03978140319858555,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 623,
+            "ineffective_found": 201,
+            "precision": 0.32263242375601925,
+            "recall": 0.40606060606060607,
+            "boundary_score": 0.49740222574085935,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 1245,
+            "ineffective_found": 283,
+            "precision": 0.22730923694779118,
+            "recall": 0.5717171717171717,
+            "boundary_score": 0.30034198988127425,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 2489,
+            "ineffective_found": 375,
+            "precision": 0.1506629168340699,
+            "recall": 0.7575757575757576,
+            "boundary_score": 0.1378489213956945,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5681026390009296,
+            "high": 0.6022781099694867,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.3588830685193175,
+            "high": 0.47035167183314774,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.27219667623538546,
+            "high": 0.365869947201331,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.4355867039411168,
+            "high": 0.48410851554088674,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Unknown": {
+        "n": 667,
+        "essays": 73,
+        "class_counts": {
+          "0": 5,
+          "1": 539,
+          "2": 123
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "Yes": {
+        "n": 1263,
+        "essays": 152,
+        "class_counts": {
+          "0": 123,
+          "1": 1077,
+          "2": 63
+        },
+        "macro_f1": 0.5146135472136392,
+        "accuracy": 0.7759303246239113,
+        "qwk": 0.37339453360811015,
+        "precision_ineffective": 0.3387096774193548,
+        "recall_ineffective": 0.6829268292682927,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.3387096774193548,
+            "recall": 0.6829268292682927,
+            "f1": 0.45283018867924524,
+            "support": 123
+          },
+          "Adequate": {
+            "precision": 0.9085303186022611,
+            "recall": 0.8207985143918292,
+            "f1": 0.8624390243902439,
+            "support": 1077
+          },
+          "Effective": {
+            "precision": 0.2857142857142857,
+            "recall": 0.19047619047619047,
+            "f1": 0.22857142857142854,
+            "support": 63
+          }
+        },
+        "confusion_matrix": [
+          [
+            84,
+            38,
+            1
+          ],
+          [
+            164,
+            884,
+            29
+          ],
+          [
+            0,
+            51,
+            12
+          ]
+        ],
+        "log_loss": 0.5455896010049829,
+        "brier_sum_classes": 0.32828360562559816,
+        "ece_10_bins": 0.020897746443989652,
+        "recall_at_precision_0.4": 0.5853658536585366,
+        "average_precision_ineffective": 0.47438912363053487,
+        "average_precision_per_class": [
+          0.47438912363053487,
+          0.9366597581367213,
+          0.23914796482876463
+        ],
+        "macro_average_precision": 0.550065615532007,
+        "ineffective_prevalence": 0.09738717339667459,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 64,
+            "ineffective_found": 37,
+            "precision": 0.578125,
+            "recall": 0.3008130081300813,
+            "boundary_score": 0.8751099798522137,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 127,
+            "ineffective_found": 59,
+            "precision": 0.4645669291338583,
+            "recall": 0.4796747967479675,
+            "boundary_score": 0.7239271134826323,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 253,
+            "ineffective_found": 85,
+            "precision": 0.3359683794466403,
+            "recall": 0.6910569105691057,
+            "boundary_score": 0.49255368632995933,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.45753036773771943,
+            "high": 0.5682587042750562,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.5716764705882352,
+            "high": 0.7791026808953669,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.25935435435435433,
+            "high": 0.4279545454545454,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.30272814128177955,
+            "high": 0.4387135437042528,
+            "valid_resamples": 500
+          }
+        }
+      }
+    },
+    "grade_level": {
+      "10": {
+        "n": 4200,
+        "essays": 483,
+        "class_counts": {
+          "0": 208,
+          "1": 3448,
+          "2": 544
+        },
+        "macro_f1": 0.5771267549441241,
+        "accuracy": 0.7847619047619048,
+        "qwk": 0.43026322336667167,
+        "precision_ineffective": 0.3136094674556213,
+        "recall_ineffective": 0.5096153846153846,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.3136094674556213,
+            "recall": 0.5096153846153846,
+            "f1": 0.38827838827838823,
+            "support": 208
+          },
+          "Adequate": {
+            "precision": 0.8848942598187312,
+            "recall": 0.849477958236659,
+            "f1": 0.8668245042912105,
+            "support": 3448
+          },
+          "Effective": {
+            "precision": 0.47282608695652173,
+            "recall": 0.4797794117647059,
+            "f1": 0.4762773722627738,
+            "support": 544
+          }
+        },
+        "confusion_matrix": [
+          [
+            106,
+            99,
+            3
+          ],
+          [
+            231,
+            2929,
+            288
+          ],
+          [
+            1,
+            282,
+            261
+          ]
+        ],
+        "log_loss": 0.5130793338767793,
+        "brier_sum_classes": 0.3119590239720299,
+        "ece_10_bins": 0.010370295909927175,
+        "recall_at_precision_0.4": 0.36538461538461536,
+        "average_precision_ineffective": 0.33631081502060667,
+        "average_precision_per_class": [
+          0.33631081502060667,
+          0.9189584088253515,
+          0.48946375550053245
+        ],
+        "macro_average_precision": 0.5815776597821635,
+        "ineffective_prevalence": 0.049523809523809526,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 210,
+            "ineffective_found": 80,
+            "precision": 0.38095238095238093,
+            "recall": 0.38461538461538464,
+            "boundary_score": 0.6464552287377536,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 420,
+            "ineffective_found": 122,
+            "precision": 0.2904761904761905,
+            "recall": 0.5865384615384616,
+            "boundary_score": 0.42980871120284037,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 840,
+            "ineffective_found": 153,
+            "precision": 0.18214285714285713,
+            "recall": 0.7355769230769231,
+            "boundary_score": 0.2127042011205019,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5412745878407502,
+            "high": 0.6030763122329766,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.40815968651005885,
+            "high": 0.6029925847457626,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.23687196866061436,
+            "high": 0.38209133567080067,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.380729252585653,
+            "high": 0.46938982382110034,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "11": {
+        "n": 2205,
+        "essays": 181,
+        "class_counts": {
+          "0": 13,
+          "1": 1539,
+          "2": 653
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "12": {
+        "n": 215,
+        "essays": 23,
+        "class_counts": {
+          "0": 7,
+          "1": 195,
+          "2": 13
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "6": {
+        "n": 505,
+        "essays": 65,
+        "class_counts": {
+          "0": 16,
+          "1": 457,
+          "2": 32
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "8": {
+        "n": 5169,
+        "essays": 575,
+        "class_counts": {
+          "0": 201,
+          "1": 4194,
+          "2": 774
+        },
+        "macro_f1": 0.5635365279866055,
+        "accuracy": 0.7784871348423292,
+        "qwk": 0.42118393520238195,
+        "precision_ineffective": 0.3177570093457944,
+        "recall_ineffective": 0.3383084577114428,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.3177570093457944,
+            "recall": 0.3383084577114428,
+            "f1": 0.32771084337349393,
+            "support": 201
+          },
+          "Adequate": {
+            "precision": 0.8832245102963335,
+            "recall": 0.8385789222699094,
+            "f1": 0.8603228962818004,
+            "support": 4194
+          },
+          "Effective": {
+            "precision": 0.4511819116135663,
+            "recall": 0.5671834625322998,
+            "f1": 0.5025758443045221,
+            "support": 774
+          }
+        },
+        "confusion_matrix": [
+          [
+            68,
+            131,
+            2
+          ],
+          [
+            145,
+            3517,
+            532
+          ],
+          [
+            1,
+            334,
+            439
+          ]
+        ],
+        "log_loss": 0.5219469632912392,
+        "brier_sum_classes": 0.3144029530495639,
+        "ece_10_bins": 0.008751216710697635,
+        "recall_at_precision_0.4": 0.24378109452736318,
+        "average_precision_ineffective": 0.2933087301957814,
+        "average_precision_per_class": [
+          0.2933087301957814,
+          0.9096727485583134,
+          0.5403336107454974
+        ],
+        "macro_average_precision": 0.5811050298331973,
+        "ineffective_prevalence": 0.038885664538595474,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 259,
+            "ineffective_found": 74,
+            "precision": 0.2857142857142857,
+            "recall": 0.3681592039800995,
+            "boundary_score": 0.4386861009276064,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 517,
+            "ineffective_found": 104,
+            "precision": 0.2011605415860735,
+            "recall": 0.5174129353233831,
+            "boundary_score": 0.27734786546524853,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 1034,
+            "ineffective_found": 141,
+            "precision": 0.13636363636363635,
+            "recall": 0.7014925373134329,
+            "boundary_score": 0.1315789927202367,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5319924796148917,
+            "high": 0.5948426400955753,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.25203614132067537,
+            "high": 0.43036347517730494,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.24355636123928806,
+            "high": 0.39421926528107964,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.3790991427786658,
+            "high": 0.4558334919153485,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "9": {
+        "n": 1535,
+        "essays": 169,
+        "class_counts": {
+          "0": 177,
+          "1": 1078,
+          "2": 280
+        },
+        "macro_f1": 0.5930748147336912,
+        "accuracy": 0.6684039087947883,
+        "qwk": 0.5049594512746693,
+        "precision_ineffective": 0.37809187279151946,
+        "recall_ineffective": 0.6045197740112994,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.37809187279151946,
+            "recall": 0.6045197740112994,
+            "f1": 0.46521739130434786,
+            "support": 177
+          },
+          "Adequate": {
+            "precision": 0.8180815876515987,
+            "recall": 0.6883116883116883,
+            "f1": 0.7476070528967255,
+            "support": 1078
+          },
+          "Effective": {
+            "precision": 0.5130434782608696,
+            "recall": 0.6321428571428571,
+            "f1": 0.5664,
+            "support": 280
+          }
+        },
+        "confusion_matrix": [
+          [
+            107,
+            66,
+            4
+          ],
+          [
+            172,
+            742,
+            164
+          ],
+          [
+            4,
+            99,
+            177
+          ]
+        ],
+        "log_loss": 0.7284413435346313,
+        "brier_sum_classes": 0.4558814870877891,
+        "ece_10_bins": 0.05552866330828833,
+        "recall_at_precision_0.4": 0.615819209039548,
+        "average_precision_ineffective": 0.4625987857466558,
+        "average_precision_per_class": [
+          0.4625987857466558,
+          0.8523200204734324,
+          0.5933697293843694
+        ],
+        "macro_average_precision": 0.6360961785348191,
+        "ineffective_prevalence": 0.11530944625407166,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 77,
+            "ineffective_found": 45,
+            "precision": 0.5844155844155844,
+            "recall": 0.2542372881355932,
+            "boundary_score": 0.8634589807799938,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 154,
+            "ineffective_found": 73,
+            "precision": 0.474025974025974,
+            "recall": 0.4124293785310734,
+            "boundary_score": 0.6951123478949442,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 307,
+            "ineffective_found": 115,
+            "precision": 0.3745928338762215,
+            "recall": 0.6497175141242938,
+            "boundary_score": 0.44725265064401565,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.55035992901726,
+            "high": 0.6282685035389667,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.5103497536945814,
+            "high": 0.6927350427350427,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.30357142857142855,
+            "high": 0.4415956795933735,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.4400092713598521,
+            "high": 0.5577330366154126,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "Unknown": {
+        "n": 650,
+        "essays": 71,
+        "class_counts": {
+          "0": 5,
+          "1": 527,
+          "2": 118
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    },
+    "length_bin": {
+      "(-0.001, 50.0]": {
+        "n": 10118,
+        "essays": 1560,
+        "class_counts": {
+          "0": 460,
+          "1": 8466,
+          "2": 1192
+        },
+        "macro_f1": 0.5446059658981959,
+        "accuracy": 0.7850365684917968,
+        "qwk": 0.3783166147578587,
+        "precision_ineffective": 0.2939297124600639,
+        "recall_ineffective": 0.4,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.2939297124600639,
+            "recall": 0.4,
+            "f1": 0.3388581952117864,
+            "support": 460
+          },
+          "Adequate": {
+            "precision": 0.8869362172790954,
+            "recall": 0.8524686983227026,
+            "f1": 0.8693609588628561,
+            "support": 8466
+          },
+          "Effective": {
+            "precision": 0.4,
+            "recall": 0.4546979865771812,
+            "f1": 0.42559874361994504,
+            "support": 1192
+          }
+        },
+        "confusion_matrix": [
+          [
+            184,
+            272,
+            4
+          ],
+          [
+            440,
+            7217,
+            809
+          ],
+          [
+            2,
+            648,
+            542
+          ]
+        ],
+        "log_loss": 0.5100869958226556,
+        "brier_sum_classes": 0.3085334166441178,
+        "ece_10_bins": 0.011855665254428108,
+        "recall_at_precision_0.4": 0.22391304347826088,
+        "average_precision_ineffective": 0.2871372611446534,
+        "average_precision_per_class": [
+          0.2871372611446534,
+          0.9220874459027992,
+          0.4236639696976631
+        ],
+        "macro_average_precision": 0.5442962255817053,
+        "ineffective_prevalence": 0.04546353034196481,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 506,
+            "ineffective_found": 159,
+            "precision": 0.3142292490118577,
+            "recall": 0.3456521739130435,
+            "boundary_score": 0.5478575711774589,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 1012,
+            "ineffective_found": 238,
+            "precision": 0.23517786561264822,
+            "recall": 0.5173913043478261,
+            "boundary_score": 0.3525415842138739,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 2024,
+            "ineffective_found": 329,
+            "precision": 0.1625494071146245,
+            "recall": 0.7152173913043478,
+            "boundary_score": 0.171936402453299,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5247882765717022,
+            "high": 0.5636552543839037,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.33891060291060293,
+            "high": 0.45381756933201023,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.2518794439426557,
+            "high": 0.33898770311813786,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.34966663431468675,
+            "high": 0.40372081693517425,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "(100.0, 200.0]": {
+        "n": 1212,
+        "essays": 719,
+        "class_counts": {
+          "0": 35,
+          "1": 592,
+          "2": 585
+        },
+        "macro_f1": 0.6424912558392913,
+        "accuracy": 0.7021452145214522,
+        "qwk": 0.5317501417967498,
+        "precision_ineffective": 0.4098360655737705,
+        "recall_ineffective": 0.7142857142857143,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.4098360655737705,
+            "recall": 0.7142857142857143,
+            "f1": 0.5208333333333334,
+            "support": 35
+          },
+          "Adequate": {
+            "precision": 0.7744186046511627,
+            "recall": 0.5625,
+            "f1": 0.6516634050880626,
+            "support": 592
+          },
+          "Effective": {
+            "precision": 0.6837725381414702,
+            "recall": 0.8427350427350427,
+            "f1": 0.7549770290964779,
+            "support": 585
+          }
+        },
+        "confusion_matrix": [
+          [
+            25,
+            8,
+            2
+          ],
+          [
+            33,
+            333,
+            226
+          ],
+          [
+            3,
+            89,
+            493
+          ]
+        ],
+        "log_loss": 0.6443064158899617,
+        "brier_sum_classes": 0.40882706264713337,
+        "ece_10_bins": 0.07652062069284528,
+        "recall_at_precision_0.4": 0.7428571428571429,
+        "average_precision_ineffective": 0.6109365052542484,
+        "average_precision_per_class": [
+          0.6109365052542484,
+          0.7849869182532153,
+          0.8102045214694205
+        ],
+        "macro_average_precision": 0.7353759816589612,
+        "ineffective_prevalence": 0.028877887788778877,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 61,
+            "ineffective_found": 25,
+            "precision": 0.4098360655737705,
+            "recall": 0.7142857142857143,
+            "boundary_score": 0.49156510348854743,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 122,
+            "ineffective_found": 30,
+            "precision": 0.2459016393442623,
+            "recall": 0.8571428571428571,
+            "boundary_score": 0.2464440371151859,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 243,
+            "ineffective_found": 33,
+            "precision": 0.13580246913580246,
+            "recall": 0.9428571428571428,
+            "boundary_score": 0.0585975671995854,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5915041045330633,
+            "high": 0.684759444385624,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.5555555555555556,
+            "high": 0.8509722222222221,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.2857142857142857,
+            "high": 0.5371821448313986,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.47779987082744463,
+            "high": 0.580860305265636,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "(200.0, 500.0]": {
+        "n": 119,
+        "essays": 102,
+        "class_counts": {
+          "0": 12,
+          "1": 43,
+          "2": 64
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      },
+      "(50.0, 100.0]": {
+        "n": 3028,
+        "essays": 1310,
+        "class_counts": {
+          "0": 119,
+          "1": 2336,
+          "2": 573
+        },
+        "macro_f1": 0.6056020101021891,
+        "accuracy": 0.7536327608982827,
+        "qwk": 0.4712118503336915,
+        "precision_ineffective": 0.3487179487179487,
+        "recall_ineffective": 0.5714285714285714,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.3487179487179487,
+            "recall": 0.5714285714285714,
+            "f1": 0.43312101910828027,
+            "support": 119
+          },
+          "Adequate": {
+            "precision": 0.87312734082397,
+            "recall": 0.7983732876712328,
+            "f1": 0.8340787119856886,
+            "support": 2336
+          },
+          "Effective": {
+            "precision": 0.5007173601147776,
+            "recall": 0.6090750436300174,
+            "f1": 0.5496062992125984,
+            "support": 573
+          }
+        },
+        "confusion_matrix": [
+          [
+            68,
+            48,
+            3
+          ],
+          [
+            126,
+            1865,
+            345
+          ],
+          [
+            1,
+            223,
+            349
+          ]
+        ],
+        "log_loss": 0.551884394640223,
+        "brier_sum_classes": 0.34410747154292226,
+        "ece_10_bins": 0.01011571700025137,
+        "recall_at_precision_0.4": 0.5042016806722689,
+        "average_precision_ineffective": 0.38028498869180677,
+        "average_precision_per_class": [
+          0.38028498869180677,
+          0.906065046133004,
+          0.5702724976506872
+        ],
+        "macro_average_precision": 0.6188741774918326,
+        "ineffective_prevalence": 0.0392998678996037,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 152,
+            "ineffective_found": 60,
+            "precision": 0.39473684210526316,
+            "recall": 0.5042016806722689,
+            "boundary_score": 0.5664738730585225,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 303,
+            "ineffective_found": 77,
+            "precision": 0.25412541254125415,
+            "recall": 0.6470588235294118,
+            "boundary_score": 0.332160692231169,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 606,
+            "ineffective_found": 101,
+            "precision": 0.16666666666666666,
+            "recall": 0.8487394957983193,
+            "boundary_score": 0.14010446650218802,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order",
+        "essay_bootstrap_95": {
+          "macro_f1": {
+            "low": 0.5735588282530494,
+            "high": 0.6329316000907215,
+            "valid_resamples": 500
+          },
+          "recall_ineffective": {
+            "low": 0.4736564960629921,
+            "high": 0.6743470588235293,
+            "valid_resamples": 500
+          },
+          "precision_ineffective": {
+            "low": 0.27368464937880427,
+            "high": 0.42662280701754385,
+            "valid_resamples": 500
+          },
+          "qwk": {
+            "low": 0.43090935416695714,
+            "high": 0.5036909448715665,
+            "valid_resamples": 500
+          }
+        }
+      },
+      "(500.0, inf]": {
+        "n": 2,
+        "essays": 2,
+        "class_counts": {
+          "0": 1,
+          "1": 1,
+          "2": 0
+        },
+        "note": "insufficient sample; no subgroup performance conclusion"
+      }
+    }
+  },
+  "llm_coverage": 0.0,
+  "llm_routed_rows": 0,
+  "llm_errors": 0,
+  "status_counts": {
+    "ok": 14479
+  }
+}

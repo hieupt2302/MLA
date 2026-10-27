@@ -1,0 +1,85 @@
+{
+  "macro_f1": 0.6022433747094398,
+  "accuracy": 0.7764804586450395,
+  "qwk": 0.478412177696937,
+  "precision_ineffective": 0.33517089305402425,
+  "recall_ineffective": 0.47874015748031495,
+  "per_class": {
+    "Ineffective": {
+      "precision": 0.33517089305402425,
+      "recall": 0.47874015748031495,
+      "f1": 0.3942931258106355,
+      "support": 635
+    },
+    "Adequate": {
+      "precision": 0.8827300150829562,
+      "recall": 0.8288926263609808,
+      "f1": 0.8549646199497831,
+      "support": 11297
+    },
+    "Effective": {
+      "precision": 0.5157819225251076,
+      "recall": 0.606495149725854,
+      "f1": 0.5574723783679008,
+      "support": 2371
+    }
+  },
+  "n": 14303,
+  "confusion_matrix": [
+    [
+      304,
+      320,
+      11
+    ],
+    [
+      594,
+      9364,
+      1339
+    ],
+    [
+      9,
+      924,
+      1438
+    ]
+  ],
+  "log_loss": 0.5111913052296829,
+  "brier_sum_classes": 0.312065667560362,
+  "ece_10_bins": 0.009863611099907233,
+  "recall_at_precision_0.4": 0.3889763779527559,
+  "average_precision_ineffective": 0.3837721477829264,
+  "average_precision_per_class": [
+    0.3837721477829264,
+    0.9230324880557856,
+    0.600341960028034
+  ],
+  "macro_average_precision": 0.635715531955582,
+  "ineffective_prevalence": 0.04439628050059428,
+  "review_budget_curve": {
+    "0.05": {
+      "reviewed": 716,
+      "ineffective_found": 265,
+      "precision": 0.37011173184357543,
+      "recall": 0.41732283464566927,
+      "boundary_score": 0.5573796568515426,
+      "boundary_tie_count": 1
+    },
+    "0.1": {
+      "reviewed": 1431,
+      "ineffective_found": 390,
+      "precision": 0.27253668763102723,
+      "recall": 0.6141732283464567,
+      "boundary_score": 0.34308572035244217,
+      "boundary_tie_count": 1
+    },
+    "0.2": {
+      "reviewed": 2861,
+      "ineffective_found": 506,
+      "precision": 0.17686123732960504,
+      "recall": 0.7968503937007874,
+      "boundary_score": 0.1593068570616103,
+      "boundary_tie_count": 1
+    }
+  },
+  "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+  "review_tie_break": "prediction row order"
+}

@@ -1,0 +1,6 @@
+Cohort,Essays,Discourse Units,Ineffective (%),Adequate (%),Effective (%),Unannotated (%)
+Train Raw (Full),15593,173266,3.73%,65.36%,14.19%,16.72%
+Train Annotated (Total),15593,144289,4.48%,78.48%,17.04%,0.00%
+Train Split (80% Fit),12474,115187,4.46%,78.44%,17.11%,0.00%
+Validation Split (20% Val),3119,29102,4.56%,78.68%,16.76%,0.00%
+Test Annotated (Holdout),10402,93677,4.51%,80.45%,15.04%,0.00%

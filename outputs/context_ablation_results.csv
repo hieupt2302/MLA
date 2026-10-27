@@ -1,0 +1,9 @@
+Metric,Level 0 (Unit Only),Level 1 (+ Neighbors),Delta (L1 - L0)
+Macro-F1 (Primary),0.5768,0.579,0.0022
+Accuracy,0.7388,0.7309,-0.0079
+Balanced Accuracy,0.6277,0.6289,0.0013
+Quadratic Weighted Kappa (QWK),0.4414,0.4384,-0.0029
+Unweighted Cohen Kappa,0.3704,0.3676,-0.0029
+F1: Ineffective (Class 0),0.3741,0.3934,0.0193
+F1: Adequate (Class 1),0.8245,0.8166,-0.008
+F1: Effective (Class 2),0.5317,0.527,-0.0047

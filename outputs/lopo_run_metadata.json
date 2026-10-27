@@ -1,0 +1,35 @@
+{
+  "quick_mode": false,
+  "run_args": [
+    "--data_path",
+    "/content/w10/persuade_corpus_2.0_train.csv",
+    "--output_dir",
+    "/content/w10/outputs",
+    "--epochs",
+    "3",
+    "--batch_size",
+    "8",
+    "--grad_accum",
+    "4",
+    "--lr",
+    "2e-5",
+    "--max_length",
+    "512"
+  ],
+  "train_csv_sha256": "f61319edd8bf16a982711ea0399fad59c05afaec05cdf0767f16a2c05c467e23",
+  "held_out_prompts": [
+    "\"A Cowboy Who Rode the Waves\"",
+    "Summer projects",
+    "Distance learning"
+  ],
+  "gpu": "Tesla T4",
+  "versions": {
+    "python": "3.13.16",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.20.2",
+    "datasets": "4.8.5",
+    "accelerate": "1.15.0",
+    "scikit-learn": "1.6.1"
+  },
+  "finished_at": "2026-10-24 16:56:14 UTC"
+}

@@ -1,0 +1,4 @@
+tier,held_out_prompt,n_test_units,rf_classical_macro_f1,deberta_macro_f1,delta_gain_over_rf,pct_gain_over_rf,rf_accuracy,deberta_accuracy,rf_f1_ineffective,deberta_f1_ineffective
+Hardest (Rank 1/15),"""A Cowboy Who Rode the Waves""",5158,0.3501,0.4082,0.0581,16.6,0.792,0.7887,0.1085,0.1246
+Median (Rank 8/15),Summer projects,9855,0.4339,0.4642,0.0303,6.98,0.7024,0.6658,0.0,0.0759
+Easiest (Rank 15/15),Distance learning,18526,0.5014,0.5735,0.0721,14.38,0.7805,0.7555,0.0649,0.2509

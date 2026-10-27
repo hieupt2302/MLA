@@ -1,0 +1,78 @@
+{
+  "seed": 42,
+  "training_seeds": [
+    42,
+    43,
+    44
+  ],
+  "budget_cu": 50.0,
+  "workload_cu": 45.0,
+  "deadline_hours": 48,
+  "data_root": "/content/mla/data",
+  "output_root": "/content/mla_task_runs/V005_N1_N2_CPU_A003/artifacts",
+  "drive_root": "/content/drive/MyDrive/MLA_MIDTERM",
+  "max_features": 15000,
+  "min_df": 2,
+  "context_chars": 1800,
+  "c_grid": [
+    0.1,
+    1.0,
+    10.0
+  ],
+  "class_weights": [
+    null,
+    "balanced"
+  ],
+  "embedding_weights": [
+    0.25,
+    1.0,
+    4.0
+  ],
+  "cv_jobs": 1,
+  "encoder": "microsoft/deberta-v3-base",
+  "max_length": 512,
+  "batch_size": 8,
+  "effective_batch_size": 32,
+  "epochs": 3,
+  "checkpoint_steps": 500,
+  "checkpoint_minutes": 15,
+  "bootstrap_repeats": 2000,
+  "minimum_slice_size": 100,
+  "minimum_slice_class_size": 20,
+  "llm_model": "Qwen/Qwen2.5-7B-Instruct",
+  "llm_fractions": [
+    0.02,
+    0.05,
+    0.1
+  ],
+  "ensemble_weights": [
+    0.25,
+    0.5,
+    0.75
+  ],
+  "gates": {
+    "macro_f1": 0.5,
+    "recall_at_precision": 0.6,
+    "precision": 0.4,
+    "hybrid_gain": 0.02
+  },
+  "stage_caps": {
+    "prepare_hybrid": 5,
+    "neural": 15,
+    "confirmation": 12,
+    "extension": 8,
+    "final": 5
+  },
+  "amp_dtype": "torch.float16",
+  "pooling": "cls_target",
+  "revision": "8ccc9b6f36199bec6961081d44eb72fb3f7353f3",
+  "parent_checkpoint": null,
+  "early_stopping_patience": 1,
+  "kind": "ensemble",
+  "contextual": true,
+  "shots": 0,
+  "source_best": "/content/mla/artifacts/runs/N1_bert_42",
+  "source_b": "/content/mla/artifacts/runs/N2_deberta_42",
+  "mode": "full",
+  "fresh_kernel": true
+}

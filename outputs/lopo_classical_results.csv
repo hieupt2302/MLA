@@ -1,0 +1,121 @@
+held_out_prompt,level,discourse_type,n_train_units,n_test_units,n_test_essays,macro_f1,accuracy,balanced_accuracy,f1_ineffective,recall_ineffective,f1_adequate,f1_effective,fold_time_sec
+"""A Cowboy Who Rode the Waves""",overall,ALL,139131,5158,688,0.3501,0.792,0.3551,0.1085,0.1279,0.8875,0.0543,63.8
+"""A Cowboy Who Rode the Waves""",per_discourse_type,Claim,139131,1776,688,0.3484,0.8514,0.3562,0.1176,0.0667,0.9196,0.008,63.8
+"""A Cowboy Who Rode the Waves""",per_discourse_type,Concluding Statement,139131,523,688,0.4171,0.8432,0.4682,0.2,0.3636,0.9135,0.1379,63.8
+"""A Cowboy Who Rode the Waves""",per_discourse_type,Counterclaim,139131,130,688,0.3115,0.8769,0.3193,0.0,0.0,0.9344,0.0,63.8
+"""A Cowboy Who Rode the Waves""",per_discourse_type,Evidence,139131,1727,688,0.3405,0.6781,0.4078,0.1137,0.1392,0.8173,0.0906,63.8
+"""A Cowboy Who Rode the Waves""",per_discourse_type,Lead,139131,274,688,0.3073,0.7737,0.3138,0.0,0.0,0.8719,0.05,63.8
+"""A Cowboy Who Rode the Waves""",per_discourse_type,Position,139131,636,688,0.3417,0.8962,0.3495,0.08,0.0625,0.9452,0.0,63.8
+"""A Cowboy Who Rode the Waves""",per_discourse_type,Rebuttal,139131,92,688,0.2778,0.7065,0.2778,0.0,0.0,0.8333,0.0,63.8
+Car-free cities,overall,ALL,135921,8368,983,0.3877,0.7609,0.3991,0.0326,0.0242,0.8629,0.2675,58.5
+Car-free cities,per_discourse_type,Claim,135921,2871,983,0.3145,0.8447,0.3378,0.0,0.0,0.9156,0.0278,58.5
+Car-free cities,per_discourse_type,Concluding Statement,135921,764,983,0.4732,0.8429,0.4875,0.0,0.0,0.9077,0.5118,58.5
+Car-free cities,per_discourse_type,Counterclaim,135921,139,983,0.3655,0.8921,0.3587,0.0,0.0,0.9425,0.1538,58.5
+Car-free cities,per_discourse_type,Evidence,135921,2946,983,0.3667,0.6178,0.5116,0.0435,0.0388,0.7536,0.3029,58.5
+Car-free cities,per_discourse_type,Lead,135921,595,983,0.47,0.795,0.4633,0.1111,0.0667,0.8774,0.4216,58.5
+Car-free cities,per_discourse_type,Position,135921,943,983,0.3127,0.8431,0.3373,0.0,0.0,0.9147,0.0233,58.5
+Car-free cities,per_discourse_type,Rebuttal,135921,110,983,0.2925,0.7818,0.2955,0.0,0.0,0.8776,0.0,58.5
+Cell phones at school,overall,ALL,137215,7074,829,0.4473,0.8723,0.4514,0.1235,0.0901,0.931,0.2874,61.0
+Cell phones at school,per_discourse_type,Claim,137215,2456,829,0.3372,0.9149,0.3395,0.0,0.0,0.9557,0.0559,61.0
+Cell phones at school,per_discourse_type,Concluding Statement,137215,702,829,0.5828,0.8405,0.6141,0.3457,0.3182,0.9071,0.4957,61.0
+Cell phones at school,per_discourse_type,Counterclaim,137215,276,829,0.3272,0.9638,0.3308,0.0,0.0,0.9815,0.0,61.0
+Cell phones at school,per_discourse_type,Evidence,137215,2345,829,0.4206,0.7936,0.4663,0.0667,0.0522,0.8823,0.3129,61.0
+Cell phones at school,per_discourse_type,Lead,137215,250,829,0.4819,0.884,0.4833,0.0,0.0,0.9351,0.5106,61.0
+Cell phones at school,per_discourse_type,Position,137215,829,829,0.3725,0.9602,0.3638,0.0,0.0,0.9796,0.1379,61.0
+Cell phones at school,per_discourse_type,Rebuttal,137215,216,829,0.4561,0.8796,0.4152,0.1,0.0667,0.935,0.3333,61.0
+Community service,overall,ALL,137828,6461,768,0.3803,0.7155,0.3858,0.1181,0.0906,0.8299,0.1928,61.4
+Community service,per_discourse_type,Claim,137828,2159,768,0.3006,0.761,0.3381,0.0,0.0,0.8639,0.0379,61.4
+Community service,per_discourse_type,Concluding Statement,137828,585,768,0.4607,0.7179,0.438,0.2118,0.1429,0.8235,0.3467,61.4
+Community service,per_discourse_type,Counterclaim,137828,284,768,0.333,0.7887,0.3527,0.1176,0.0625,0.8814,0.0,61.4
+Community service,per_discourse_type,Evidence,137828,2160,768,0.4188,0.6681,0.4159,0.1319,0.1353,0.7891,0.3355,61.4
+Community service,per_discourse_type,Lead,137828,274,768,0.3278,0.6971,0.3562,0.0,0.0,0.8168,0.1667,61.4
+Community service,per_discourse_type,Position,137828,763,768,0.2782,0.7025,0.3337,0.0,0.0,0.825,0.0097,61.4
+Community service,per_discourse_type,Rebuttal,137828,236,768,0.3248,0.7034,0.3604,0.1481,0.1333,0.8262,0.0,61.4
+Distance learning,overall,ALL,125763,18526,1498,0.5014,0.7805,0.4916,0.0649,0.0433,0.8536,0.5859,52.6
+Distance learning,per_discourse_type,Claim,125763,6987,1498,0.3819,0.8061,0.3787,0.0,0.0,0.8889,0.2568,52.6
+Distance learning,per_discourse_type,Concluding Statement,125763,1455,1498,0.4914,0.6921,0.5078,0.087,0.0526,0.7231,0.6641,52.6
+Distance learning,per_discourse_type,Counterclaim,125763,1204,1498,0.3406,0.7998,0.3512,0.0,0.0,0.887,0.1349,52.6
+Distance learning,per_discourse_type,Evidence,125763,5275,1498,0.5168,0.7427,0.528,0.0476,0.0317,0.7709,0.732,52.6
+Distance learning,per_discourse_type,Lead,125763,1215,1498,0.56,0.7811,0.5512,0.1538,0.0909,0.8324,0.6938,52.6
+Distance learning,per_discourse_type,Position,125763,1501,1498,0.365,0.8827,0.3611,0.0,0.0,0.9371,0.1579,52.6
+Distance learning,per_discourse_type,Rebuttal,125763,889,1498,0.4332,0.748,0.4799,0.2222,0.375,0.8506,0.2269,52.6
+Does the electoral college work?,overall,ALL,127449,16840,1818,0.4172,0.6866,0.4092,0.1258,0.0859,0.8082,0.3176,52.0
+Does the electoral college work?,per_discourse_type,Claim,127449,5463,1818,0.2971,0.7424,0.3387,0.0,0.0,0.8516,0.0396,52.0
+Does the electoral college work?,per_discourse_type,Concluding Statement,127449,1521,1818,0.5185,0.714,0.4969,0.2291,0.2016,0.81,0.5165,52.0
+Does the electoral college work?,per_discourse_type,Counterclaim,127449,1057,1818,0.3148,0.7342,0.3419,0.055,0.0345,0.8469,0.0423,52.0
+Does the electoral college work?,per_discourse_type,Evidence,127449,5316,1818,0.4606,0.6161,0.4743,0.1694,0.1164,0.7424,0.4699,52.0
+Does the electoral college work?,per_discourse_type,Lead,127449,939,1818,0.4405,0.6368,0.4326,0.1622,0.1184,0.7549,0.4045,52.0
+Does the electoral college work?,per_discourse_type,Position,127449,1798,1818,0.2954,0.6969,0.3338,0.0563,0.0923,0.8243,0.0056,52.0
+Does the electoral college work?,per_discourse_type,Rebuttal,127449,746,1818,0.3453,0.6957,0.361,0.0938,0.0594,0.8172,0.125,52.0
+Driverless cars,overall,ALL,131661,12628,1386,0.4117,0.7831,0.4079,0.0584,0.0684,0.8737,0.303,58.9
+Driverless cars,per_discourse_type,Claim,131661,4294,1386,0.2974,0.7781,0.3351,0.0,0.0,0.875,0.0171,58.9
+Driverless cars,per_discourse_type,Concluding Statement,131661,1257,1386,0.4842,0.786,0.5175,0.069,0.1667,0.867,0.5167,58.9
+Driverless cars,per_discourse_type,Counterclaim,131661,532,1386,0.3227,0.8045,0.5044,0.0,0.0,0.8926,0.0755,58.9
+Driverless cars,per_discourse_type,Evidence,131661,3952,1386,0.4546,0.7465,0.5567,0.0698,0.0891,0.8425,0.4514,58.9
+Driverless cars,per_discourse_type,Lead,131661,842,1386,0.4864,0.8171,0.4697,0.1333,0.0909,0.8922,0.4336,58.9
+Driverless cars,per_discourse_type,Position,131661,1387,1386,0.3228,0.8854,0.3367,0.0,0.0,0.9391,0.0294,58.9
+Driverless cars,per_discourse_type,Rebuttal,131661,364,1386,0.348,0.7308,0.3362,0.0,0.0,0.844,0.2,58.9
+Exploring Venus,overall,ALL,137037,7252,928,0.4451,0.7299,0.4463,0.1279,0.0869,0.8409,0.3666,59.1
+Exploring Venus,per_discourse_type,Claim,137037,2489,928,0.3208,0.8252,0.3415,0.0,0.0,0.904,0.0586,59.1
+Exploring Venus,per_discourse_type,Concluding Statement,137037,799,928,0.5348,0.7209,0.5374,0.208,0.1398,0.812,0.5844,59.1
+Exploring Venus,per_discourse_type,Counterclaim,137037,94,928,0.3065,0.8511,0.4878,0.0,0.0,0.9195,0.0,59.1
+Exploring Venus,per_discourse_type,Evidence,137037,2470,928,0.449,0.6182,0.5085,0.1724,0.1391,0.751,0.4236,59.1
+Exploring Venus,per_discourse_type,Lead,137037,448,928,0.4412,0.721,0.4309,0.125,0.0851,0.8301,0.3684,59.1
+Exploring Venus,per_discourse_type,Position,137037,885,928,0.3026,0.7706,0.3362,0.0377,0.0202,0.8701,0.0,59.1
+Exploring Venus,per_discourse_type,Rebuttal,137037,67,928,0.2881,0.7612,0.3091,0.0,0.0,0.8644,0.0,59.1
+Facial action coding system,overall,ALL,135114,9175,1103,0.4612,0.781,0.4768,0.1015,0.0641,0.8742,0.4078,59.7
+Facial action coding system,per_discourse_type,Claim,135114,3064,1103,0.3779,0.8398,0.3775,0.0,0.0,0.912,0.2216,59.7
+Facial action coding system,per_discourse_type,Concluding Statement,135114,934,1103,0.5022,0.7377,0.526,0.1915,0.1216,0.8316,0.4834,59.7
+Facial action coding system,per_discourse_type,Counterclaim,135114,288,1103,0.3098,0.8681,0.3218,0.0,0.0,0.9294,0.0,59.7
+Facial action coding system,per_discourse_type,Evidence,135114,3047,1103,0.4817,0.6997,0.5583,0.1494,0.1097,0.8149,0.4806,59.7
+Facial action coding system,per_discourse_type,Lead,135114,601,1103,0.4424,0.7571,0.4615,0.0417,0.0227,0.8522,0.4333,59.7
+Facial action coding system,per_discourse_type,Position,135114,1077,1103,0.3671,0.8672,0.3666,0.0,0.0,0.9284,0.1728,59.7
+Facial action coding system,per_discourse_type,Rebuttal,135114,164,1103,0.2985,0.811,0.3189,0.0,0.0,0.8956,0.0,59.7
+Grades for extracurricular activities,overall,ALL,138167,6122,815,0.4235,0.8143,0.4133,0.0956,0.089,0.8948,0.28,60.3
+Grades for extracurricular activities,per_discourse_type,Claim,138167,2130,815,0.3311,0.8357,0.3454,0.0,0.0,0.9098,0.0836,60.3
+Grades for extracurricular activities,per_discourse_type,Concluding Statement,138167,565,815,0.4733,0.8071,0.4998,0.087,0.0769,0.8868,0.4463,60.3
+Grades for extracurricular activities,per_discourse_type,Counterclaim,138167,214,815,0.2988,0.8084,0.3258,0.0,0.0,0.8964,0.0,60.3
+Grades for extracurricular activities,per_discourse_type,Evidence,138167,2033,815,0.4749,0.7909,0.5338,0.1277,0.1385,0.8768,0.4203,60.3
+Grades for extracurricular activities,per_discourse_type,Lead,138167,207,815,0.5191,0.8213,0.4938,0.1818,0.125,0.894,0.4815,60.3
+Grades for extracurricular activities,per_discourse_type,Position,138167,817,815,0.3363,0.8372,0.3473,0.0,0.0,0.9113,0.0976,60.3
+Grades for extracurricular activities,per_discourse_type,Rebuttal,138167,156,815,0.3614,0.7308,0.3991,0.0952,0.25,0.8409,0.1481,60.3
+Mandatory extracurricular activities,overall,ALL,135834,8455,839,0.4802,0.7876,0.4703,0.076,0.0505,0.8682,0.4963,59.6
+Mandatory extracurricular activities,per_discourse_type,Claim,135834,3202,839,0.3375,0.8132,0.3517,0.0,0.0,0.8957,0.1169,59.6
+Mandatory extracurricular activities,per_discourse_type,Concluding Statement,135834,779,839,0.5318,0.751,0.548,0.2222,0.1333,0.8314,0.5418,59.6
+Mandatory extracurricular activities,per_discourse_type,Counterclaim,135834,191,839,0.3181,0.8115,0.334,0.0,0.0,0.8953,0.0588,59.6
+Mandatory extracurricular activities,per_discourse_type,Evidence,135834,2688,839,0.5214,0.7414,0.5504,0.1094,0.0933,0.8086,0.6464,59.6
+Mandatory extracurricular activities,per_discourse_type,Lead,135834,598,839,0.4695,0.7659,0.4759,0.0,0.0,0.8458,0.5627,59.6
+Mandatory extracurricular activities,per_discourse_type,Position,135834,842,839,0.3313,0.8753,0.3423,0.0,0.0,0.9332,0.0606,59.6
+Mandatory extracurricular activities,per_discourse_type,Rebuttal,135834,155,839,0.5477,0.8194,0.514,0.2857,0.25,0.8923,0.4651,59.6
+Phones and driving,overall,ALL,137705,6584,700,0.4697,0.8355,0.4587,0.0292,0.0286,0.9038,0.4761,60.0
+Phones and driving,per_discourse_type,Claim,137705,2084,700,0.3378,0.8911,0.3448,0.0,0.0,0.9422,0.0711,60.0
+Phones and driving,per_discourse_type,Concluding Statement,137705,612,700,0.4551,0.7892,0.4752,0.0,0.0,0.8674,0.498,60.0
+Phones and driving,per_discourse_type,Counterclaim,137705,285,700,0.3168,0.9053,0.327,0.0,0.0,0.9503,0.0,60.0
+Phones and driving,per_discourse_type,Evidence,137705,2096,700,0.4904,0.7758,0.4944,0.0225,0.0303,0.852,0.5967,60.0
+Phones and driving,per_discourse_type,Lead,137705,581,700,0.5281,0.7522,0.5042,0.2222,0.1429,0.8329,0.5292,60.0
+Phones and driving,per_discourse_type,Position,137705,700,700,0.3318,0.9214,0.3391,0.0,0.0,0.959,0.0364,60.0
+Phones and driving,per_discourse_type,Rebuttal,137705,226,700,0.3088,0.8628,0.3234,0.0,0.0,0.9264,0.0,60.0
+Seeking multiple opinions,overall,ALL,129727,14562,1544,0.4442,0.7713,0.4424,0.0412,0.0763,0.8597,0.4316,56.1
+Seeking multiple opinions,per_discourse_type,Claim,129727,5528,1544,0.3106,0.8073,0.3407,0.0345,0.0227,0.8935,0.0039,56.1
+Seeking multiple opinions,per_discourse_type,Concluding Statement,129727,1439,1544,0.4956,0.7825,0.5161,0.0714,0.0714,0.8588,0.5566,56.1
+Seeking multiple opinions,per_discourse_type,Counterclaim,129727,126,1544,0.3075,0.8492,0.3302,0.0,0.0,0.9224,0.0,56.1
+Seeking multiple opinions,per_discourse_type,Evidence,129727,4657,1544,0.4723,0.7026,0.5117,0.0364,0.1304,0.7826,0.5981,56.1
+Seeking multiple opinions,per_discourse_type,Lead,129727,1181,1544,0.4755,0.7739,0.4729,0.0784,0.125,0.8584,0.4896,56.1
+Seeking multiple opinions,per_discourse_type,Position,129727,1550,1544,0.302,0.8277,0.3331,0.0,0.0,0.9061,0.0,56.1
+Seeking multiple opinions,per_discourse_type,Rebuttal,129727,81,1544,0.2993,0.8148,0.4714,0.0,0.0,0.898,0.0,56.1
+Summer projects,overall,ALL,134434,9855,875,0.4339,0.7024,0.4339,0.0,0.0,0.7877,0.5139,58.2
+Summer projects,per_discourse_type,Claim,134434,3628,875,0.3346,0.7194,0.3611,0.0,0.0,0.8311,0.1726,58.2
+Summer projects,per_discourse_type,Concluding Statement,134434,861,875,0.4195,0.6307,0.4683,0.0,0.0,0.6595,0.599,58.2
+Summer projects,per_discourse_type,Counterclaim,134434,559,875,0.3342,0.703,0.3539,0.0,0.0,0.8188,0.1837,58.2
+Summer projects,per_discourse_type,Evidence,134434,2714,875,0.4467,0.664,0.4777,0.0,0.0,0.6696,0.6705,58.2
+Summer projects,per_discourse_type,Lead,134434,755,875,0.4466,0.6675,0.485,0.0,0.0,0.7141,0.6256,58.2
+Summer projects,per_discourse_type,Position,134434,878,875,0.337,0.8554,0.3483,0.0,0.0,0.9215,0.0896,58.2
+Summer projects,per_discourse_type,Rebuttal,134434,460,875,0.4171,0.6935,0.4135,0.0,0.0,0.788,0.4634,58.2
+The Face on Mars,overall,ALL,137060,7229,819,0.4009,0.7503,0.3895,0.1479,0.1566,0.8561,0.1986,59.4
+The Face on Mars,per_discourse_type,Claim,137060,2077,819,0.3131,0.8647,0.3336,0.0118,0.0063,0.9274,0.0,59.4
+The Face on Mars,per_discourse_type,Concluding Statement,137060,708,819,0.4349,0.7048,0.4231,0.1438,0.1692,0.8193,0.3415,59.4
+The Face on Mars,per_discourse_type,Counterclaim,137060,438,819,0.3495,0.8539,0.3512,0.127,0.0976,0.9215,0.0,59.4
+The Face on Mars,per_discourse_type,Evidence,137060,2276,819,0.3992,0.598,0.3996,0.196,0.255,0.7361,0.2653,59.4
+The Face on Mars,per_discourse_type,Lead,137060,543,819,0.3948,0.7735,0.384,0.0857,0.0938,0.8709,0.2278,59.4
+The Face on Mars,per_discourse_type,Position,137060,812,819,0.3222,0.8473,0.3317,0.0471,0.0488,0.9196,0.0,59.4
+The Face on Mars,per_discourse_type,Rebuttal,137060,375,819,0.309,0.7627,0.3206,0.0597,0.0714,0.8672,0.0,59.4

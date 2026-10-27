@@ -1,0 +1,287 @@
+{
+  "members": [
+    "/content/mla/artifacts/runs/N1_bert_42",
+    "/content/mla/artifacts/runs/N2_deberta_42"
+  ],
+  "weight": 0.5,
+  "search": [
+    {
+      "weight": 0.25,
+      "metrics": {
+        "macro_f1": 0.6015333175785574,
+        "accuracy": 0.7760609662308606,
+        "qwk": 0.4834134282870637,
+        "precision_ineffective": 0.3175403225806452,
+        "recall_ineffective": 0.49606299212598426,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.3175403225806452,
+            "recall": 0.49606299212598426,
+            "f1": 0.3872157344806392,
+            "support": 635
+          },
+          "Adequate": {
+            "precision": 0.8826193621438008,
+            "recall": 0.8280074356023723,
+            "f1": 0.8544416533455128,
+            "support": 11297
+          },
+          "Effective": {
+            "precision": 0.5274603759675636,
+            "recall": 0.6035428089413749,
+            "f1": 0.56294256490952,
+            "support": 2371
+          }
+        },
+        "n": 14303,
+        "confusion_matrix": [
+          [
+            315,
+            309,
+            11
+          ],
+          [
+            672,
+            9354,
+            1271
+          ],
+          [
+            5,
+            935,
+            1431
+          ]
+        ],
+        "log_loss": 0.5175594193754695,
+        "brier_sum_classes": 0.3156355728103779,
+        "ece_10_bins": 0.020089667999034562,
+        "recall_at_precision_0.4": 0.37480314960629924,
+        "average_precision_ineffective": 0.3811002409823715,
+        "average_precision_per_class": [
+          0.3811002409823715,
+          0.9216008196222278,
+          0.6035819779557283
+        ],
+        "macro_average_precision": 0.6354276795201093,
+        "ineffective_prevalence": 0.04439628050059428,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 716,
+            "ineffective_found": 261,
+            "precision": 0.3645251396648045,
+            "recall": 0.4110236220472441,
+            "boundary_score": 0.588215717009954,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 1431,
+            "ineffective_found": 390,
+            "precision": 0.27253668763102723,
+            "recall": 0.6141732283464567,
+            "boundary_score": 0.3637732712053593,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 2861,
+            "ineffective_found": 504,
+            "precision": 0.17616218105557496,
+            "recall": 0.7937007874015748,
+            "boundary_score": 0.17984949988242283,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order"
+      }
+    },
+    {
+      "weight": 0.5,
+      "metrics": {
+        "macro_f1": 0.6022433747094398,
+        "accuracy": 0.7764804586450395,
+        "qwk": 0.478412177696937,
+        "precision_ineffective": 0.33517089305402425,
+        "recall_ineffective": 0.47874015748031495,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.33517089305402425,
+            "recall": 0.47874015748031495,
+            "f1": 0.3942931258106355,
+            "support": 635
+          },
+          "Adequate": {
+            "precision": 0.8827300150829562,
+            "recall": 0.8288926263609808,
+            "f1": 0.8549646199497831,
+            "support": 11297
+          },
+          "Effective": {
+            "precision": 0.5157819225251076,
+            "recall": 0.606495149725854,
+            "f1": 0.5574723783679008,
+            "support": 2371
+          }
+        },
+        "n": 14303,
+        "confusion_matrix": [
+          [
+            304,
+            320,
+            11
+          ],
+          [
+            594,
+            9364,
+            1339
+          ],
+          [
+            9,
+            924,
+            1438
+          ]
+        ],
+        "log_loss": 0.5154653669088112,
+        "brier_sum_classes": 0.3136061277436607,
+        "ece_10_bins": 0.02518061579815305,
+        "recall_at_precision_0.4": 0.38740157480314963,
+        "average_precision_ineffective": 0.3829593030209067,
+        "average_precision_per_class": [
+          0.3829593030209067,
+          0.9230463445327381,
+          0.6003834297774105
+        ],
+        "macro_average_precision": 0.6354630257770184,
+        "ineffective_prevalence": 0.04439628050059428,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 716,
+            "ineffective_found": 265,
+            "precision": 0.37011173184357543,
+            "recall": 0.41732283464566927,
+            "boundary_score": 0.5496606668263258,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 1431,
+            "ineffective_found": 388,
+            "precision": 0.27113906359189377,
+            "recall": 0.6110236220472441,
+            "boundary_score": 0.3534094235721597,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 2861,
+            "ineffective_found": 506,
+            "precision": 0.17686123732960504,
+            "recall": 0.7968503937007874,
+            "boundary_score": 0.17961007527289682,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order"
+      }
+    },
+    {
+      "weight": 0.75,
+      "metrics": {
+        "macro_f1": 0.6008194885342105,
+        "accuracy": 0.7743130811717821,
+        "qwk": 0.47380602500417734,
+        "precision_ineffective": 0.3413516609392898,
+        "recall_ineffective": 0.4692913385826772,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.3413516609392898,
+            "recall": 0.4692913385826772,
+            "f1": 0.3952254641909814,
+            "support": 635
+          },
+          "Adequate": {
+            "precision": 0.8832165182799773,
+            "recall": 0.8254403824024077,
+            "f1": 0.8533516357812857,
+            "support": 11297
+          },
+          "Effective": {
+            "precision": 0.5055710306406686,
+            "recall": 0.6123998312948123,
+            "f1": 0.5538813656303644,
+            "support": 2371
+          }
+        },
+        "n": 14303,
+        "confusion_matrix": [
+          [
+            298,
+            324,
+            13
+          ],
+          [
+            565,
+            9325,
+            1407
+          ],
+          [
+            10,
+            909,
+            1452
+          ]
+        ],
+        "log_loss": 0.5225590578814255,
+        "brier_sum_classes": 0.31894723274509285,
+        "ece_10_bins": 0.020258907460754715,
+        "recall_at_precision_0.4": 0.35748031496062993,
+        "average_precision_ineffective": 0.37305172793797475,
+        "average_precision_per_class": [
+          0.37305172793797475,
+          0.9220073926043055,
+          0.5896214795620649
+        ],
+        "macro_average_precision": 0.6282268667014484,
+        "ineffective_prevalence": 0.04439628050059428,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 716,
+            "ineffective_found": 266,
+            "precision": 0.3715083798882682,
+            "recall": 0.4188976377952756,
+            "boundary_score": 0.5444756445472808,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 1431,
+            "ineffective_found": 372,
+            "precision": 0.259958071278826,
+            "recall": 0.5858267716535434,
+            "boundary_score": 0.34384924294885555,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 2861,
+            "ineffective_found": 498,
+            "precision": 0.1740650122334848,
+            "recall": 0.784251968503937,
+            "boundary_score": 0.1729169027853764,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order"
+      }
+    }
+  ],
+  "temperature": 0.9040141963665012,
+  "operating_point": {
+    "threshold": 0.6538000297519135,
+    "precision": 0.4,
+    "recall": 0.3349282296650718
+  },
+  "selected_without_test": true,
+  "selection_predictions": "Existing validation/calibration CSVs with exact ID/group/label alignment; no repeated GPU inference",
+  "prediction_sha256": {
+    "/content/mla/artifacts/runs/N1_bert_42/predictions_validation.csv.gz": "827b1f2fe1b0effc395f62033ceacdcaf1e0dcbd6fdb635827f2d1dbdcb30c24",
+    "/content/mla/artifacts/runs/N1_bert_42/predictions_calibration.csv.gz": "ef5bd2cd504f3241f6a70c5961f94ec624a94ff838c27acfc7742db91e6ad694",
+    "/content/mla/artifacts/runs/N2_deberta_42/predictions_validation.csv.gz": "976bdca780050109d706b20caf4421911446b14d71a1663ef696c5e0b1a2d264",
+    "/content/mla/artifacts/runs/N2_deberta_42/predictions_calibration.csv.gz": "354828c3bebbc03979620a39be5401cb025416566dc9d9e4bb1921966505cb1d"
+  }
+}

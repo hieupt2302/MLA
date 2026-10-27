@@ -1,0 +1,10 @@
+Experiment,Converged?,Accuracy (%),Balanced Acc (%),Macro-F1,Ineffective F1
+Convergence (max_iter=100),No (Hit 100 limit),80.00,40.94,0.4258,0.0619
+Convergence (max_iter=5000),Yes (107 iters),79.99,41.26,0.4305,0.0699
+StandardScaler (with_mean=False),Yes (485 iters),71.27,44.99,0.4434,0.1552
+Class Weight: Balanced (Correct Predict),Yes (162 iters),59.39,57.90,0.4583,0.2240
+"Solver: SAGA (200 iters, 59.3s)",No,53.69,54.49,0.4183,0.1979
+"Solver: L-BFGS (converged, 31.2s)",Yes,59.39,57.90,0.4583,0.2240
+Regularization C = 0.1,Yes,56.12,60.16,0.4475,0.2201
+Regularization C = 1.0,Yes,59.39,57.90,0.4583,0.2240
+Regularization C = 10.0,Yes,60.27,53.76,0.4485,0.2165

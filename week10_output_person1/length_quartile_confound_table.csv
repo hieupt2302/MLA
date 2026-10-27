@@ -1,0 +1,5 @@
+Quartile,Word_Count_Range,N_Units,N_Essays,Pct_Ineffective,Pct_Adequate,Pct_Effective,Dominant_Prompt,Dominant_Prompt_Pct
+Q1 (Short),148 - 315,7333,1037,8.97,85.74,5.29,Does the electoral college work?,10.5
+Q2 (Med-Low),316 - 422,7277,786,5.02,84.27,10.72,Does the electoral college work?,14.98
+Q3 (Med-High),423 - 566,7226,690,2.92,78.74,18.34,Does the electoral college work?,15.46
+Q4 (Long),567 - 8811,7266,606,1.29,65.9,32.81,Distance learning,27.36

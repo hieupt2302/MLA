@@ -1,0 +1,79 @@
+﻿Reading dataset...
+============================================================
+1. Tß╗╢ Lß╗å INEFFECTIVE / ADEQUATE / EFFECTIVE THEO LOß║áI LUß║¼N ─ÉIß╗éM
+============================================================
+
+--- Sß╗É L╞»ß╗óNG (COUNTS) ---
+discourse_effectiveness  Adequate  Effective  Ineffective     All
+discourse_type                                                   
+Claim                       40561       8172         1475   50208
+Concluding Statement        10407       2516          581   13504
+Counterclaim                 4771        841          205    5817
+Evidence                    34063       8483         3156   45702
+Lead                         6949       1990          364    9303
+Position                    13087       1861          470   15418
+Rebuttal                     3406        720          211    4337
+All                        113244      24583         6462  144289
+
+--- Tß╗╢ Lß╗å PHß║ªN TR─éM (%) ---
+discourse_effectiveness  Adequate  Effective  Ineffective
+discourse_type                                           
+Claim                       80.79      16.28         2.94
+Concluding Statement        77.07      18.63         4.30
+Counterclaim                82.02      14.46         3.52
+Evidence                    74.53      18.56         6.91
+Lead                        74.70      21.39         3.91
+Position                    84.88      12.07         3.05
+Rebuttal                    78.53      16.60         4.87
+
+============================================================
+2. ─Éß╗ÿ D├ÇI TRUNG B├îNH (Sß╗É Tß╗¬) Cß╗ªA DISCOURSE THEO HIß╗åU QUß║ó
+============================================================
+
+--- Tß╗öNG THß╗é THEO NH├âN ---
+                          count   mean  median    std  min  max
+discourse_effectiveness                                        
+Adequate                 113244  37.10    25.0  34.50    1  637
+Effective                 24583  71.12    52.0  59.79    1  631
+Ineffective                6462  48.74    30.0  59.12    1  836
+
+--- CHI TIß║╛T THEO LOß║áI LUß║¼N ─ÉIß╗éM V├Ç NH├âN (MEAN WORDS) ---
+discourse_effectiveness  Adequate  Effective  Ineffective
+discourse_type                                           
+Claim                       16.39      22.23        19.23
+Concluding Statement        54.70      94.76        34.90
+Counterclaim                22.71      32.34        20.92
+Evidence                    65.98     124.24        74.28
+Lead                        43.73      83.27        37.31
+Position                    16.88      27.40        19.95
+Rebuttal                    25.42      42.50        21.98
+
+============================================================
+3. Tß╗╢ Lß╗å INEFFECTIVE THEO Tß╗¬NG ─Éß╗Ç B├ÇI (PROMPT_NAME)
+============================================================
+                                       Total_Discourses  Ineffective_%  Adequate_%  Effective_%
+prompt_name                                                                                    
+Does the electoral college work?                  16840          11.54       69.89        18.57
+Exploring Venus                                    7252          11.43       77.05        11.51
+The Face on Mars                                   7229           9.89       83.39         6.72
+Facial action coding system                        9175           9.19       81.83         8.98
+Community service                                  6461           5.12       71.83        23.05
+"A Cowboy Who Rode the Waves"                      5158           4.25       87.94         7.81
+Cell phones at school                              7074           3.29       91.43         5.27
+Car-free cities                                    8368           2.96       85.59        11.45
+Grades for extracurricular activities              6122           2.38       85.32        12.30
+Mandatory extracurricular activities               8455           2.34       78.40        19.25
+Distance learning                                 18526           1.50       72.90        25.61
+Driverless cars                                   12628           1.50       83.12        15.37
+Phones and driving                                 6584           1.06       83.44        15.49
+Seeking multiple opinions                         14562           0.90       78.40        20.70
+Summer projects                                    9855           0.89       68.79        30.32
+
+============================================================
+4. Tß╗╢ Lß╗å INEFFECTIVE THEO Hß╗îC SINH ELL (ENGLISH LANGUAGE LEARNER)
+============================================================
+            Total_Discourses  Ineffective_%  Adequate_%  Effective_%
+ell_status                                                          
+                         637           2.98       85.24        11.77
+No                    125627           4.13       77.68        18.20
+Yes                    11301          10.42       84.20         5.38

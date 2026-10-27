@@ -1,0 +1,17 @@
+{
+  "iterations_B": 2000,
+  "cluster_entity": "essay_id",
+  "cluster_count_essays": 3119,
+  "sample_size_units": 29102,
+  "deberta_macro_f1": 0.5767914263062249,
+  "classical_baseline_macro_f1": 0.5229575646130417,
+  "delta_definition": "Macro_F1(DeBERTa) - Macro_F1(Classical)",
+  "delta_mean": 0.05366115497485063,
+  "ci_95_lower": 0.042679876443792224,
+  "ci_95_upper": 0.06518684947390353,
+  "empirical_p_value": 0.0,
+  "ci_contains_zero": false,
+  "is_statistically_significant": true,
+  "conclusion": "STATISTICALLY SIGNIFICANT: The 95% Confidence Interval [+0.0427, +0.0652] is strictly greater than 0 (p = 0.0000). We reject the null hypothesis and confirm DeBERTa-v3-base achieves statistically superior performance over the classical baseline.",
+  "timestamp": "2026-10-16 17:36:31 UTC"
+}

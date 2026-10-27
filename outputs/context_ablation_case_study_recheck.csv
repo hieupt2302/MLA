@@ -1,0 +1,11 @@
+case_id,discourse_type,target_snippet,true_label,week9_pred,week9_p_ineff,level1_pred,level1_p_ineff,is_corrected,mechanism
+1,Counterclaim,There are many reason on why texting while driving is very u,Ineffective,Adequate,0.022472,Adequate,0.029,False,Flaw is holistic/extrinsic (needs full essay or source text)
+2,Evidence,"To provide reasonings to my strong point, brings me back to ",Ineffective,Effective,0.000375,Effective,0.0014,False,Flaw is holistic/extrinsic (needs full essay or source text)
+3,Position,I think you shouldn't join the Seagoing Cowboys,Ineffective,Adequate,0.02206,Adequate,0.0096,False,Flaw is holistic/extrinsic (needs full essay or source text)
+4,Counterclaim,Not allowing students to use there phones at all,Ineffective,Adequate,0.037859,Adequate,0.0904,False,Flaw is holistic/extrinsic (needs full essay or source text)
+5,Position,The Driverless people can cause problems,Ineffective,Adequate,0.027851,Adequate,0.1515,False,Flaw is holistic/extrinsic (needs full essay or source text)
+6,Counterclaim,But Sometimes it could be a distraction from you doing all y,Ineffective,Adequate,0.031486,Adequate,0.04,False,Flaw is holistic/extrinsic (needs full essay or source text)
+7,Position,I reconsider that are principal should let us eight graders ,Ineffective,Adequate,0.034727,Adequate,0.097,False,Flaw is holistic/extrinsic (needs full essay or source text)
+8,Claim,Some kids will ask there parents to transfer school,Ineffective,Adequate,0.020652,Adequate,0.1236,False,Flaw is holistic/extrinsic (needs full essay or source text)
+9,Lead,The future is near and the talk about driverless cars is upo,Ineffective,Adequate,0.044645,Adequate,0.0802,False,Flaw is holistic/extrinsic (needs full essay or source text)
+10,Claim,Another cars is a bad idea is because of its gas,Ineffective,Adequate,0.039191,Adequate,0.0315,False,Flaw is holistic/extrinsic (needs full essay or source text)

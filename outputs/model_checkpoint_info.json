@@ -1,0 +1,50 @@
+{
+  "model_architecture": "microsoft/deberta-v3-base",
+  "task": "Discourse Effectiveness 3-Class Classification",
+  "num_labels": 3,
+  "label_mapping": {
+    "Ineffective": 0,
+    "Adequate": 1,
+    "Effective": 2
+  },
+  "max_sequence_length": 512,
+  "class_weights": [
+    7.47870406440722,
+    0.424979984577979,
+    1.9484251835312425
+  ],
+  "hyperparameters": {
+    "learning_rate": 2e-05,
+    "train_batch_size": 8,
+    "gradient_accumulation_steps": 4,
+    "effective_batch_size": 32,
+    "epochs": 3,
+    "warmup_ratio": 0.1,
+    "fp16": true,
+    "metric_for_best_model": "macro_f1",
+    "random_seed": 42
+  },
+  "validation_performance": {
+    "macro_f1": 0.5767914263062249,
+    "accuracy": 0.738849563603876,
+    "balanced_accuracy": 0.6276775932297388,
+    "quadratic_weighted_kappa": 0.4413853393936328,
+    "f1_ineffective": 0.37410071942446044,
+    "f1_adequate": 0.8245360440175324,
+    "f1_effective": 0.5317375154766818
+  },
+  "calibration": {
+    "fitted_temperature": 1.1243616577384346,
+    "calib_split_ratio": 0.2,
+    "report_split_ratio": 0.8,
+    "report_ece_uncalibrated": 0.015290811572932668,
+    "report_ece_calibrated": 0.016634389729785724,
+    "relative_ece_reduction_percent": -8.786833520539993
+  },
+  "hardware_environment": {
+    "device": "cuda:0",
+    "gpu_name": "NVIDIA GeForce RTX 4070 SUPER",
+    "fp16_enabled": true
+  },
+  "timestamp": "2026-10-16 17:36:31 UTC"
+}

@@ -1,0 +1,247 @@
+{
+  "run_id": "V005_N1_N2_CPU_A003",
+  "audit": {
+    "run_id": "V005_N1_N2_CPU_A003",
+    "status": "complete",
+    "checks": {
+      "bundle_sha256": true,
+      "executed_notebook_sha256": true,
+      "kernel_notebook_sha256": true,
+      "artifacts_sha256": true
+    },
+    "metrics_recomputed": {
+      "validation": {
+        "macro_f1": 0.6022433747094398,
+        "accuracy": 0.7764804586450395,
+        "qwk": 0.478412177696937,
+        "precision_ineffective": 0.33517089305402425,
+        "recall_ineffective": 0.47874015748031495,
+        "per_class": {
+          "Ineffective": {
+            "precision": 0.33517089305402425,
+            "recall": 0.47874015748031495,
+            "f1": 0.3942931258106355,
+            "support": 635
+          },
+          "Adequate": {
+            "precision": 0.8827300150829562,
+            "recall": 0.8288926263609808,
+            "f1": 0.8549646199497831,
+            "support": 11297
+          },
+          "Effective": {
+            "precision": 0.5157819225251076,
+            "recall": 0.606495149725854,
+            "f1": 0.5574723783679008,
+            "support": 2371
+          }
+        },
+        "n": 14303,
+        "confusion_matrix": [
+          [
+            304,
+            320,
+            11
+          ],
+          [
+            594,
+            9364,
+            1339
+          ],
+          [
+            9,
+            924,
+            1438
+          ]
+        ],
+        "log_loss": 0.5111913052296828,
+        "brier_sum_classes": 0.312065667560362,
+        "ece_10_bins": 0.009863611099907202,
+        "recall_at_precision_0.4": 0.3889763779527559,
+        "average_precision_ineffective": 0.38377214778292645,
+        "average_precision_per_class": [
+          0.38377214778292645,
+          0.9230324880557856,
+          0.6003419600280337
+        ],
+        "macro_average_precision": 0.635715531955582,
+        "ineffective_prevalence": 0.04439628050059428,
+        "review_budget_curve": {
+          "0.05": {
+            "reviewed": 716,
+            "ineffective_found": 265,
+            "precision": 0.37011173184357543,
+            "recall": 0.41732283464566927,
+            "boundary_score": 0.5573796568515426,
+            "boundary_tie_count": 1
+          },
+          "0.1": {
+            "reviewed": 1431,
+            "ineffective_found": 390,
+            "precision": 0.27253668763102723,
+            "recall": 0.6141732283464567,
+            "boundary_score": 0.3430857203524421,
+            "boundary_tie_count": 1
+          },
+          "0.2": {
+            "reviewed": 2861,
+            "ineffective_found": 506,
+            "precision": 0.17686123732960504,
+            "recall": 0.7968503937007874,
+            "boundary_score": 0.1593068570616103,
+            "boundary_tie_count": 1
+          }
+        },
+        "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+        "review_tie_break": "prediction row order"
+      }
+    },
+    "notebook_errors": [],
+    "executed_cells": 1,
+    "execution_count_populated": 0,
+    "kernel_notebook_errors": [],
+    "kernel_executed_cells": 5
+  },
+  "validation_metrics": {
+    "macro_f1": 0.6022433747094398,
+    "accuracy": 0.7764804586450395,
+    "qwk": 0.478412177696937,
+    "precision_ineffective": 0.33517089305402425,
+    "recall_ineffective": 0.47874015748031495,
+    "per_class": {
+      "Ineffective": {
+        "precision": 0.33517089305402425,
+        "recall": 0.47874015748031495,
+        "f1": 0.3942931258106355,
+        "support": 635
+      },
+      "Adequate": {
+        "precision": 0.8827300150829562,
+        "recall": 0.8288926263609808,
+        "f1": 0.8549646199497831,
+        "support": 11297
+      },
+      "Effective": {
+        "precision": 0.5157819225251076,
+        "recall": 0.606495149725854,
+        "f1": 0.5574723783679008,
+        "support": 2371
+      }
+    },
+    "n": 14303,
+    "confusion_matrix": [
+      [
+        304,
+        320,
+        11
+      ],
+      [
+        594,
+        9364,
+        1339
+      ],
+      [
+        9,
+        924,
+        1438
+      ]
+    ],
+    "log_loss": 0.5111913052296828,
+    "brier_sum_classes": 0.312065667560362,
+    "ece_10_bins": 0.009863611099907202,
+    "recall_at_precision_0.4": 0.3889763779527559,
+    "average_precision_ineffective": 0.38377214778292645,
+    "average_precision_per_class": [
+      0.38377214778292645,
+      0.9230324880557856,
+      0.6003419600280337
+    ],
+    "macro_average_precision": 0.635715531955582,
+    "ineffective_prevalence": 0.04439628050059428,
+    "review_budget_curve": {
+      "0.05": {
+        "reviewed": 716,
+        "ineffective_found": 265,
+        "precision": 0.37011173184357543,
+        "recall": 0.41732283464566927,
+        "boundary_score": 0.5573796568515426,
+        "boundary_tie_count": 1
+      },
+      "0.1": {
+        "reviewed": 1431,
+        "ineffective_found": 390,
+        "precision": 0.27253668763102723,
+        "recall": 0.6141732283464567,
+        "boundary_score": 0.3430857203524421,
+        "boundary_tie_count": 1
+      },
+      "0.2": {
+        "reviewed": 2861,
+        "ineffective_found": 506,
+        "precision": 0.17686123732960504,
+        "recall": 0.7968503937007874,
+        "boundary_score": 0.1593068570616103,
+        "boundary_tie_count": 1
+      }
+    },
+    "review_budget_policy": "Predeclared top 5/10/20 percent by Ineffective score; batch-ranking diagnostic, not a fixed calibrated threshold",
+    "review_tie_break": "segment_id"
+  },
+  "comparisons": [
+    {
+      "reference": "N1_BERT",
+      "macro_f1": 0.5885472872345546,
+      "gain_macro_f1": 0.013696087474885155,
+      "paired_essay_bootstrap_95": {
+        "macro_f1": {
+          "low": 0.005066451051039564,
+          "high": 0.022839539808828576,
+          "valid_resamples": 2000
+        },
+        "recall_ineffective": {
+          "low": -0.006655851358846415,
+          "high": 0.05393992257324477,
+          "valid_resamples": 2000
+        },
+        "precision_ineffective": {
+          "low": -0.009320419256701865,
+          "high": 0.03325909626770788,
+          "valid_resamples": 2000
+        },
+        "qwk": {
+          "low": 0.010054659780950085,
+          "high": 0.030917797757862537,
+          "valid_resamples": 2000
+        }
+      }
+    },
+    {
+      "reference": "N2_DeBERTa",
+      "macro_f1": 0.5990812411210614,
+      "gain_macro_f1": 0.0031621335883783575,
+      "paired_essay_bootstrap_95": {
+        "macro_f1": {
+          "low": -0.005156210554111992,
+          "high": 0.011460061370878533,
+          "valid_resamples": 2000
+        },
+        "recall_ineffective": {
+          "low": -0.06282020480293855,
+          "high": -0.007249991767921267,
+          "valid_resamples": 2000
+        },
+        "precision_ineffective": {
+          "low": 0.009717308107656319,
+          "high": 0.04647048568407746,
+          "valid_resamples": 2000
+        },
+        "qwk": {
+          "low": -0.013147731250793748,
+          "high": 0.007660594126269075,
+          "valid_resamples": 2000
+        }
+      }
+    }
+  ],
+  "scope": "Validation only; ensemble weights selected on this validation. Bootstrap is conditional on selected weights, not independent confirmation of model superiority. No test read."
+}

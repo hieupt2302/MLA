@@ -1,0 +1,21 @@
+Quartile,Prompt_Name,Pct_Within_Quartile,Count_Units
+Q1 (Short),Does the electoral college work?,10.5,770
+Q1 (Short),Grades for extracurricular activities,10.27,753
+Q1 (Short),Cell phones at school,9.76,716
+Q1 (Short),Facial action coding system,9.48,695
+Q1 (Short),Community service,8.81,646
+Q2 (Med-Low),Does the electoral college work?,14.98,1090
+Q2 (Med-Low),Driverless cars,10.88,792
+Q2 (Med-Low),Seeking multiple opinions,9.36,681
+Q2 (Med-Low),Facial action coding system,8.19,596
+Q2 (Med-Low),The Face on Mars,6.53,475
+Q3 (Med-High),Does the electoral college work?,15.46,1117
+Q3 (Med-High),Distance learning,13.51,976
+Q3 (Med-High),Seeking multiple opinions,11.74,848
+Q3 (Med-High),Driverless cars,10.25,741
+Q3 (Med-High),Summer projects,6.7,484
+Q4 (Long),Distance learning,27.36,1988
+Q4 (Long),Summer projects,17.09,1242
+Q4 (Long),Seeking multiple opinions,16.93,1230
+Q4 (Long),Does the electoral college work?,7.16,520
+Q4 (Long),Car-free cities,6.17,448

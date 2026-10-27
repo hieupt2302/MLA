@@ -1,0 +1,11 @@
+Feature Set,Model,Accuracy (%),Balanced Acc (%),Macro-F1,Weighted-F1,Ineffective F1,Adequate F1,Effective F1,Train Time (s)
+Feature Set B (TF-IDF + Handcrafted),Random Forest,77.22,51.15,0.523,0.7658,0.2384,0.8591,0.4713,293.6
+Feature Set B (TF-IDF + Handcrafted),LR + Threshold Optimization,67.01,60.32,0.5086,0.7031,0.2608,0.7739,0.4909,89.9
+Feature Set A (TF-IDF Only),Random Forest,75.93,48.59,0.4956,0.7526,0.1993,0.8522,0.4354,261.8
+Feature Set B (TF-IDF + Handcrafted),Logistic Regression,62.57,61.3,0.488,0.6677,0.2484,0.7309,0.4847,78.3
+Feature Set B (TF-IDF + Handcrafted),LightGBM,60.25,64.82,0.4868,0.6485,0.2561,0.7025,0.5017,380.0
+Feature Set A (TF-IDF Only),LR + Threshold Optimization,64.35,57.59,0.4821,0.6804,0.2402,0.7548,0.4514,38.3
+Feature Set A (TF-IDF Only),Logistic Regression,59.6,58.08,0.4599,0.642,0.2278,0.7083,0.4436,27.8
+Feature Set A (TF-IDF Only),LightGBM,57.61,60.2,0.4552,0.6285,0.2231,0.6893,0.4533,375.2
+Feature Set B (TF-IDF + Handcrafted),Calibrated Linear SVM,79.59,35.7,0.3408,0.7186,0.006,0.885,0.1314,122.9
+Feature Set A (TF-IDF Only),Calibrated Linear SVM,78.9,33.79,0.3029,0.6983,0.0,0.8817,0.0271,40.2

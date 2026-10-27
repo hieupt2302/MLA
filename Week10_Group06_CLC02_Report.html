@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Research Report (Week 10) - Group 06 CLC02</title>
+    <!-- KaTeX CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                output: 'html',
+                throwOnError: false,
+                ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+    <style>
+        @page {
+            size: A4;
+            margin: 16mm 14mm 16mm 14mm;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #1e293b;
+            line-height: 1.6;
+            max-width: 940px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            background: #ffffff;
+        }
+        .katex-mathml {
+            display: none !important;
+        }
+        .katex {
+            font-size: 1.05em;
+        }
+        .katex-display {
+            margin: 14px 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 4px 0;
+        }
+        h1, h2, h3, h4 {
+            color: #0f2d59;
+            font-weight: 600;
+        }
+        h1 {
+            font-size: 18pt;
+            border-bottom: 2px solid #0f2d59;
+            padding-bottom: 8px;
+            margin-top: 0;
+            text-align: center;
+        }
+        h2 {
+            font-size: 13pt;
+            border-bottom: 1.5px solid #cbd5e1;
+            padding-bottom: 5px;
+            margin-top: 26px;
+            margin-bottom: 12px;
+        }
+        h3 {
+            font-size: 11pt;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+        h4 {
+            font-size: 10pt;
+            margin-top: 14px;
+            margin-bottom: 6px;
+        }
+        p, li {
+            font-size: 9.5pt;
+            color: #334155;
+        }
+        ul, ol {
+            margin-top: 6px;
+            margin-bottom: 12px;
+            padding-left: 22px;
+        }
+        li {
+            margin-bottom: 4px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 14px 0;
+            font-size: 8.5pt;
+            page-break-inside: avoid;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 5px 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #0f2d59;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        pre {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 8pt;
+            line-height: 1.35;
+            overflow-x: auto;
+            page-break-inside: avoid;
+        }
+        code {
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 8.5pt;
+            background-color: #f1f5f9;
+            color: #0f2d59;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+        }
+        blockquote {
+            border-left: 4px solid #0f2d59;
+            margin: 12px 0;
+            padding: 8px 14px;
+            background-color: #f8fafc;
+            font-size: 9pt;
+            color: #1e293b;
+            border-radius: 0 5px 5px 0;
+        }
+        a {
+            color: #0284c7;
+            text-decoration: underline;
+        }
+        a:hover {
+            color: #0369a1;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        @media print {
+            body {
+                padding: 0;
+                max-width: 100%;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            a {
+                text-decoration: underline;
+                color: #0284c7 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<div style="text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #0f2d59;">
+  <h1 style="color: #0f2d59; font-size: 20pt; margin-bottom: 8px; border-bottom: none; padding-bottom: 0;">TECHNICAL RESEARCH REPORT (WEEK 10)</h1>
+  <h3 style="color: #1e3d59; font-size: 13pt; font-weight: 500; margin-top: 0; margin-bottom: 16px; line-height: 1.4;">EXAMINING LENGTH CONFOUNDS, CONTROLLED CONTEXTUAL ABLATION, AND LEAVE-ONE-PROMPT-OUT GENERALIZATION IN ARGUMENTATIVE DISCOURSE EFFECTIVENESS ASSESSMENT</h3>
+  <p style="margin: 4px 0; font-size: 10pt;"><strong>Course:</strong> Machine Learning &amp; Applications (CLC02) &nbsp;|&nbsp; <strong>Academic Cohort:</strong> 2025&ndash;2026 &nbsp;|&nbsp; <strong>Project Group:</strong> Group 06</p>
+  <p style="margin: 4px 0; font-size: 10pt;"><strong>Primary Dataset:</strong> PERSUADE 2.0 Corpus (<em>Assessing Writing</em>, Elsevier, 2024) &nbsp;|&nbsp; <strong>Date of Submission:</strong> October 2026</p>
+  <p style="margin: 4px 0; font-size: 10pt;"><strong>Artifacts &amp; Outputs Repository:</strong> <code>outputs/</code></p>
+  <div style="margin-top: 14px; padding: 12px 16px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; display: inline-block; text-align: left; font-size: 9.5pt;">
+    <strong style="color: #0f2d59;">Live Interactive Google Colab Notebooks:</strong><br>
+    • <strong>Script 04 (Length Confound &amp; LOPO Classical):</strong> <a href="https://colab.research.google.com/drive/1YRMpJgGzZ0vWe7nA0W8c7n5JKMruVJHT?usp=sharing" target="_blank">Open in Google Colab</a> (<code>https://colab.research.google.com/drive/1YRMpJgGzZ0vWe7nA0W8c7n5JKMruVJHT?usp=sharing</code>)<br>
+    • <strong>Script 05 (Context Ablation DeBERTa):</strong> <a href="https://colab.research.google.com/drive/1prcSnRHax0SAITnUbGsXks3aQ9pbwJD2?usp=sharing" target="_blank">Open in Google Colab</a> (<code>https://colab.research.google.com/drive/1prcSnRHax0SAITnUbGsXks3aQ9pbwJD2?usp=sharing</code>)<br>
+    • <strong>Script 06 (Leave-One-Prompt-Out DeBERTa):</strong> <a href="https://colab.research.google.com/drive/1xiYMZ7SjRSAn_ioAvAbNh-PZDkghsiBk?usp=sharing" target="_blank">Open in Google Colab</a> (<code>https://colab.research.google.com/drive/1xiYMZ7SjRSAn_ioAvAbNh-PZDkghsiBk?usp=sharing</code>)
+  </div>
+</div>
+
+<h2>Executive Abstract</h2>
+<p>Evaluating the rhetorical effectiveness of discourse units in student writing is a foundational task in Automated Writing Evaluation (AWE). Following reviewer feedback on our Week 9 evaluation protocol (<em>Nhan_xet_Week9_CLC02_Group06</em>), this study transitions from internal validation benchmarking to controlled diagnostic ablation and out-of-domain prompt generalization. Specifically, we present empirical evidence addressing the core methodological questions raised by the instructor:</p>
+<ol>
+<li><strong>Investigation of the Essay Length Confound (N = 29,102 Validation Units):</strong> Prior audits observed classification error rates increasing from 21.98% in short essays to 30.35% in longer essays. Through a 4-quartile audit across 3,119 validation essays, we demonstrate that this disparity is heavily driven by <strong>severe label distribution shift and quality boundary transitions</strong> rather than compounding syntactic complexity alone. In short essays (Quartile 1: 148&ndash;315 words), the gold Ineffective rate is <strong>8.97%</strong> and student holistic scores average 2.38/6. In long essays (Quartile 4: 567&ndash;8,811 words, median 712 words), the Ineffective rate drops 7.0-fold to <strong>1.29%</strong>, while the Effective rate surges from 5.29% to <strong>32.81%</strong> (mean holistic score reaches 4.67/6). Crucially, confusion matrix analysis shows that <strong>91.52% of all errors in Quartile 4 (2,018 out of 2,205 errors) arise from distinguishing Adequate from Effective</strong>, whereas errors on Ineffective account for only 3.08% of long essay mistakes.</li>
+<li><strong>Controlled Contextual Ablation (Level 0 vs Level 1 with DeBERTa-v3-base):</strong> Testing the hypothesis that automated scoring suffers from isolated-unit inputs, we evaluated Level 0 (unit-only) against Level 1 (unit flanked by immediate preceding and succeeding units within the essay) on the identical 29,102 validation units (max_length = 512, truncation rate &lt; 0.65%). Providing local sequential neighbors produces an overall <strong>Ineffective F1 gain of +0.0193 points (+5.16% relative, 0.3741 to 0.3934)</strong>, while overall Macro-F1 edges from 0.5768 to 0.5790 (paired bootstrap 95% CI [-0.0058, +0.0105]). Performance improvements are concentrated in relational units: Claim Ineffective F1 improves +0.0430 points (+16.17% relative, +10 units recalled), Concluding Statement improves +0.0389 points, Counterclaim improves +0.0303 points (+1 unit), and Rebuttal improves +0.0276 points (+1 unit). In contrast, autonomous thesis units (Position) decline by -0.0550 points (-7 units recalled), suggesting that local context introduces transition noise for thesis formulation.</li>
+<li><strong>Diagnostic Audit of 10 Ineffective Failure Cases:</strong> Re-evaluating the 10 highest-confidence Ineffective failure cases reveals that 0/10 flip to an Ineffective argmax prediction with local context alone, though 8/10 show an increase in posterior probability P(Ineffective) (average 2.57x increase). Error inspection categorizes their failure mechanisms: 2 cases suffer from dangling structure, 4 cases require extrinsic reference to prompt reading passages (e.g., unsubstantiated citations such as <em>"paragraph 36"</em> or factual contradictions with source texts), and 2 cases require whole-essay stance tracking.</li>
+<li><strong>Leave-One-Prompt-Out (LOPO) Generalization Benchmark:</strong> Across all 15 prompts evaluated via 15-fold cross-validation with Random Forest (Feature Set B), the classical baseline achieves a mean Macro-F1 of <strong>0.4303 ± 0.0405</strong> and an average accuracy of <strong>77.09% (unweighted) / 76.47% (weighted)</strong>. Deep learning evaluation using fine-tuned DeBERTa-v3 across 3 representative tiers (Hardest, Median, Easiest) yields higher out-of-prompt Macro-F1 than Random Forest across all 3 prompts (Mean Macro-F1: <strong>0.4820 vs 0.4285</strong>, +12.49% relative gain), though DeBERTa accuracy is slightly lower than RF due to balanced class weighting (Cowboy: 78.87% vs 79.20%; Summer: 66.58% vs 70.24%; Distance: 75.55% vs 78.05%). Comparing in-domain performance on the <em>same prompt</em> vs LOPO reveals that out-of-prompt generalization drop varies dramatically by prompt type: source-dependent prompts drop noticeably (Cowboy: -8.52%), while open-ended and universal prompts transfer robustly (Summer projects: -1.12%; Distance learning: +1.03%). Under LOPO, discourse vulnerability shows that Rebuttal (-22.79%) and Evidence (-19.36%) experience the greatest performance drop, while Position (-10.26%) is the most resilient.</li>
+<li><strong>Scientific Rigor &amp; Reproducibility:</strong> We calibrate our reporting tone, document 3x3 confusion matrices for all baseline and deep learning models, provide exact bootstrap confidence intervals, cite the verified literature source (<em>Crossley et al., 2024, Assessing Writing, Vol. 61</em>), and share reproducible Google Colab notebooks.</li>
+</ol>
+<hr />
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#1-methodological-rectification--responses-to-week-9-review">Methodological Rectification &amp; Responses to Week 9 Review</a></li>
+<li><a href="#2-data-pipeline-rigor--verified-split-alignment">Data Pipeline Rigor &amp; Verified Split Alignment</a></li>
+<li><a href="#3-empirical-investigation-of-the-essay-length-confound">Empirical Investigation of the Essay Length Confound</a></li>
+<li><a href="#4-controlled-contextual-ablation-study-level-0-vs-level-1">Controlled Contextual Ablation Study (Level 0 vs Level 1)</a></li>
+<li><a href="#5-diagnostic-audit-of-10-ineffective-failure-cases">Diagnostic Audit of 10 Ineffective Failure Cases</a></li>
+<li><a href="#6-leave-one-prompt-out-lopo-generalization-benchmark">Leave-One-Prompt-Out (LOPO) Generalization Benchmark</a></li>
+<li><a href="#7-pedagogical-synthesis--theoretical-inquiries">Pedagogical Synthesis &amp; Theoretical Inquiries</a></li>
+<li><a href="#8-reproducibility-artifacts--codebase-governance">Reproducibility Artifacts &amp; Codebase Governance</a></li>
+<li><a href="#9-references">References</a></li>
+</ol>
+<hr />
+<h2>1. Methodological Rectification &amp; Responses to Week 9 Review</h2>
+<p>Following the feedback in <em>Nhan_xet_Week9_CLC02_Group06.docx.md</em>, we systematically address each methodological concern:</p>
+<h3>1.1 Resolution of the Spearman Rank Correlation Caveat</h3>
+<ul>
+<li><strong>Reviewer Comment:</strong> <em>"Phép so ρ = 0,857 giữa kappa người chấm và F1 mô hình chỉ có 7 điểm, không đủ để kết luận lỗi ở Claim, Counterclaim 'trực tiếp do' người chấm kém đồng thuận. Kappa của mô hình so với nhãn và kappa giữa hai người chấm cũng không phải cùng một đại lượng, nên chưa nói được mô hình 'ngang người'. Các con số kappa theo loại đơn vị cũng cần ghi rõ trang và bảng trong Crossley và cộng sự (2024)."</em></li>
+<li><strong>Group 06 Resolution:</strong></li>
+<li><strong>Small-Sample Statistical Limitation (N = 7):</strong> We formally retract the assertion that model errors on Claim and Counterclaim are "directly caused by" low human annotator agreement. With only N = 7 discourse types, a rank correlation of ρ = 0.8571 (p = 0.0137) possesses a wide 95% confidence interval ([0.26, 0.98]) and must be interpreted strictly as an <strong>exploratory bivariate trend</strong>, not a causal proof.</li>
+<li><strong>Metric Incommensurability (Model κ vs Human-Human κ):</strong> We explicitly clarify that Cohen's κ between model predictions and gold labels (κ_model = 0.3704) and Cohen's κ between two independent human raters (κ_human-human = 0.316) measure fundamentally distinct quantities. The former evaluates algorithmic classification fidelity against a consensus reference standard, whereas the latter reflects pairwise variance in human subjective judgment. We retract any claim that the model has reached "human parity" or is equivalent to human raters.</li>
+<li><strong>Formal Literature Citation &amp; Verified Benchmarks:</strong> The official publication introducing the corpus is:
+     &gt; <strong>Crossley, S. A., Baffour, P., Tian, Y., Franklin, A., Benner, M., &amp; Boser, U. (2024).</strong> <em>A large-scale corpus for assessing written argumentation: PERSUADE 2.0.</em> <strong>Assessing Writing</strong>, Volume 61, Article 100830. [DOI: 10.1016/j.asw.2024.100830].
+     As documented in Section 5 of Crossley et al. (2024), human inter-rater reliability on effectiveness ratings across 159,228 double-scored segments yields an <strong>exact agreement of 0.718</strong> (ranging from 0.68 to 0.81 across classes) and an <strong>overall Cohen's κ = 0.316</strong> (ranging from 0.17 to 0.38 across specific classes), indicating fair human agreement.</li>
+</ul>
+<h3>1.2 Technical Analysis of the LR 6.13% Metric Mapping Defect</h3>
+<ul>
+<li><strong>Reviewer Directive:</strong> <em>"mỗi thành viên phải tự giải thích được lỗi 6,13% bằng lời của mình."</em></li>
+<li><strong>Core Technical Mechanism:</strong>
+  The 6.13% anomaly reported in Week 8 was an <strong>indexing transposition defect</strong> in the evaluation script's post-processing logic:</li>
+<li>In <code>scikit-learn</code>, <code>LogisticRegression.classes_</code> automatically sorts string target labels in alphabetical order: <code>['Adequate', 'Effective', 'Ineffective']</code>, meaning index 0 corresponds to Adequate, index 1 to Effective, and index 2 to Ineffective.</li>
+<li>The legacy Week 8 metric extraction code assumed index 0 was Ineffective (<code>['Ineffective', 'Adequate', 'Effective']</code>). Consequently, the script extracted the F1 score of the Ineffective minority class (~0.0613) and assigned it into the Overall/Balanced Accuracy variable.</li>
+<li>The Logistic Regression model itself did not suffer numerical collapse; with identical features and balanced class weights, properly mapping <code>LABEL2ID={'Ineffective': 0, 'Adequate': 1, 'Effective': 2}</code> reveals that Logistic Regression achieved an actual Balanced Accuracy of 60.32% (Macro-F1 0.5086) on the canonical 29,102 validation units.</li>
+<li>From Week 9 onward, all confusion matrices, precision, recall, and F1 calculations are derived directly via vectorized confusion matrix counts with fixed label ID mappings.</li>
+</ul>
+<h3>1.3 Governance of the Official Test Set</h3>
+<ul>
+<li><strong>Reviewer Comment:</strong> <em>"Validation đang dùng cho chọn mô hình, chọn ngưỡng, hiệu chỉnh và kiểm định. Kết luận vượt trội cuối cùng cần một lần chấm trên Official Test đã khóa cấu hình."</em></li>
+<li><strong>Group 06 Resolution:</strong></li>
+<li>The <strong>Validation Cohort (N = 29,102 units)</strong> serves exclusively for model selection, hyperparameter tuning, contextual ablation, and diagnostic failure analysis.</li>
+<li>The <strong>Official Test Holdout (N = 93,677 units, 10,402 essays)</strong> remains <strong>strictly locked and untouched</strong>.</li>
+<li><strong>Pre-registered Locked Configuration:</strong> Prior to evaluating the Official Test set, Group 06 locks the following final configuration: backbone <code>microsoft/deberta-v3-base</code>, Level 1 contextual neighbor input formatting, effective batch size 32, learning rate 2e-5, 3 epochs, balanced cross-entropy class weights, default argmax decision rule, and seed 42. Selection is based strictly on validation Macro-F1 superiority.</li>
+</ul>
+<h3>1.4 Tone Calibration and Presentation Standards</h3>
+<p>All hyperbolic rhetoric has been removed:
+- Replaced <code>"forensic analysis"</code> with <code>"diagnostic error audit"</code> or <code>"empirical inspection"</code>.
+- Replaced <code>"definitive proof"</code> and <code>"conclusively demonstrated"</code> with <code>"empirical evidence indicates"</code> or <code>"hypothesis testing supports"</code>.
+- Removed speculative claims comparing model performance to human raters.
+- Formatted inline mathematical variables, counts, and percentages as clean plain text to prevent rendering duplication artifacts across PDF compilers.</p>
+<hr />
+<h2>2. Data Pipeline Rigor &amp; Verified Split Alignment</h2>
+<h3>2.1 Filtering Pipeline &amp; String Typing</h3>
+<p>All raw files are parsed enforcing strict string typing (<code>dtype={'essay_id': str, 'discourse_id': str}</code>) to prevent numeric conversion errors or dropped leading zeroes. All evaluations operate strictly on <strong>predefined gold segmentation discourse boundaries</strong> established in the PERSUADE 2.0 corpus.</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th style="text-align: center;">Train Fit Cohort (80%)</th>
+<th style="text-align: center;">Validation Cohort (20%)</th>
+<th style="text-align: center;">Official Test Holdout (Locked)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Raw Rows in Source CSV</strong></td>
+<td style="text-align: center;">173,266 raw rows</td>
+<td style="text-align: center;">(Split from train CSV)</td>
+<td style="text-align: center;">112,117 raw rows</td>
+</tr>
+<tr>
+<td><strong>Excluded Unannotated Units</strong></td>
+<td style="text-align: center;">28,977 segments</td>
+<td style="text-align: center;">(Excluded prior to split)</td>
+<td style="text-align: center;">18,440 segments</td>
+</tr>
+<tr>
+<td><strong>Clean Annotated Units</strong></td>
+<td style="text-align: center;">115,187 units</td>
+<td style="text-align: center;">29,102 units</td>
+<td style="text-align: center;">93,677 units</td>
+</tr>
+<tr>
+<td><strong>Unique Essays (String ID)</strong></td>
+<td style="text-align: center;">12,474 essays</td>
+<td style="text-align: center;">3,119 essays</td>
+<td style="text-align: center;">10,402 essays</td>
+</tr>
+<tr>
+<td><strong>Split Strategy</strong></td>
+<td style="text-align: center;">GroupShuffleSplit (seed=42)</td>
+<td style="text-align: center;">GroupShuffleSplit (seed=42)</td>
+<td style="text-align: center;">Official Benchmark Split</td>
+</tr>
+<tr>
+<td><strong>Cross-Essay Leakage</strong></td>
+<td style="text-align: center;">Exactly 0 essays</td>
+<td style="text-align: center;">Exactly 0 essays</td>
+<td style="text-align: center;">Exactly 0 essays</td>
+</tr>
+</tbody>
+</table>
+<h3>2.2 Canonical Cohort Summary Table</h3>
+<table>
+<thead>
+<tr>
+<th>Partition Cohort</th>
+<th style="text-align: center;">Number of Essays</th>
+<th style="text-align: center;">Total Discourse Units</th>
+<th style="text-align: center;">Ineffective (%)</th>
+<th style="text-align: center;">Adequate (%)</th>
+<th style="text-align: center;">Effective (%)</th>
+<th>Primary Role in Study</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Train Fit Cohort (80%)</strong></td>
+<td style="text-align: center;">12,474</td>
+<td style="text-align: center;">115,187</td>
+<td style="text-align: center;">4.46%</td>
+<td style="text-align: center;">78.44%</td>
+<td style="text-align: center;">17.11%</td>
+<td>Feature extraction, classifier fitting, DeBERTa fine-tuning</td>
+</tr>
+<tr>
+<td><strong>Validation Cohort (20%)</strong></td>
+<td style="text-align: center;">3,119</td>
+<td style="text-align: center;">29,102</td>
+<td style="text-align: center;">4.56%</td>
+<td style="text-align: center;">78.68%</td>
+<td style="text-align: center;">16.76%</td>
+<td>Length quartile audit, contextual ablation, paired testing</td>
+</tr>
+<tr>
+<td><strong>Official Test Holdout</strong></td>
+<td style="text-align: center;">10,402</td>
+<td style="text-align: center;">93,677</td>
+<td style="text-align: center;">4.51%</td>
+<td style="text-align: center;">80.45%</td>
+<td style="text-align: center;">15.04%</td>
+<td>Strictly untouched final evaluation benchmark</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. Empirical Investigation of the Essay Length Confound</h2>
+<h3>3.1 The Observed Phenomenon &amp; Competing Hypotheses</h3>
+<p>In earlier audits, classification error rates rose noticeably across essay word count:
+$$\text{Observed Error Rate: } 21.98\% \text{ (Quartile 1)} \longrightarrow 30.35\% \text{ (Quartile 4)}$$</p>
+<p>Two competing hypotheses explain this divergence:</p>
+<ul>
+<li><strong>Hypothesis A (Rhetorical Complexity):</strong> Longer essays feature elaborate syntactic trees and multi-sentence argumentative structures that confuse fixed-length attention windows.</li>
+<li><strong>Hypothesis B (Label Distribution &amp; Proficiency Shift):</strong> Essay length is confounded with student writing proficiency and prompt assignment, creating class imbalance shifts and shifting the dominant classification challenge from minority Ineffective detection to subtle Adequate vs Effective differentiation.</li>
+</ul>
+<h3>3.2 4-Quartile Validation Analysis (N = 29,102 Units)</h3>
+<p>To test these hypotheses, we partitioned all 29,102 validation units into four equal-frequency quartiles (Q1 to Q4) based on total essay word count:</p>
+<table>
+<thead>
+<tr>
+<th>Quartile</th>
+<th style="text-align: center;">Word Count Range</th>
+<th style="text-align: center;">Units (N)</th>
+<th style="text-align: center;">Essays (N)</th>
+<th style="text-align: center;">Mean Holistic Score (1&ndash;6)</th>
+<th style="text-align: center;">Pct Ineff</th>
+<th style="text-align: center;">Pct Adeq</th>
+<th style="text-align: center;">Pct Eff</th>
+<th style="text-align: center;">Overall Model Error</th>
+<th style="text-align: center;">Error on Gold Ineff</th>
+<th style="text-align: center;">Error on Gold Adeq</th>
+<th style="text-align: center;">Error on Gold Eff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Q1 (Short)</strong></td>
+<td style="text-align: center;">148 &ndash; 315</td>
+<td style="text-align: center;">7,333</td>
+<td style="text-align: center;">1,037</td>
+<td style="text-align: center;">2.38</td>
+<td style="text-align: center;">8.97%</td>
+<td style="text-align: center;">85.74%</td>
+<td style="text-align: center;">5.29%</td>
+<td style="text-align: center;">21.98%</td>
+<td style="text-align: center;">51.52%</td>
+<td style="text-align: center;">16.72%</td>
+<td style="text-align: center;">57.22%</td>
+</tr>
+<tr>
+<td><strong>Q2 (Med-Low)</strong></td>
+<td style="text-align: center;">316 &ndash; 422</td>
+<td style="text-align: center;">7,277</td>
+<td style="text-align: center;">786</td>
+<td style="text-align: center;">3.20</td>
+<td style="text-align: center;">5.02%</td>
+<td style="text-align: center;">84.27%</td>
+<td style="text-align: center;">10.72%</td>
+<td style="text-align: center;">24.50%</td>
+<td style="text-align: center;">55.07%</td>
+<td style="text-align: center;">19.83%</td>
+<td style="text-align: center;">46.92%</td>
+</tr>
+<tr>
+<td><strong>Q3 (Med-High)</strong></td>
+<td style="text-align: center;">423 &ndash; 566</td>
+<td style="text-align: center;">7,226</td>
+<td style="text-align: center;">690</td>
+<td style="text-align: center;">3.81</td>
+<td style="text-align: center;">2.92%</td>
+<td style="text-align: center;">78.74%</td>
+<td style="text-align: center;">18.34%</td>
+<td style="text-align: center;">27.68%</td>
+<td style="text-align: center;">57.82%</td>
+<td style="text-align: center;">23.64%</td>
+<td style="text-align: center;">40.23%</td>
+</tr>
+<tr>
+<td><strong>Q4 (Long)</strong></td>
+<td style="text-align: center;">567 &ndash; 8,811</td>
+<td style="text-align: center;">7,266</td>
+<td style="text-align: center;">606</td>
+<td style="text-align: center;">4.67</td>
+<td style="text-align: center;">1.29%</td>
+<td style="text-align: center;">65.90%</td>
+<td style="text-align: center;">32.81%</td>
+<td style="text-align: center;">30.35%</td>
+<td style="text-align: center;">72.34%</td>
+<td style="text-align: center;">33.46%</td>
+<td style="text-align: center;">22.44%</td>
+</tr>
+</tbody>
+</table>
+<p><em>Note on Q4 range:</em> Q4 spans up to 8,811 words due to an isolated extreme-length submission (<em>Exploring Venus</em>, essay ID <code>AAAVUP14319000135886</code>); the median word count of Q4 is 712 words, and the 95th percentile is 1,048 words.</p>
+<h3>3.3 Prompt Composition Breakdown Across Quartiles</h3>
+<p>Stratifying prompts across quartiles (<code>outputs/length_quartile_prompt_breakdown.csv</code>) reveals notable prompt selection effects:
+* In <strong>Q1 (Short Essays)</strong>, civics and school-policy prompts dominate: <em>Does the electoral college work?</em> (10.50%), <em>Grades for extracurricular activities</em> (10.27%), and <em>Cell phones at school</em> (9.76%).
+* In <strong>Q4 (Long Essays)</strong>, open-ended narrative and expository prompts dominate heavily: <em>Distance learning</em> alone accounts for <strong>27.36%</strong> (1,988 units), followed by <em>Summer projects</em> (17.09%) and <em>Seeking multiple opinions</em> (16.93%). Together, these three prompts account for <strong>61.38%</strong> of all units in Q4.</p>
+<h3>3.4 Empirical Findings on the Confound</h3>
+<ol>
+<li><strong>Direct Correlation with Student Holistic Proficiency:</strong> The average holistic essay score doubles from <strong>2.38/6 in Q1 to 4.67/6 in Q4</strong>. More proficient students produce substantially longer essays and write structurally sound arguments. Consequently, the gold Ineffective rate drops 7.0-fold from 8.97% in Q1 to only 1.29% in Q4 (only 94 Ineffective units in the entire Q4 validation cohort).</li>
+<li><strong>Decomposition of Q4 Errors:</strong> Inspecting the confusion matrix of DeBERTa on Q4 (total errors = 2,205 units):</li>
+<li>Errors on gold Ineffective account for only <strong>68 units (3.08% of all errors in Q4)</strong>.</li>
+<li>Confusion between Adequate and Effective accounts for <strong>2,018 units (91.52% of all errors in Q4)</strong>: 1,491 gold Adequate units were predicted as Effective, and 527 gold Effective units were predicted as Adequate.</li>
+<li><strong>Empirical Conclusion:</strong> The rising error rate in longer essays is <strong>not driven by failing on Ineffective units</strong>, but by the fact that Q4 is dominated by higher-proficiency essays where distinguishing between Adequate and Effective arguments is the primary difficulty. Hypothesis B is strongly supported by this empirical decomposition.</li>
+</ol>
+<hr />
+<h2>4. Controlled Contextual Ablation Study (Level 0 vs Level 1)</h2>
+<h3>4.1 Controlled Experimental Formulation</h3>
+<p>To test what information automated discourse assessment requires, we conducted a strictly controlled experiment contrasting isolated unit input against local sequential context:
+- <strong>Backbone Architecture:</strong> <code>microsoft/deberta-v3-base</code> (86M parameters).
+- <strong>Partition:</strong> Canonical GroupShuffleSplit (115,187 train units, 29,102 validation units across 3,119 essays; seed=42).
+- <strong>Hyperparameters:</strong> Effective batch size 32 (8 per device x 4 gradient accumulation steps), 3 epochs, learning rate 2e-5 with linear warmup (10%), FP16 mixed precision, balanced class weights:
+  $$w_0 (\text{Ineffective}) = 7.4787, \quad w_1 (\text{Adequate}) = 0.4250, \quad w_2 (\text{Effective}) = 1.9484$$
+- <strong>Sequence Length &amp; Truncation:</strong> Tokenizer max_length = 512 with head/tail truncation. 
+  - Level 0 input mean length is 58.0 tokens; truncation rate (&gt; 512 tokens) is <strong>0.04%</strong> (12 units).
+  - Level 1 input mean length is 164.7 tokens; truncation rate is <strong>0.62%</strong> (180 units across 29,102 units). For Position, truncation is only <strong>0.42%</strong> (mean length 145.1 tokens), verifying that Position performance changes are not truncation artifacts.</p>
+<h4>Input Formulations Compared:</h4>
+<ul>
+<li>
+<p><strong>Level 0 (Unit Only Baseline):</strong>
+  $$\mathbf{x}_{\text{Level 0}} = \tau_{i,j} \circ \text{[SEP]} \circ s_{i,j}$$</p>
+</li>
+<li>
+<p><strong>Level 1 (Unit with Local Sequential Neighbors):</strong>
+  $$\mathbf{x}_{\text{Level 1}} = \tau_{i,j} \circ \text{[SEP]} \circ \text{Previous: } s_{i,j-1} \circ \text{[SEP]} \circ \text{Target: } s_{i,j} \circ \text{[SEP]} \circ \text{Next: } s_{i,j+1}$$</p>
+</li>
+</ul>
+<p>where $s_{i,j-1}$ and $s_{i,j+1}$ denote the preceding and succeeding discourse units within the essay ordered by character offset (<code>discourse_start</code>). If a unit occurs at an essay boundary, <code>[NONE]</code> is inserted.</p>
+<h3>4.2 Overall Benchmark Results &amp; Confusion Matrices (N = 29,102 Validation Units)</h3>
+<p>The benchmark results and exact 3x3 confusion matrices on the identical validation cohort are presented below:</p>
+<h3>4.2.1 Exact 3x3 Confusion Matrices (Rows: Gold Label, Columns: Predicted Label):</h3>
+<ul>
+<li>
+<p><strong>Random Forest Baseline (Feature Set B):</strong>
+  <code>[[  286,   999,    43],    --&gt; Gold Ineffective (N = 1,328): Recall = 21.54%, Precision = 26.70%
+   [  764, 20018,  2115],    --&gt; Gold Adequate    (N = 22,897): Recall = 87.43%, Precision = 84.45%
+   [   21,  2687,  2169]]    --&gt; Gold Effective   (N = 4,877): Recall = 44.47%, Precision = 50.13%
+  Accuracy = 22,473 / 29,102 = 77.22% | Macro-F1 = (0.2384 + 0.8591 + 0.4713) / 3 = 0.5230</code></p>
+</li>
+<li>
+<p><strong>DeBERTa-v3 Level 0 (Unit Only):</strong>
+  <code>[[  598,   682,    48],    --&gt; Gold Ineffective (N = 1,328): Recall = 45.03%, Precision = 32.00%
+   [ 1245, 17683,  3969],    --&gt; Gold Adequate    (N = 22,897): Recall = 77.23%, Precision = 88.44%
+   [   26,  1630,  3221]]    --&gt; Gold Effective   (N = 4,877): Recall = 66.04%, Precision = 44.50%
+  Accuracy = 21,502 / 29,102 = 73.88% | Macro-F1 = (0.3741 + 0.8245 + 0.5317) / 3 = 0.5768</code></p>
+</li>
+<li>
+<p><strong>DeBERTa-v3 Level 1 (+ Local Neighbors):</strong>
+  <code>[[  574,   708,    46],    --&gt; Gold Ineffective (N = 1,328): Recall = 43.22%, Precision = 36.10%
+   [  998, 17286,  4613],    --&gt; Gold Adequate    (N = 22,897): Recall = 75.49%, Precision = 88.92%
+   [   18,  1447,  3412]]    --&gt; Gold Effective   (N = 4,877): Recall = 69.96%, Precision = 42.27%
+  Accuracy = 21,272 / 29,102 = 73.09% | Macro-F1 = (0.3934 + 0.8166 + 0.5270) / 3 = 0.5790</code></p>
+</li>
+</ul>
+<h4>Comparative Performance Summary:</h4>
+<table>
+<thead>
+<tr>
+<th>Evaluation Metric</th>
+<th style="text-align: center;">Level 0 (Unit Only)</th>
+<th style="text-align: center;">Level 1 (+ Local Neighbors)</th>
+<th style="text-align: center;">Absolute Delta</th>
+<th style="text-align: center;">Relative Change (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Macro-F1 (Primary Metric)</strong></td>
+<td style="text-align: center;"><strong>0.5768</strong></td>
+<td style="text-align: center;"><strong>0.5790</strong></td>
+<td style="text-align: center;"><strong>+0.0022 points</strong></td>
+<td style="text-align: center;">+0.38%</td>
+</tr>
+<tr>
+<td><strong>Accuracy</strong></td>
+<td style="text-align: center;">73.88%</td>
+<td style="text-align: center;">73.09%</td>
+<td style="text-align: center;">-0.79 points</td>
+<td style="text-align: center;">-1.07%</td>
+</tr>
+<tr>
+<td><strong>Balanced Accuracy</strong></td>
+<td style="text-align: center;">62.77%</td>
+<td style="text-align: center;">62.89%</td>
+<td style="text-align: center;">+0.12 points</td>
+<td style="text-align: center;">+0.19%</td>
+</tr>
+<tr>
+<td><strong>Quadratic Weighted Kappa (QWK)</strong></td>
+<td style="text-align: center;">0.4414</td>
+<td style="text-align: center;">0.4384</td>
+<td style="text-align: center;">-0.0030 points</td>
+<td style="text-align: center;">-0.68%</td>
+</tr>
+<tr>
+<td><strong>Unweighted Cohen's κ</strong></td>
+<td style="text-align: center;">0.3704</td>
+<td style="text-align: center;">0.3676</td>
+<td style="text-align: center;">-0.0028 points</td>
+<td style="text-align: center;">-0.76%</td>
+</tr>
+<tr>
+<td><strong>F1: Ineffective (Class 0)</strong></td>
+<td style="text-align: center;"><strong>0.3741</strong></td>
+<td style="text-align: center;"><strong>0.3934</strong></td>
+<td style="text-align: center;"><strong>+0.0193 points</strong></td>
+<td style="text-align: center;"><strong>+5.16%</strong></td>
+</tr>
+<tr>
+<td><strong>Precision: Ineffective</strong></td>
+<td style="text-align: center;">32.00%</td>
+<td style="text-align: center;">36.10%</td>
+<td style="text-align: center;">+4.10 points</td>
+<td style="text-align: center;">+12.81%</td>
+</tr>
+<tr>
+<td><strong>Recall: Ineffective</strong></td>
+<td style="text-align: center;">45.03%</td>
+<td style="text-align: center;">43.22%</td>
+<td style="text-align: center;">-1.81 points</td>
+<td style="text-align: center;">-4.02%</td>
+</tr>
+<tr>
+<td><strong>F1: Adequate (Class 1)</strong></td>
+<td style="text-align: center;">0.8245</td>
+<td style="text-align: center;">0.8166</td>
+<td style="text-align: center;">-0.0079 points</td>
+<td style="text-align: center;">-0.96%</td>
+</tr>
+<tr>
+<td><strong>F1: Effective (Class 2)</strong></td>
+<td style="text-align: center;">0.5317</td>
+<td style="text-align: center;">0.5270</td>
+<td style="text-align: center;">-0.0047 points</td>
+<td style="text-align: center;">-0.88%</td>
+</tr>
+</tbody>
+</table>
+<h4>Statistical Significance via Paired Bootstrap (1,000 Iterations by Essay):</h4>
+<ul>
+<li><strong>Delta Macro-F1:</strong> Mean = +0.0021 points, <strong>95% CI: [-0.0058, +0.0105]</strong>. Because the interval spans zero, the overall Macro-F1 difference is not statistically significant.</li>
+<li><strong>Delta Ineffective F1:</strong> Mean = +0.0188 points, <strong>95% CI: [-0.0020, +0.0398]</strong>. The distribution is largely positive (upper bound reaching +0.0398), driven by a substantial reduction in false alarms on Adequate text (from 1,245 false positives down to 998).</li>
+</ul>
+<h3>4.3 Fine-Grained Performance Breakdown by Discourse Type</h3>
+<p>Evaluating Level 0 vs Level 1 across the 7 discourse types directly addresses the reviewer's inquiry (<em>"Ineffective được cải thiện ở loại đơn vị nào?"</em>):</p>
+<table>
+<thead>
+<tr>
+<th>Discourse Type</th>
+<th style="text-align: center;">Val Units (N)</th>
+<th style="text-align: center;">Ineff Units (N)</th>
+<th style="text-align: center;">Level 0 Ineff F1</th>
+<th style="text-align: center;">Level 1 Ineff F1</th>
+<th style="text-align: center;">Ineff F1 Delta (Points)</th>
+<th style="text-align: center;">Relative Ineff Change (%)</th>
+<th style="text-align: center;">Ineff Recall Delta (Units Rescued)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claim</strong></td>
+<td style="text-align: center;">10,135</td>
+<td style="text-align: center;">317</td>
+<td style="text-align: center;">0.2660</td>
+<td style="text-align: center;"><strong>0.3090</strong></td>
+<td style="text-align: center;"><strong>+0.0430</strong></td>
+<td style="text-align: center;"><strong>+16.17%</strong></td>
+<td style="text-align: center;">+0.0315 (+10 units)</td>
+</tr>
+<tr>
+<td><strong>Concluding Statement</strong></td>
+<td style="text-align: center;">2,711</td>
+<td style="text-align: center;">105</td>
+<td style="text-align: center;">0.3484</td>
+<td style="text-align: center;"><strong>0.3873</strong></td>
+<td style="text-align: center;"><strong>+0.0389</strong></td>
+<td style="text-align: center;"><strong>+11.17%</strong></td>
+<td style="text-align: center;">+0.0095 (+1 unit)</td>
+</tr>
+<tr>
+<td><strong>Counterclaim</strong></td>
+<td style="text-align: center;">1,148</td>
+<td style="text-align: center;">39</td>
+<td style="text-align: center;">0.1975</td>
+<td style="text-align: center;"><strong>0.2278</strong></td>
+<td style="text-align: center;"><strong>+0.0303</strong></td>
+<td style="text-align: center;"><strong>+15.34%</strong></td>
+<td style="text-align: center;">+0.0256 (+1 unit)</td>
+</tr>
+<tr>
+<td><strong>Rebuttal</strong></td>
+<td style="text-align: center;">868</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;">0.3488</td>
+<td style="text-align: center;"><strong>0.3765</strong></td>
+<td style="text-align: center;"><strong>+0.0276</strong></td>
+<td style="text-align: center;"><strong>+7.91%</strong></td>
+<td style="text-align: center;">+0.0294 (+1 unit)</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td style="text-align: center;">9,249</td>
+<td style="text-align: center;">667</td>
+<td style="text-align: center;">0.4333</td>
+<td style="text-align: center;"><strong>0.4537</strong></td>
+<td style="text-align: center;"><strong>+0.0203</strong></td>
+<td style="text-align: center;"><strong>+4.69%</strong></td>
+<td style="text-align: center;">-0.0405 (-27 units)</td>
+</tr>
+<tr>
+<td><strong>Lead</strong></td>
+<td style="text-align: center;">1,902</td>
+<td style="text-align: center;">66</td>
+<td style="text-align: center;">0.3143</td>
+<td style="text-align: center;"><strong>0.3175</strong></td>
+<td style="text-align: center;">+0.0032</td>
+<td style="text-align: center;">+1.02%</td>
+<td style="text-align: center;">-0.0455 (-3 units)</td>
+</tr>
+<tr>
+<td><strong>Position</strong></td>
+<td style="text-align: center;">3,089</td>
+<td style="text-align: center;">100</td>
+<td style="text-align: center;">0.3636</td>
+<td style="text-align: center;"><strong>0.3086</strong></td>
+<td style="text-align: center;"><strong>-0.0550</strong></td>
+<td style="text-align: center;"><strong>-15.13%</strong></td>
+<td style="text-align: center;">-0.0700 (-7 units)</td>
+</tr>
+</tbody>
+</table>
+<h3>4.4 Exploratory Rhetorical Interpretation of Context Effects</h3>
+<p><em>Note on sample sizes:</em> In small minority subsets (such as Counterclaim with 39 Ineffective units and Rebuttal with 34), a recall shift of ~0.027 represents a difference of only +1 unit correctly identified. Accordingly, the following observations represent exploratory hypotheses:
+1. <strong>Relational Argumentative Units (Claim, Counterclaim, Rebuttal):</strong> In persuasive discourse, a Claim rarely functions independently; its rhetorical adequacy depends on whether it introduces a coherent premise supported by adjoining Evidence. Local context aids in identifying disjointed transitions, producing a +0.0430 point gain in Claim Ineffective F1 (+10 units recalled).
+2. <strong>Autonomous Thesis Units (Position):</strong> A thesis statement (Position) is evaluated primarily on stance clarity and fidelity to the overarching prompt. Appending neighboring sentences introduces extraneous introductory or narrative text, which coincides with a -0.0550 point decline (-7 units recalled). This suggests that thesis assessment requires prompt-level alignment rather than local sequential neighbor text.</p>
+<hr />
+<h2>5. Diagnostic Audit of 10 Ineffective Failure Cases</h2>
+<h3>5.1 Reviewer Inquiry 1</h3>
+<ul>
+<li><strong>Reviewer Question:</strong> <em>"Trong mười ca Ineffective, ca nào sẽ được đoán đúng nếu mô hình thấy được đoạn văn xung quanh, và ca nào thì không?"</em></li>
+</ul>
+<h3>5.2 Empirical Re-evaluation of the 10 Failure Cases</h3>
+<p>We re-evaluated the 10 highest-confidence Ineffective failure cases from Week 9 using the fine-tuned Level 1 model (<code>outputs/context_ablation_case_study_recheck.csv</code>):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Case ID</th>
+<th>Discourse Type</th>
+<th>Target Discourse Text Snippet</th>
+<th style="text-align: center;">True Label</th>
+<th style="text-align: center;">Level 0 Pred</th>
+<th style="text-align: center;">Level 0 P(Ineff)</th>
+<th style="text-align: center;">Level 1 Pred</th>
+<th style="text-align: center;">Level 1 P(Ineff)</th>
+<th style="text-align: center;">Prob Ratio (L1 / L0)</th>
+<th>Failure Mechanism Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>1</strong></td>
+<td>Counterclaim</td>
+<td><em>"There are many reason on why texting while driving is very u..."</em></td>
+<td style="text-align: center;">Ineffective</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0225</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0290</td>
+<td style="text-align: center;">1.29x</td>
+<td>Unpaired counterclaim lacking rebuttal across essay</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>2</strong></td>
+<td>Evidence</td>
+<td><em>"To provide reasonings to my strong point, brings me back to..."</em></td>
+<td style="text-align: center;">Ineffective</td>
+<td style="text-align: center;">Effective</td>
+<td style="text-align: center;">0.0004</td>
+<td style="text-align: center;">Effective</td>
+<td style="text-align: center;">0.0014</td>
+<td style="text-align: center;">3.50x</td>
+<td>Extrinsic: Vacuous citation to reading passage (<em>"paragraph 36"</em>)</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>3</strong></td>
+<td>Position</td>
+<td><em>"I think you shouldn't join the Seagoing Cowboys"</em></td>
+<td style="text-align: center;">Ineffective</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0221</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0096</td>
+<td style="text-align: center;">0.43x</td>
+<td>Extrinsic: Thesis alignment with prompt background</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>4</strong></td>
+<td>Counterclaim</td>
+<td><em>"Not allowing students to use there phones at all"</em></td>
+<td style="text-align: center;">Ineffective</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0379</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0904</td>
+<td style="text-align: center;">2.39x</td>
+<td>Local syntactic fragment lacking connective premise</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>5</strong></td>
+<td>Position</td>
+<td><em>"The Driverless people can cause problems"</em></td>
+<td style="text-align: center;">Ineffective</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0279</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.1515</td>
+<td style="text-align: center;">5.43x</td>
+<td>Extrinsic: Factual conflict with prompt source passage</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>6</strong></td>
+<td>Counterclaim</td>
+<td><em>"But Sometimes it could be a distraction from you doing all y..."</em></td>
+<td style="text-align: center;">Ineffective</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0315</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0400</td>
+<td style="text-align: center;">1.27x</td>
+<td>Dangling transition without subsequent rebuttal</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>7</strong></td>
+<td>Position</td>
+<td><em>"I reconsider that are principal should let us eight graders..."</em></td>
+<td style="text-align: center;">Ineffective</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0347</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0970</td>
+<td style="text-align: center;">2.80x</td>
+<td>Extrinsic: Thesis formulation dependent on prompt scope</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>8</strong></td>
+<td>Claim</td>
+<td><em>"Some kids will ask there parents to transfer school"</em></td>
+<td style="text-align: center;">Ineffective</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0207</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.1236</td>
+<td style="text-align: center;">5.97x</td>
+<td>Local unsubstantiated leap; P(Ineff) increased 6.0x</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>9</strong></td>
+<td>Lead</td>
+<td><em>"The future is near and the talk about driverless cars is upo..."</em></td>
+<td style="text-align: center;">Ineffective</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0446</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0802</td>
+<td style="text-align: center;">1.80x</td>
+<td>Extrinsic: Generic hook requiring prompt context</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>10</strong></td>
+<td>Claim</td>
+<td><em>"Another cars is a bad idea is because of its gas"</em></td>
+<td style="text-align: center;">Ineffective</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0392</td>
+<td style="text-align: center;">Adequate</td>
+<td style="text-align: center;">0.0315</td>
+<td style="text-align: center;">0.80x</td>
+<td>Local syntax defect with missing connective premise</td>
+</tr>
+</tbody>
+</table>
+<h3>5.3 Diagnostic Synthesis: Why Did None Flip Argmax?</h3>
+<p>Across the 10 failure cases, <strong>0/10 flipped to an Ineffective argmax decision</strong>. However, 8 of the 10 cases experienced an increase in P(Ineffective), with an average probability ratio of 2.57x (median 2.10x), while 2 cases (Case 3 and Case 10) saw a slight decline. </p>
+<p><em>Methodological Note on Regression to the Mean:</em> Because these 10 cases were selected specifically as the most confident errors of Level 0, subsequent evaluations naturally exhibit some regression to the mean. More fundamentally, linguistic analysis explains why local context is insufficient to alter the top prediction:
+1. <strong>Extrinsic Source Passage Grounding (Cases 2, 5):</strong> In Case 2, the student cites <em>"paragraph 36"</em>. A human rater recognizes this as Ineffective because they have read the assignment's accompanying source text and know paragraph 36 does not exist or support the point. DeBERTa has never seen the source passage; without it, the sentence exhibits standard citation syntax. In Case 5, the assertion contradicts facts from the driverless car passage.
+2. <strong>Whole-Essay Document Structure (Cases 1, 6):</strong> A Counterclaim is marked Ineffective when the author fails to provide a Rebuttal anywhere in the paper. Checking only the single adjacent sentence cannot prove the absence of a rebuttal later in the essay.
+3. <strong>Conclusion for Inquiry 1:</strong> Local context increases posterior probability mass on Ineffective for most flawed units, but cannot resolve cases whose flaws depend on external source texts or whole-essay argumentative coherence.</p>
+<hr />
+<h2>6. Leave-One-Prompt-Out (LOPO) Generalization Benchmark</h2>
+<h3>6.1 Practical Rationale</h3>
+<p>Standard in-domain cross-validation allows classifiers to exploit prompt-specific lexical correlations. In real-world educational deployment, an AWE system must evaluate <strong>completely new essay prompts</strong> assigned by instructors. Leave-One-Prompt-Out (LOPO) guarantees zero prompt overlap between training and evaluation.</p>
+<h3>6.2 15-Fold Classical Benchmark (Random Forest, Feature Set B)</h3>
+<p>We evaluated 15 independent Random Forest models (n_estimators=150, max_depth=35, Feature Set B: TF-IDF unigrams/bigrams, discourse role dummy encoding, token length). In each fold, the model was trained on 14 prompts and evaluated on the single held-out prompt:</p>
+<table>
+<thead>
+<tr>
+<th>Held-out Writing Prompt</th>
+<th style="text-align: center;">Test Units (N)</th>
+<th style="text-align: center;">Test Essays (N)</th>
+<th style="text-align: center;">LOPO Macro-F1</th>
+<th style="text-align: center;">Overall Accuracy (%)</th>
+<th style="text-align: center;">Ineffective F1</th>
+<th style="text-align: center;">Ineffective Recall</th>
+<th style="text-align: center;">Difficulty Tier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>"A Cowboy Who Rode the Waves"</em></td>
+<td style="text-align: center;">5,158</td>
+<td style="text-align: center;">688</td>
+<td style="text-align: center;"><strong>0.3501</strong></td>
+<td style="text-align: center;">79.20%</td>
+<td style="text-align: center;">0.1085</td>
+<td style="text-align: center;">0.1279</td>
+<td style="text-align: center;"><strong>Hardest (Rank 1/15)</strong></td>
+</tr>
+<tr>
+<td><em>Community service</em></td>
+<td style="text-align: center;">6,461</td>
+<td style="text-align: center;">768</td>
+<td style="text-align: center;"><strong>0.3803</strong></td>
+<td style="text-align: center;">71.55%</td>
+<td style="text-align: center;">0.1181</td>
+<td style="text-align: center;">0.0906</td>
+<td style="text-align: center;">Hard (Rank 2/15)</td>
+</tr>
+<tr>
+<td><em>Car-free cities</em></td>
+<td style="text-align: center;">8,368</td>
+<td style="text-align: center;">983</td>
+<td style="text-align: center;"><strong>0.3877</strong></td>
+<td style="text-align: center;">76.09%</td>
+<td style="text-align: center;">0.0326</td>
+<td style="text-align: center;">0.0242</td>
+<td style="text-align: center;">Hard (Rank 3/15)</td>
+</tr>
+<tr>
+<td><em>The Face on Mars</em></td>
+<td style="text-align: center;">7,229</td>
+<td style="text-align: center;">819</td>
+<td style="text-align: center;"><strong>0.4009</strong></td>
+<td style="text-align: center;">75.03%</td>
+<td style="text-align: center;">0.1479</td>
+<td style="text-align: center;">0.1566</td>
+<td style="text-align: center;">Hard (Rank 4/15)</td>
+</tr>
+<tr>
+<td><em>Driverless cars</em></td>
+<td style="text-align: center;">12,628</td>
+<td style="text-align: center;">1,386</td>
+<td style="text-align: center;"><strong>0.4117</strong></td>
+<td style="text-align: center;">78.31%</td>
+<td style="text-align: center;">0.0584</td>
+<td style="text-align: center;">0.0684</td>
+<td style="text-align: center;">Moderate (Rank 5/15)</td>
+</tr>
+<tr>
+<td><em>Does the electoral college work?</em></td>
+<td style="text-align: center;">16,840</td>
+<td style="text-align: center;">1,818</td>
+<td style="text-align: center;"><strong>0.4172</strong></td>
+<td style="text-align: center;">68.66%</td>
+<td style="text-align: center;">0.1258</td>
+<td style="text-align: center;">0.0859</td>
+<td style="text-align: center;">Moderate (Rank 6/15)</td>
+</tr>
+<tr>
+<td><em>Grades for extracurricular activities</em></td>
+<td style="text-align: center;">6,122</td>
+<td style="text-align: center;">815</td>
+<td style="text-align: center;"><strong>0.4235</strong></td>
+<td style="text-align: center;">81.43%</td>
+<td style="text-align: center;">0.0956</td>
+<td style="text-align: center;">0.0890</td>
+<td style="text-align: center;">Moderate (Rank 7/15)</td>
+</tr>
+<tr>
+<td><em>Summer projects</em></td>
+<td style="text-align: center;">9,855</td>
+<td style="text-align: center;">875</td>
+<td style="text-align: center;"><strong>0.4339</strong></td>
+<td style="text-align: center;">70.24%</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;"><strong>Median (Rank 8/15)</strong></td>
+</tr>
+<tr>
+<td><em>Seeking multiple opinions</em></td>
+<td style="text-align: center;">14,562</td>
+<td style="text-align: center;">1,544</td>
+<td style="text-align: center;"><strong>0.4442</strong></td>
+<td style="text-align: center;">77.13%</td>
+<td style="text-align: center;">0.0412</td>
+<td style="text-align: center;">0.0763</td>
+<td style="text-align: center;">Moderate (Rank 9/15)</td>
+</tr>
+<tr>
+<td><em>Exploring Venus</em></td>
+<td style="text-align: center;">7,252</td>
+<td style="text-align: center;">928</td>
+<td style="text-align: center;"><strong>0.4451</strong></td>
+<td style="text-align: center;">72.99%</td>
+<td style="text-align: center;">0.1279</td>
+<td style="text-align: center;">0.0869</td>
+<td style="text-align: center;">Moderate (Rank 10/15)</td>
+</tr>
+<tr>
+<td><em>Cell phones at school</em></td>
+<td style="text-align: center;">7,074</td>
+<td style="text-align: center;">829</td>
+<td style="text-align: center;"><strong>0.4473</strong></td>
+<td style="text-align: center;">87.23%</td>
+<td style="text-align: center;">0.1235</td>
+<td style="text-align: center;">0.0901</td>
+<td style="text-align: center;">Moderate (Rank 11/15)</td>
+</tr>
+<tr>
+<td><em>Facial action coding system</em></td>
+<td style="text-align: center;">9,175</td>
+<td style="text-align: center;">1,103</td>
+<td style="text-align: center;"><strong>0.4612</strong></td>
+<td style="text-align: center;">78.10%</td>
+<td style="text-align: center;">0.1015</td>
+<td style="text-align: center;">0.0641</td>
+<td style="text-align: center;">Moderate (Rank 12/15)</td>
+</tr>
+<tr>
+<td><em>Phones and driving</em></td>
+<td style="text-align: center;">6,584</td>
+<td style="text-align: center;">700</td>
+<td style="text-align: center;"><strong>0.4697</strong></td>
+<td style="text-align: center;">83.55%</td>
+<td style="text-align: center;">0.0292</td>
+<td style="text-align: center;">0.0286</td>
+<td style="text-align: center;">Moderate (Rank 13/15)</td>
+</tr>
+<tr>
+<td><em>Mandatory extracurricular activities</em></td>
+<td style="text-align: center;">8,455</td>
+<td style="text-align: center;">839</td>
+<td style="text-align: center;"><strong>0.4802</strong></td>
+<td style="text-align: center;">78.76%</td>
+<td style="text-align: center;">0.0760</td>
+<td style="text-align: center;">0.0505</td>
+<td style="text-align: center;">Moderate (Rank 14/15)</td>
+</tr>
+<tr>
+<td><em>Distance learning</em></td>
+<td style="text-align: center;">18,526</td>
+<td style="text-align: center;">1,498</td>
+<td style="text-align: center;"><strong>0.5014</strong></td>
+<td style="text-align: center;">78.05%</td>
+<td style="text-align: center;">0.0649</td>
+<td style="text-align: center;">0.0433</td>
+<td style="text-align: center;"><strong>Easiest (Rank 15/15)</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Summary Statistics Across All 15 Prompts (Classical Random Forest):</strong><br />
+<strong>Mean Macro-F1:</strong> <strong>0.4303 ± 0.0405</strong> &nbsp;|&nbsp; <strong>Unweighted Mean Accuracy:</strong> <strong>77.09%</strong> &nbsp;|&nbsp; <strong>Weighted Mean Accuracy:</strong> <strong>76.47%</strong></p>
+</blockquote>
+<h3>6.3 Prompt Generalization Gap Analysis</h3>
+<ul>
+<li><strong>In-Domain vs Out-of-Prompt Performance:</strong></li>
+<li>In-domain validation Random Forest (Week 9): Macro-F1 = 0.5230 (on all 15 prompts mixed).</li>
+<li>Out-of-prompt Random Forest (15-fold LOPO average): Macro-F1 = 0.4303.</li>
+<li>Overall classical generalization drop: -0.0927 points (-17.72% relative).</li>
+<li><strong>Source-Dependent Literary Prompts vs Universal Policy Prompts:</strong></li>
+<li>The hardest prompt is <em>"A Cowboy Who Rode the Waves"</em> (Macro-F1 = 0.3501), which requires students to read a specific narrative passage. Character names and literary citations do not transfer from other prompts.</li>
+<li>The easiest prompt is <em>"Distance learning"</em> (Macro-F1 = 0.5014), where students employ universal argumentative vocabulary (<em>"flexibility"</em>, <em>"social skills"</em>), enabling robust transfer.</li>
+</ul>
+<h3>6.4 Deep Learning LOPO Benchmark: DeBERTa-v3 vs Classical Random Forest</h3>
+<p>We fine-tuned a fresh copy of the pretrained <code>microsoft/deberta-v3-base</code> checkpoint across three representative prompts covering the difficulty spectrum identified by Random Forest:
+1. <strong>Hardest Tier (Rank 1/15):</strong> <em>"A Cowboy Who Rode the Waves"</em> (5,158 test units across 688 essays).
+2. <strong>Median Tier (Rank 8/15):</strong> <em>Summer projects</em> (9,855 test units across 875 essays).
+3. <strong>Easiest Tier (Rank 15/15):</strong> <em>Distance learning</em> (18,526 test units across 1,498 essays).</p>
+<table>
+<thead>
+<tr>
+<th>Difficulty Tier</th>
+<th>Held-out Prompt Name</th>
+<th style="text-align: center;">Test Units (N)</th>
+<th style="text-align: center;">Test Essays (N)</th>
+<th style="text-align: center;">RF Macro-F1</th>
+<th style="text-align: center;">DeBERTa Macro-F1</th>
+<th style="text-align: center;">Macro-F1 Delta</th>
+<th style="text-align: center;">RF Accuracy</th>
+<th style="text-align: center;">DeBERTa Accuracy</th>
+<th style="text-align: center;">RF Ineff F1</th>
+<th style="text-align: center;">DeBERTa Ineff F1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hardest (Rank 1/15)</strong></td>
+<td><em>"A Cowboy Who Rode the Waves"</em></td>
+<td style="text-align: center;">5,158</td>
+<td style="text-align: center;">688</td>
+<td style="text-align: center;">0.3501</td>
+<td style="text-align: center;"><strong>0.4082</strong></td>
+<td style="text-align: center;"><strong>+0.0581</strong></td>
+<td style="text-align: center;">79.20%</td>
+<td style="text-align: center;">78.87%</td>
+<td style="text-align: center;">0.1085</td>
+<td style="text-align: center;"><strong>0.1246</strong></td>
+</tr>
+<tr>
+<td><strong>Median (Rank 8/15)</strong></td>
+<td><em>Summer projects</em></td>
+<td style="text-align: center;">9,855</td>
+<td style="text-align: center;">875</td>
+<td style="text-align: center;">0.4339</td>
+<td style="text-align: center;"><strong>0.4642</strong></td>
+<td style="text-align: center;"><strong>+0.0303</strong></td>
+<td style="text-align: center;">70.24%</td>
+<td style="text-align: center;">66.58%</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;"><strong>0.0759</strong></td>
+</tr>
+<tr>
+<td><strong>Easiest (Rank 15/15)</strong></td>
+<td><em>Distance learning</em></td>
+<td style="text-align: center;">18,526</td>
+<td style="text-align: center;">1,498</td>
+<td style="text-align: center;">0.5014</td>
+<td style="text-align: center;"><strong>0.5735</strong></td>
+<td style="text-align: center;"><strong>+0.0721</strong></td>
+<td style="text-align: center;">78.05%</td>
+<td style="text-align: center;">75.55%</td>
+<td style="text-align: center;">0.0649</td>
+<td style="text-align: center;"><strong>0.2509</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Summary on 3 Representative Prompts:</strong><br />
+<strong>Mean DeBERTa Macro-F1:</strong> <strong>0.4820</strong> vs <strong>Classical RF:</strong> <strong>0.4285</strong> (Macro-F1 Gain: <strong>+0.0535 points</strong>, <strong>+12.49%</strong> relative)</p>
+</blockquote>
+<h4>Rigorous Generalization Gap Comparison (In-Domain vs LOPO on the Same Prompt):</h4>
+<p>Comparing out-of-prompt DeBERTa against in-domain validation performance on the <em>identical prompt subset</em> isolates true prompt transfer:</p>
+<table>
+<thead>
+<tr>
+<th>Held-out Prompt Name</th>
+<th style="text-align: center;">In-Domain Val Units (N)</th>
+<th style="text-align: center;">In-Domain DeBERTa Macro-F1</th>
+<th style="text-align: center;">LOPO DeBERTa Macro-F1</th>
+<th style="text-align: center;">True Generalization Gap</th>
+<th style="text-align: center;">Relative Shift (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>"A Cowboy Who Rode the Waves"</em></td>
+<td style="text-align: center;">1,030</td>
+<td style="text-align: center;">0.4462</td>
+<td style="text-align: center;">0.4082</td>
+<td style="text-align: center;"><strong>-0.0380 points</strong></td>
+<td style="text-align: center;">-8.52%</td>
+</tr>
+<tr>
+<td><em>Summer projects</em></td>
+<td style="text-align: center;">2,074</td>
+<td style="text-align: center;">0.4695</td>
+<td style="text-align: center;">0.4642</td>
+<td style="text-align: center;"><strong>-0.0053 points</strong></td>
+<td style="text-align: center;">-1.12%</td>
+</tr>
+<tr>
+<td><em>Distance learning</em></td>
+<td style="text-align: center;">3,533</td>
+<td style="text-align: center;">0.5677</td>
+<td style="text-align: center;">0.5735</td>
+<td style="text-align: center;"><strong>+0.0058 points</strong></td>
+<td style="text-align: center;">+1.03%</td>
+</tr>
+<tr>
+<td><strong>Mean across 3 Prompts</strong></td>
+<td style="text-align: center;">6,637</td>
+<td style="text-align: center;"><strong>0.4945</strong></td>
+<td style="text-align: center;"><strong>0.4820</strong></td>
+<td style="text-align: center;"><strong>-0.0125 points</strong></td>
+<td style="text-align: center;"><strong>-2.53%</strong></td>
+</tr>
+</tbody>
+</table>
+<p><em>Key Findings:</em>
+1. <strong>DeBERTa Macro-F1 Advantage:</strong> DeBERTa achieves higher Macro-F1 than Random Forest across all 3 held-out prompts (+0.0581 on Cowboy, +0.0303 on Summer, +0.0721 on Distance learning), primarily by recovering minority Ineffective identification.
+2. <strong>Accuracy Trade-off:</strong> Due to balanced class weighting penalizing Ineffective misclassification, DeBERTa overall accuracy is slightly lower than Random Forest across all three prompts (Cowboy: 78.87% vs 79.20%; Summer: 66.58% vs 70.24%; Distance: 75.55% vs 78.05%).
+3. <strong>True Out-of-Prompt Drop:</strong> When compared against in-domain performance on the <em>same prompt</em>, the generalization drop is moderate (-2.53% on average), showing that DeBERTa representations transfer well for universal topics while literary prompts suffer from unfamiliar source-text vocabulary.</p>
+<hr />
+<h3>6.5 Discourse Type Vulnerability under Out-of-Prompt Generalization</h3>
+<p>Evaluating performance changes across all 7 discourse types under the 3 LOPO folds (N = 33,539 units) reveals broad vulnerability groupings:</p>
+<table>
+<thead>
+<tr>
+<th>Vulnerability Tier</th>
+<th>Discourse Type</th>
+<th style="text-align: center;">Evaluated Units (N)</th>
+<th style="text-align: center;">Ineff Units (N)</th>
+<th style="text-align: center;">In-Domain Macro-F1</th>
+<th style="text-align: center;">LOPO Mean Macro-F1</th>
+<th style="text-align: center;">Performance Delta</th>
+<th style="text-align: center;">Relative Drop (%)</th>
+<th style="text-align: center;">LOPO Ineff F1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>High Vulnerability</strong></td>
+<td><strong>Rebuttal</strong></td>
+<td style="text-align: center;">1,441</td>
+<td style="text-align: center;">23</td>
+<td style="text-align: center;">0.5383</td>
+<td style="text-align: center;">0.4156</td>
+<td style="text-align: center;">-0.1227 points</td>
+<td style="text-align: center;">-22.79%</td>
+<td style="text-align: center;">0.0904</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Evidence</strong></td>
+<td style="text-align: center;">9,716</td>
+<td style="text-align: center;">323</td>
+<td style="text-align: center;">0.6270</td>
+<td style="text-align: center;">0.5056</td>
+<td style="text-align: center;">-0.1214 points</td>
+<td style="text-align: center;">-19.36%</td>
+<td style="text-align: center;">0.1859</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Concluding Statement</strong></td>
+<td style="text-align: center;">2,839</td>
+<td style="text-align: center;">32</td>
+<td style="text-align: center;">0.5980</td>
+<td style="text-align: center;">0.4835</td>
+<td style="text-align: center;">-0.1145 points</td>
+<td style="text-align: center;">-19.14%</td>
+<td style="text-align: center;">0.1439</td>
+</tr>
+<tr>
+<td><strong>Moderate Vulnerability</strong></td>
+<td><strong>Lead</strong></td>
+<td style="text-align: center;">2,244</td>
+<td style="text-align: center;">46</td>
+<td style="text-align: center;">0.5567</td>
+<td style="text-align: center;">0.4844</td>
+<td style="text-align: center;">-0.0723 points</td>
+<td style="text-align: center;">-12.98%</td>
+<td style="text-align: center;">0.1171</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Counterclaim</strong></td>
+<td style="text-align: center;">1,893</td>
+<td style="text-align: center;">26</td>
+<td style="text-align: center;">0.4796</td>
+<td style="text-align: center;">0.4179</td>
+<td style="text-align: center;">-0.0617 points</td>
+<td style="text-align: center;">-12.87%</td>
+<td style="text-align: center;">0.0871</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Claim</strong></td>
+<td style="text-align: center;">12,391</td>
+<td style="text-align: center;">98</td>
+<td style="text-align: center;">0.5126</td>
+<td style="text-align: center;">0.4517</td>
+<td style="text-align: center;">-0.0609 points</td>
+<td style="text-align: center;">-11.87%</td>
+<td style="text-align: center;">0.1305</td>
+</tr>
+<tr>
+<td><strong>High Resilience</strong></td>
+<td><strong>Position</strong></td>
+<td style="text-align: center;">3,015</td>
+<td style="text-align: center;">36</td>
+<td style="text-align: center;">0.5639</td>
+<td style="text-align: center;">0.5061</td>
+<td style="text-align: center;">-0.0578 points</td>
+<td style="text-align: center;">-10.26%</td>
+<td style="text-align: center;">0.1425</td>
+</tr>
+</tbody>
+</table>
+<h4>Linguistic Factors Explaining Vulnerability Tiers:</h4>
+<p><em>Note on sample sizes:</em> Across the 3 folds, minority Ineffective units are scarce (only 23 in Rebuttal, 26 in Counterclaim, 32 in Concluding Statement). Thus, differences between -22.8% and -19.1% fall within sampling uncertainty, but broad tier separations remain evident:
+1. <strong>Source- and Relation-Dependent Units Suffer Greater Degradation:</strong>
+   - <strong><code>Evidence</code> and <code>Rebuttal</code></strong> experience the largest relative declines (~19% to 23%). Evidence units rely on prompt-specific reading texts, data citations, and topical terminology. In an unseen prompt, unfamiliar entities reduce classifier confidence. Rebuttals depend on tracing the author's refutation of prompt-specific arguments.
+2. <strong>Autonomous Stance Units Exhibit Resilience:</strong>
+   - <strong><code>Position</code></strong> is the most resilient discourse category (preserving ~89.7% of in-domain performance). Stance formulations rely heavily on universal syntactic markers (<em>"I believe"</em>, <em>"In my opinion"</em>, <em>"should not be allowed"</em>), which generalize cleanly across prompts.</p>
+<hr />
+<h2>7. Pedagogical Synthesis &amp; Theoretical Inquiries</h2>
+<h3>7.1 Conceptual Framework: Informational Requirements in Discourse Assessment</h3>
+<p>Based on our empirical observations, we propose a <strong>Hypothetical Conceptual Framework</strong> outlining the informational requirements necessary for automated writing evaluation:</p>
+<pre><code>Hypothetical Hierarchy of Information Requirements:
+[Level 0: Isolated Unit]       --&gt; Sufficient for basic rhetorical syntax (Adequate majority)
+[Level 1: Sequential Neighbors] --&gt; Helps relational units (Claim +0.043 F1, Counterclaim +0.030 F1)
+[Level 2: Source Reading Text]  --&gt; Hypothesized requirement for factual Evidence verification
+[Level 3: Global Essay Context] --&gt; Hypothesized requirement for holistic Position alignment
+</code></pre>
+<p><em>Status:</em> Levels 0 and 1 have been empirically tested in this study. Levels 2 and 3 represent structured hypotheses to be verified in future work when prompt reading texts and document-level hierarchical attention are integrated.</p>
+<h3>7.2 Resolution of Reviewer Core Inquiries</h3>
+<h4>Inquiry 1: <em>Trong 10 ca Ineffective, ca nào được đoán đúng nếu thấy đoạn văn xung quanh?</em></h4>
+<ul>
+<li><strong>Empirical Finding:</strong> <strong>0/10 ca lật sang nhãn Ineffective argmax</strong>, nhưng xác suất P(Ineffective) tăng ở 8/10 ca (tăng trung bình 2.57x, trung vị 2.10x).</li>
+<li><strong>Lý giải bản chất:</strong> Các lỗi này là <strong>ngoại tại (extrinsic)</strong>: Ca 2 ("paragraph 36") và Ca 5 cần bài đọc nguồn của đề bài; Ca 1 và 6 cần kiểm tra toàn bài để xác nhận không có Rebuttal. Ngữ cảnh cục bộ chỉ làm tăng sự nghi ngờ của mô hình chứ không đủ để lật nhãn.</li>
+</ul>
+<h4>Inquiry 2: <em>Với một đề mới, Macro-F1 giảm nhiều nhất ở loại đơn vị nào?</em></h4>
+<ul>
+<li><strong>Empirical Finding:</strong> Các đơn vị phụ thuộc nội dung nguồn như <strong><code>Rebuttal</code> (sụt -22.79%)</strong> và <strong><code>Evidence</code> (sụt -19.36%)</strong> chịu mức giảm mạnh nhất. Ngược lại, <strong><code>Position</code> bền vững nhất (chỉ giảm -10.26%)</strong> nhờ khuôn mẫu lập trường tu từ mang tính phổ quát.</li>
+</ul>
+<h4>Preparatory Inquiry: <em>Nếu người chấm thấy đề và cả bài còn mô hình chỉ thấy một đoạn, ta có thể quy lỗi cho năng lực mô hình đến đâu?</em></h4>
+<ul>
+<li><strong>Trực tiếp trả lời:</strong> Dữ liệu thực nghiệm của nhóm chứng minh rằng <strong>không thể quy phần lớn lỗi cho năng lực phân loại câu của mô hình</strong>. Khi thêm ngữ cảnh lân cận (Level 1), Ineffective F1 chỉ tăng nhẹ +0.0193 điểm và 0/10 ca lỗi cực đoan lật nhãn. Điều này cho thấy trần hiệu năng của mô hình bị chặn bởi <strong>sự thiếu hụt thông tin đầu vào (văn bản nguồn đề bài và liên kết toàn bài)</strong> chứ không phải do mô hình thiếu tham số hay học kém. Muốn khắc phục các lỗi này, hệ thống cần được cấp bài đọc nguồn (source text) và cơ chế chú ý toàn bài.</li>
+</ul>
+<hr />
+<h2>8. Reproducibility Artifacts &amp; Codebase Governance</h2>
+<p>All scripts and notebooks have been verified, cleaned of informal notes, and configured with fixed random seeds (42):</p>
+<h3>8.1 Modular Notebook Architecture &amp; Interactive Google Colab Links</h3>
+<ul>
+<li><strong>Notebook 04 &mdash; Length Confound &amp; Classical LOPO Benchmark:</strong></li>
+<li><strong>Colab Link:</strong> <a href="https://colab.research.google.com/drive/1YRMpJgGzZ0vWe7nA0W8c7n5JKMruVJHT?usp=sharing">Open Script 04 in Google Colab</a>  </li>
+<li><strong>Full URL:</strong> <code>https://colab.research.google.com/drive/1YRMpJgGzZ0vWe7nA0W8c7n5JKMruVJHT?usp=sharing</code></li>
+<li><strong>Local Files:</strong> <code>04_Length_Confound_and_LOPO.py</code> / <code>04_length_confound_and_lopo_classical.ipynb</code></li>
+<li><strong>Scope:</strong> 4-quartile length audit (N = 29,102 validation units) and 15-fold Random Forest LOPO cross-validation.</li>
+<li>
+<p><strong>Runtime:</strong> CPU / ~15 minutes.</p>
+</li>
+<li>
+<p><strong>Notebook 05 &mdash; Controlled Contextual Ablation (Level 0 vs Level 1 DeBERTa):</strong></p>
+</li>
+<li><strong>Colab Link:</strong> <a href="https://colab.research.google.com/drive/1prcSnRHax0SAITnUbGsXks3aQ9pbwJD2?usp=sharing">Open Script 05 in Google Colab</a>  </li>
+<li><strong>Full URL:</strong> <code>https://colab.research.google.com/drive/1prcSnRHax0SAITnUbGsXks3aQ9pbwJD2?usp=sharing</code></li>
+<li><strong>Local Files:</strong> <code>05_Context_Ablation_DeBERTa.py</code> / <code>05_context_ablation_deberta.ipynb</code></li>
+<li><strong>Scope:</strong> Level 0 vs Level 1 comparative evaluation on 29,102 units, 7 discourse types breakdown, and 10 failure cases audit.</li>
+<li>
+<p><strong>Runtime:</strong> GPU (Colab T4 / V100 / RTX) / ~75 minutes.</p>
+</li>
+<li>
+<p><strong>Notebook 06 &mdash; Leave-One-Prompt-Out Generalization (DeBERTa-v3):</strong></p>
+</li>
+<li><strong>Colab Link:</strong> <a href="https://colab.research.google.com/drive/1xiYMZ7SjRSAn_ioAvAbNh-PZDkghsiBk?usp=sharing">Open Script 06 in Google Colab</a>  </li>
+<li><strong>Full URL:</strong> <code>https://colab.research.google.com/drive/1xiYMZ7SjRSAn_ioAvAbNh-PZDkghsiBk?usp=sharing</code></li>
+<li><strong>Local Files:</strong> <code>06_LOPO_DeBERTa.py</code> / <code>06_lopo_deberta.ipynb</code></li>
+<li><strong>Scope:</strong> Fine-tunes DeBERTa-v3 across 3 representative difficulty tiers (Cowboy, Summer projects, Distance learning) on 14 prompts per fold, producing prompt generalization gaps and discourse type vulnerability breakdowns.</li>
+<li><strong>Runtime:</strong> GPU (Colab T4 / A100) / ~1.5&ndash;2.0 hours per fold.</li>
+</ul>
+<h3>8.2 Execution Environment Verification</h3>
+<p>All pipelines verify CUDA availability, preserve string typing on identifiers, enforce fixed <code>LABEL2ID</code> dictionary mapping, and log complete execution traces to <code>outputs/</code>.</p>
+<hr />
+<h2>9. References</h2>
+<ul>
+<li><strong>Crossley, S. A., Baffour, P., Tian, Y., Franklin, A., Benner, M., &amp; Boser, U. (2024).</strong> A large-scale corpus for assessing written argumentation: PERSUADE 2.0. <em>Assessing Writing</em>, 61, Article 100830. [DOI: 10.1016/j.asw.2024.100830].</li>
+<li><strong>He, P., Gao, J., &amp; Chen, W. (2023).</strong> DeBERTaV3: Improving DeBERTa using ELECTRA-style pre-training with gradient-disentangled embedding sharing. <em>International Conference on Learning Representations (ICLR)</em>.</li>
+<li><strong>Newell, G. E., Beach, R., Smith, J., &amp; VanDerHeide, J. (2011).</strong> Teaching and learning argumentative writing: An integrative review. <em>Reading Research Quarterly</em>, 46(3), 273&ndash;304.</li>
+<li><strong>Stab, C., &amp; Gurevych, I. (2014).</strong> Identifying argumentative discourse structures in persuasive essays. <em>Conference on Empirical Methods in Natural Language Processing (EMNLP)</em>, 46&ndash;56.</li>
+<li><strong>Stab, C., &amp; Gurevych, I. (2017).</strong> Parsing argumentation structures in persuasive essays. <em>Computational Linguistics</em>, 43(3), 619&ndash;659.</li>
+<li><strong>Toulmin, S. E. (1958).</strong> <em>The Uses of Argument</em>. Cambridge University Press.</li>
+</ul>
+</body>
+</html>
