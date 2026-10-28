@@ -1,0 +1,4 @@
+held_out_prompt,model_name,test_units,macro_f1,accuracy,f1_ineffective,f1_adequate,f1_effective
+A Cowboy Who Rode the Waves,Linear SVM (TF-IDF),5158,0.3373,71.99,0.1027,0.8415,0.0675
+Summer projects,Linear SVM (TF-IDF),9855,0.4269,64.9,0.041,0.7346,0.5051
+Distance learning,Linear SVM (TF-IDF),18526,0.469,71.35,0.0622,0.797,0.5478
