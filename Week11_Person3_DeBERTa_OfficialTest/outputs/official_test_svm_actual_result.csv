@@ -1,0 +1,2 @@
+Hệ thống,Macro-F1,Accuracy (%),F1 Ineffective,F1 Adequate,F1 Effective,Runtime (s)
+Linear SVM (TF-IDF Baseline),0.4822,74.4,0.2044,0.8439,0.3983,40.9

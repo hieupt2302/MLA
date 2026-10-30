@@ -8,9 +8,16 @@ Mục đích:
 Thời gian chạy: ~5-10 giây trên máy tính cá nhân (không cần GPU).
 """
 
+import os
+import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 import pandas as pd
 import numpy as np
-import os
 
 def run_holistic_length_analysis(
     train_csv_path='persuade_corpus_2.0_train.csv',

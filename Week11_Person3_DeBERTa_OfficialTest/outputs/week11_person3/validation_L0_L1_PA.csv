@@ -1,0 +1,4 @@
+Hệ thống,Nguồn model,Macro-F1,Accuracy,Balanced Accuracy,QWK,Cohen Kappa,F1 Ineffective,F1 Adequate,F1 Effective,Precision Ineffective,Recall Ineffective,Ghi chú
+3. DeBERTa-v3 Level 0,train ở notebook 07,0.5723,0.7291,0.6241,0.4326,0.3626,0.3755,0.8158,0.5255,0.3347,0.4277,lệch -0.0045 so với số cũ 0.5768
+4. DeBERTa-v3 Level 1 (Khóa),train ở notebook 07,0.5809,0.7417,0.628,0.4446,0.3735,0.3846,0.8266,0.5316,0.3373,0.4473,lệch +0.0019 so với số cũ 0.579
+5. DeBERTa-v3 Level 1 + Prompt-Aware,train ở notebook 07,0.5855,0.7406,0.6433,0.4545,0.38,0.3925,0.8248,0.5392,0.3283,0.488,

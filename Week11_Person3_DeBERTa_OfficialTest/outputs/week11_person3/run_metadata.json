@@ -1,0 +1,39 @@
+{
+  "finished_at": "2026-10-28T21:15:41.510603+00:00",
+  "quick": false,
+  "gpu": "NVIDIA A100-SXM4-40GB",
+  "precision": "bf16",
+  "versions": {
+    "python": "3.13.16",
+    "torch": "2.11.0+cu130",
+    "transformers": "4.57.6",
+    "pandas": "2.2.3"
+  },
+  "train_csv_sha256": "f61319edd8bf16a982711ea0399fad59c05afaec05cdf0767f16a2c05c467e23",
+  "cfg": {
+    "model_name": "microsoft/deberta-v3-base",
+    "max_length": 512,
+    "batch_size": 8,
+    "grad_accum": 4,
+    "lr": 2e-05,
+    "epochs": 3,
+    "warmup_ratio": 0.1,
+    "seed": 42,
+    "eval_batch_size": 64,
+    "n_bootstrap": 2000
+  },
+  "models": {
+    "L0": {
+      "dir": "/content/outputs/week11_person3/l0_best_model",
+      "source": "train ở notebook 07"
+    },
+    "L1": {
+      "dir": "/content/outputs/week11_person3/l1_best_model",
+      "source": "train ở notebook 07"
+    },
+    "PA": {
+      "dir": "/content/outputs/week11_person3/pa_best_model",
+      "source": "train ở notebook 07"
+    }
+  }
+}

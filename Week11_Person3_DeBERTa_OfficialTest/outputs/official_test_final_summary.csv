@@ -1,0 +1,6 @@
+Hệ thống,Kiểu mô hình & Đầu vào,Macro-F1,Accuracy (%),F1 Ineffective,F1 Adequate,F1 Effective
+1. Linear SVM (TF-IDF Baseline),Tuyến tính / Phân loại lề (TF-IDF 15k từ),0.4822,74.4,0.2044,0.8439,0.3983
+2. Random Forest (Feature Set B),Rừng cây quyết định (Bag-of-words + Role + Len),0.4834,67.79,0.2304,0.7878,0.4321
+3. DeBERTa-v3 Level 0,Deep Learning Transformer (Câu cô lập [Type] [SEP] [Text]),0.5613,74.38,0.3387,0.8312,0.5141
+4. DeBERTa-v3 Level 1 (Khóa),Transformer Ngữ cảnh (Kèm 2 câu lân cận [Prev] [Target] [Next]),0.5772,75.68,0.3679,0.841,0.5228
+5. DeBERTa-v3 Level 1 + Prompt-Aware,Transformer Ngữ cảnh + Tên đề bài ([Prompt] [SEP] [Context]),0.5808,75.39,0.3787,0.8381,0.5258

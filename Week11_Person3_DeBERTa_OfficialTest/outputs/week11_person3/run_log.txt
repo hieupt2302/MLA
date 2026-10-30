@@ -1,0 +1,32 @@
+[2026-10-28 17:43:24 UTC] BASE_DIR=/content | P3_DIR=/content/outputs/week11_person3 | QUICK=False | GPU=NVIDIA A100-SXM4-40GB
+[2026-10-28 17:43:26 UTC] TRAIN_CSV=/content/persuade_corpus_2.0_train.csv | sha256=f61319edd8bf16a982711ea0399fad59c05afaec05cdf0767f16a2c05c467e23
+[2026-10-28 17:43:32 UTC] Train: 115,187 đơn vị / 12,475 bài | Val: 29,102 đơn vị / 3,119 bài
+[2026-10-28 17:43:32 UTC] Split khớp tuần 9–10: 115.187 train / 29.102 val.
+[2026-10-28 17:43:57 UTC] [L0] class weights = [7.4787, 0.425, 1.9484]
+[2026-10-28 17:44:01 UTC] [L0] Bắt đầu train (từ đầu) | 115,187 train / 29,102 val | 3 epoch
+[2026-10-28 18:47:28 UTC] [L0] epoch 1.0: val Macro-F1=0.5217 | Ineff F1=0.3197
+[2026-10-28 18:47:28 UTC] [L0] epoch 2.0: val Macro-F1=0.5710 | Ineff F1=0.3683
+[2026-10-28 18:47:28 UTC] [L0] epoch 3.0: val Macro-F1=0.5721 | Ineff F1=0.3754
+[2026-10-28 18:47:28 UTC] [L0] Xong sau 63.4 phút. Best val Macro-F1=0.5721 -> /content/outputs/week11_person3/l0_best_model
+[2026-10-28 18:47:29 UTC] L0: dùng /content/outputs/week11_person3/l0_best_model (train ở notebook 07)
+[2026-10-28 18:47:51 UTC] [L1] class weights = [7.4787, 0.425, 1.9484]
+[2026-10-28 18:47:52 UTC] [L1] Bắt đầu train (từ đầu) | 115,187 train / 29,102 val | 3 epoch
+[2026-10-28 19:58:29 UTC] [L1] epoch 1.0: val Macro-F1=0.5448 | Ineff F1=0.3337
+[2026-10-28 19:58:29 UTC] [L1] epoch 2.0: val Macro-F1=0.5806 | Ineff F1=0.3930
+[2026-10-28 19:58:29 UTC] [L1] epoch 3.0: val Macro-F1=0.5810 | Ineff F1=0.3846
+[2026-10-28 19:58:29 UTC] [L1] Xong sau 70.6 phút. Best val Macro-F1=0.5810 -> /content/outputs/week11_person3/l1_best_model
+[2026-10-28 19:58:30 UTC] L1: dùng /content/outputs/week11_person3/l1_best_model (train ở notebook 07)
+[2026-10-28 19:58:53 UTC] [PA] class weights = [7.4787, 0.425, 1.9484]
+[2026-10-28 19:58:54 UTC] [PA] Bắt đầu train (từ đầu) | 115,187 train / 29,102 val | 3 epoch
+[2026-10-28 21:10:05 UTC] [PA] epoch 1.0: val Macro-F1=0.5397 | Ineff F1=0.3356
+[2026-10-28 21:10:05 UTC] [PA] epoch 2.0: val Macro-F1=0.5854 | Ineff F1=0.3921
+[2026-10-28 21:10:05 UTC] [PA] epoch 3.0: val Macro-F1=0.5839 | Ineff F1=0.3899
+[2026-10-28 21:10:05 UTC] [PA] Xong sau 71.2 phút. Best val Macro-F1=0.5854 -> /content/outputs/week11_person3/pa_best_model
+[2026-10-28 21:10:06 UTC] PA: dùng /content/outputs/week11_person3/pa_best_model (train ở notebook 07)
+[2026-10-28 21:11:28 UTC] Validation xong. Xem bảng trên, rồi mới đặt RUN_OFFICIAL_TEST = True ở ô cấu hình.
+[2026-10-28 21:11:32 UTC] TEST_CSV=/content/data/persuade_corpus_2.0_test.csv | 93,677 đơn vị / 10,402 bài
+[2026-10-28 21:12:29 UTC] [L0] Suy luận test xong trong 57.2s -> /content/outputs/week11_person3/test_predictions_L0.csv
+[2026-10-28 21:14:01 UTC] [L1] Suy luận test xong trong 91.0s -> /content/outputs/week11_person3/test_predictions_L1.csv
+[2026-10-28 21:15:35 UTC] [PA] Suy luận test xong trong 93.5s -> /content/outputs/week11_person3/test_predictions_PA.csv
+[2026-10-28 21:15:37 UTC] Đã ghi khóa test: /content/outputs/week11_person3/OFFICIAL_TEST_LOCK.json
+[2026-10-28 21:15:41 UTC] Đã ghi: /content/outputs/official_test_deberta_results.csv, improved_deberta_results.csv, official_test_final_summary.csv

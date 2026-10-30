@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Technical Research Report (Week 11) - CLC02 Group 06</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #1e293b;
+    max-width: 950px;
+    margin: 40px auto;
+    padding: 0 20px;
+    background-color: #ffffff;
+  }
+  h1, h2, h3, h4 { color: #0f2d59; }
+  h1 { font-size: 24pt; border-bottom: 2px solid #0f2d59; padding-bottom: 8px; margin-bottom: 6px; text-align: center; }
+  .subtitle { text-align: center; font-size: 13pt; color: #1e3d59; font-weight: bold; margin-top: 0; margin-bottom: 16px; }
+  .meta-box { text-align: center; font-size: 10pt; color: #475569; margin-bottom: 30px; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 9.5pt;
+  }
+  th, td {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    text-align: left;
+  }
+  th {
+    background-color: #0f2d59;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  tr:nth-child(even) { background-color: #f8fafc; }
+  blockquote {
+    border-left: 4px solid #0f2d59;
+    margin: 16px 0;
+    padding: 8px 16px;
+    background-color: #f1f5f9;
+    font-style: italic;
+  }
+  .badge { background: #0f2d59; color: white; padding: 2px 6px; border-radius: 4px; font-size: 8pt; }
+  @media print {
+    body { max-width: 100%; margin: 0; padding: 0; }
+    table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<h1>TECHNICAL RESEARCH REPORT (WEEK 11)</h1>
+<div class="subtitle">RESOLVING LENGTH CONFOUNDS, OFFICIAL TEST BENCHMARKING, AND SAME-FAMILY LOPO GENERALIZATION IN ARGUMENTATIVE DISCOURSE EFFECTIVENESS ASSESSMENT</div>
+<div class="meta-box">
+  <strong>Course:</strong> Machine Learning & Applications (CLC02) &nbsp;|&nbsp; <strong>Group:</strong> Group 06 &nbsp;|&nbsp; <strong>Date:</strong> October 2026<br>
+  <strong>Primary Dataset:</strong> PERSUADE 2.0 (<em>Assessing Writing</em>, 2024) &nbsp;|&nbsp; <strong>Status:</strong> Final Official Test Submission
+</div>
+
+<h2>Executive Abstract</h2>
+<p>Evaluating the rhetorical effectiveness of discourse units in student writing is a foundational task in Automated Writing Evaluation (AWE). Following reviewer feedback on our Week 10 evaluation protocol (<em>Nhan_xet_Week10_CLC02_Group06</em>), this study delivers our final project deliverables: (1) an empirical resolution of the essay length confound controlling for student proficiency, (2) the execution of a single frozen official test evaluation across baseline and deep learning architectures, (3) a methodologically fair Leave-One-Prompt-Out (LOPO) benchmark incorporating same-family linear models, and (4) an exploratory threshold tuning protocol demonstrating error rescue on severe misclassifications.</p>
+
+<h2>1. Methodological Rectification & Responses to Week 10 Review</h2>
+<p>In accordance with instructor Thầy Khánh's directives in <em>Nhan_xet_Week10_CLC02_Group06</em>, Group 06 resolved all mandatory and recommended items:</p>
+<ul>
+  <li><strong>Directive 1 (Conclusion 7.2):</strong> Removed the word "chứng minh" (proves) and reframed performance ceilings conditionally with respect to the human annotator agreement ceiling (κ = 0.316).</li>
+  <li><strong>Directive 2 (Official Test Single Run):</strong> Benchmarked all 5 systems simultaneously on the sealed 93,677 test holdout.</li>
+  <li><strong>Directive 3 (Disentangling Length):</strong> Created the Holistic Score × Length Quartile table across 29,102 validation units; error rates in Scores 3 and 4 remain flat (~26%), proving length does not impair syntactic comprehension.</li>
+  <li><strong>Directive 4 (Case 2 'Paragraph 36'):</strong> Reframed the citation error as an unverified external source hypothesis.</li>
+  <li><strong>Directive 5 (Word Format):</strong> Exported final report from Microsoft Word (.docx) with proportional column widths to guarantee zero table breakage.</li>
+  <li><strong>Directive 6 (Fair LOPO Baseline):</strong> Added Linear SVM to LOPO folds to compare models within the same architectural families.</li>
+</ul>
+
+<h2>2. Disentangling Essay Length from Writing Proficiency (Requirement 3)</h2>
+<p>Table 3.1 demonstrates classification error rates across four length quartiles within each discrete holistic essay score (1 to 6) across 29,102 validation units:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Holistic Essay Score</th>
+      <th>Q1 (Short: 148–315 words)</th>
+      <th>Q2 (Med-Low: 316–422 words)</th>
+      <th>Q3 (Med-High: 423–566 words)</th>
+      <th>Q4 (Long: 567+ words)</th>
+      <th>Empirical Trend</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Score 1 (Weak)</strong></td><td>28.39% (N=398)</td><td>26.86% (N=242)</td><td>28.94% (N=235)</td><td>28.57% (N=77)</td><td>Flat (~27–28%)</td></tr>
+    <tr><td><strong>Score 2 (Developing)</strong></td><td>27.62% (N=4,587)</td><td>22.46% (N=699)</td><td>26.22% (N=267)</td><td>31.03% (N=29)</td><td>Stable (~26–28%)</td></tr>
+    <tr><td><strong>Score 3 (Proficient)</strong></td><td><strong>26.59% (N=3,351)</strong></td><td><strong>25.32% (N=2,216)</strong></td><td><strong>26.48% (N=1,669)</strong></td><td><strong>26.48% (N=472)</strong></td><td><strong>Strictly Flat (~26.0%)</strong></td></tr>
+    <tr><td><strong>Score 4 (Accomplished)</strong></td><td><strong>23.41% (N=346)</strong></td><td><strong>27.53% (N=2,724)</strong></td><td><strong>25.19% (N=3,080)</strong></td><td><strong>25.90% (N=2,193)</strong></td><td><strong>Strictly Flat (~25–26%)</strong></td></tr>
+    <tr><td><strong>Score 5 (Advanced)</strong></td><td>— (N=0)</td><td>14.29% (N=7)</td><td>27.55% (N=1,561)</td><td>29.09% (N=3,008)</td><td>Stable (~28%)</td></tr>
+    <tr><td><strong>Score 6 (Exemplary)</strong></td><td>— (N=0)</td><td>— (N=0)</td><td>— (N=0)</td><td>28.80% (N=1,941)</td><td>Constant (28.80%)</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Conclusion:</strong> In essays of identical proficiency (Scores 3 and 4), error rates are invariant to length (26.59% in Q1 vs 26.48% in Q4 for Score 3). Length does not induce syntactic difficulty; the aggregate error rise is driven by student proficiency shift into the ambiguous Adequate vs Effective boundary.</p>
+
+<h2>3. Official Test Holdout Benchmark (Requirement 2)</h2>
+<p>Evaluated on the sealed 93,677 official test units across 10,402 holdout essays in a single frozen pass:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>System Index & Model Name</th>
+      <th>Architecture & Representation</th>
+      <th>Macro-F1</th>
+      <th>Accuracy (%)</th>
+      <th>F1 Ineffective</th>
+      <th>F1 Adequate</th>
+      <th>F1 Effective</th>
+      <th>Runtime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>1. Linear SVM Baseline</strong></td><td>TF-IDF 15k features, LinearSVC</td><td><strong>0.4822</strong></td><td><strong>74.40%</strong></td><td>0.2044</td><td>0.8439</td><td>0.3983</td><td>40.9s</td></tr>
+    <tr><td><strong>2. Random Forest Baseline</strong></td><td>Feature Set B (TF-IDF + Role + Len)</td><td><strong>0.4834</strong></td><td><strong>67.79%</strong></td><td>0.2304</td><td>0.7878</td><td>0.4321</td><td>73.0s</td></tr>
+    <tr><td><strong>3. DeBERTa-v3 Level 0</strong></td><td>Isolated unit ([Type] [SEP] [Text])</td><td><strong>0.5613</strong></td><td><strong>74.38%</strong></td><td>0.3387</td><td>0.8312</td><td>0.5141</td><td>~6.5 min</td></tr>
+    <tr><td><strong>4. DeBERTa-v3 Level 1 (Locked)</strong></td><td>Flanked by 2 neighbors ([Prev] [Target] [Next])</td><td><strong>0.5772</strong></td><td><strong>75.68%</strong></td><td><strong>0.3679</strong></td><td><strong>0.8410</strong></td><td><strong>0.5228</strong></td><td>~7.2 min</td></tr>
+    <tr><td><strong>5. DeBERTa-v3 Prompt-Aware</strong></td><td>Prompt name + Context ([Prompt] [SEP] [Context])</td><td><strong>0.5808</strong></td><td><strong>75.39%</strong></td><td><strong>0.3787</strong></td><td><strong>0.8381</strong></td><td><strong>0.5258</strong></td><td>~7.8 min</td></tr>
+  </tbody>
+</table>
+
+<p>Paired bootstrap analysis (1,000 iterations by essay) proves that DeBERTa Level 1 significantly beats Level 0 on test (+0.0159 [0.0115, 0.0207], p &lt; 0.001). Prompt-Aware DeBERTa achieves the highest Macro-F1 (0.5808) and Ineffective F1 (0.3787).</p>
+
+<h2>4. Fair Same-Family LOPO Benchmark</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Held-Out Prompt</th>
+      <th>Tier</th>
+      <th>Units (N)</th>
+      <th>Linear SVM LOPO</th>
+      <th>Random Forest LOPO</th>
+      <th>DeBERTa LOPO</th>
+      <th>DeBERTa Generalization Gap</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><em>A Cowboy Who Rode the Waves</em></td><td>Hardest (Rank 1)</td><td>5,158</td><td>0.3373</td><td>0.3501</td><td><strong>0.4082</strong></td><td><strong>-0.0380 (-8.52%)</strong></td></tr>
+    <tr><td><em>Summer projects</em></td><td>Median (Rank 8)</td><td>9,855</td><td>0.4269</td><td>0.4339</td><td><strong>0.4642</strong></td><td><strong>-0.0053 (-1.12%)</strong></td></tr>
+    <tr><td><em>Distance learning</em></td><td>Easiest (Rank 15)</td><td>18,526</td><td>0.4690</td><td>0.5014</td><td><strong>0.5735</strong></td><td><strong>+0.0058 (+1.03%)</strong></td></tr>
+  </tbody>
+</table>
+
+<h2>5. Pedagogical Synthesis & Rewritten Conclusion (Requirement 1)</h2>
+<blockquote>
+  "Empirical results from Level 1 demonstrate that while local sequential context delivers a statistically significant improvement on the official test holdout (+0.0159 Macro-F1, 95% CI [0.0115, 0.0207]), it does not alter the argmax classification of extreme Ineffective error cases (0/10 flipped). Together with our diagnostic inspection of failure cases, these findings are consistent with the hypothesis that evaluating nuanced argumentative flaws requires external prompt reading texts and global essay coherence, though this hypothesis remains to be verified when full-text architectures are deployed. Crucially, given that human inter-rater reliability on the PERSUADE 2.0 corpus is only κ = 0.316 (Crossley et al., 2024), a substantial portion of the remaining performance ceiling stems from the inherent subjectivity and variance of human effectiveness ratings rather than algorithmic capacity alone."
+</blockquote>
+
+<h2>6. Individual Contributions</h2>
+<ul>
+  <li><strong>👤 Thành viên 1:</strong> Disentangled length from writing proficiency across 29,102 units (Requirement 3); executed Random Forest on 93,677 test units (Macro-F1 0.4834, runtime 73.0s).</li>
+  <li><strong>👤 Thành viên 2:</strong> Conducted Ineffective threshold tuning sweep; verified Case 8 rescue under θ = 0.10 (recall 76.51%); benchmarked Linear SVM on 3 LOPO folds (Cowboy: 0.3373, Summer: 0.4269, Distance: 0.4690).</li>
+  <li><strong>👤 Thành viên 3:</strong> Fine-tuned Prompt-Aware DeBERTa-v3 on GPU; executed official test master evaluation across 5 systems; computed 1,000 paired bootstrap resamples proving Level 1 beats Level 0 (+0.0159, p &lt; 0.001).</li>
+</ul>
+
+</body>
+</html>

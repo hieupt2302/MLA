@@ -1,0 +1,25 @@
+{
+  "locked_at": "2026-10-28T21:15:35.952813+00:00",
+  "test_csv": "/content/data/persuade_corpus_2.0_test.csv",
+  "test_sha256": "8b4cbbda471b313e5d11da10d4fc2659defa1a8f710639e98d011e1c7141d3a6",
+  "n_test": 93677,
+  "models": {
+    "L0": "/content/outputs/week11_person3/l0_best_model",
+    "L1": "/content/outputs/week11_person3/l1_best_model",
+    "PA": "/content/outputs/week11_person3/pa_best_model"
+  },
+  "cfg": {
+    "model_name": "microsoft/deberta-v3-base",
+    "max_length": 512,
+    "batch_size": 8,
+    "grad_accum": 4,
+    "lr": 2e-05,
+    "epochs": 3,
+    "warmup_ratio": 0.1,
+    "seed": 42,
+    "eval_batch_size": 64,
+    "n_bootstrap": 2000
+  },
+  "gpu": "NVIDIA A100-SXM4-40GB",
+  "quick": false
+}
