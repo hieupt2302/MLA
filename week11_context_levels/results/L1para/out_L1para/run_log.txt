@@ -1,0 +1,14 @@
+[2026-10-31 08:27:05 UTC] [L1para] Train 115,187 đơn vị / 12,475 bài | Val 29,102 đơn vị / 3,119 bài (khớp split tuần 9–11)
+[2026-10-31 08:27:11 UTC] [L1para] train: số từ của đoạn p50/p90 = [107.0, 215.0]
+[2026-10-31 08:27:13 UTC] [L1para] val: số từ của đoạn p50/p90 = [106.0, 216.0]
+[2026-10-31 08:27:35 UTC] [L1para] [L1para] độ dài token p50/p90/p99 = [170.0, 339.0, 549.0] | bị cắt 1.44% | Target bị cắt 0.02%
+[2026-10-31 08:28:16 UTC] [L1para] Thử batch 32 x 512: đỉnh VRAM 19.7/22.0 GB
+[2026-10-31 08:28:17 UTC] [L1para] Thử batch 16 x 512: đỉnh VRAM 10.3/22.0 GB
+[2026-10-31 08:28:17 UTC] [L1para] [L1para] batch GPU 16 x grad_accum 2 = 32 | class weights [7.4787, 0.425, 1.9484]
+[2026-10-31 09:48:32 UTC] [L1para] [L1para] epoch 1: val Macro-F1 0.5376 | F1 Ineff 0.3416
+[2026-10-31 09:48:32 UTC] [L1para] [L1para] epoch 2: val Macro-F1 0.5686 | F1 Ineff 0.3882
+[2026-10-31 09:48:32 UTC] [L1para] [L1para] epoch 3: val Macro-F1 0.5580 | F1 Ineff 0.3762
+[2026-10-31 09:48:32 UTC] [L1para] [L1para] train xong sau 80.2 phút | best val Macro-F1 0.5686
+[2026-10-31 09:55:28 UTC] [L1para] [L1para] Macro-F1 dự đoán cuối − best_metric lúc train = -0.00004
+[2026-10-31 09:55:29 UTC] [L1para] Lưu /content/out_L1para/val_predictions_L1para.csv
+[2026-10-31 09:55:59 UTC] [L1para] KẾT QUẢ L1para (validation): macro_f1 0.5686 | accuracy 0.7044 | balanced_accuracy 0.6644 | qwk 0.4346 | f1_ineffective 0.3882 | f1_adequate 0.7927 | f1_effective 0.5249 | recall_ineffective 0.5655 | precision_ineffective 0.2956

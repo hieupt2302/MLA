@@ -1,0 +1,14 @@
+[05:39:51] [ctxl3b] tạo phiên L4
+[colab] Session READY.
+Installation Complete (via uv)!
+[colab] Uploaded '/workspace/week11_context_levels/upload/val_predictions_L1.csv' to '/content/val_predictions_L1.csv'
+[colab] Uploaded '/workspace/week11_context_levels/upload/val_predictions_L0.csv' to '/content/val_predictions_L0.csv'
+[colab] Uploaded '/workspace/week11_context_levels/upload/source_texts.json' to '/content/source_texts.json'
+
+[05:40:23] [ctxl3b] chạy week11_context_levels/10b_L3_whole_essay_7epochs.ipynb QUICK=1
+[05:41:40] [ctxl3b] xong week11_context_levels/10b_L3_whole_essay_7epochs.ipynb QUICK=1
+
+[05:41:45] [ctxl3b] chạy week11_context_levels/10b_L3_whole_essay_7epochs.ipynb QUICK=0
+[07:33:57] [ctxl3b] xong week11_context_levels/10b_L3_whole_essay_7epochs.ipynb QUICK=0
+[07:34:00] [ctxl3b] đã tải results_L3_7ep.zip
+[07:34:00] [ctxl3b] HẾT

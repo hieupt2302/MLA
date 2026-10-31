@@ -1,0 +1,70 @@
+{
+  "cfg": {
+    "model_name": "microsoft/deberta-v3-base",
+    "max_len": 1536,
+    "overlap": 256,
+    "eff_essays": 8,
+    "lr": 2e-05,
+    "weight_decay": 0.01,
+    "epochs": 3,
+    "warmup_ratio": 0.1,
+    "seed": 42,
+    "dropout": 0.1
+  },
+  "batch_essays": 4,
+  "grad_accum": 2,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.8381029565444706,
+      "macro_f1": 0.5214351206679769,
+      "accuracy": 0.6197168579479073,
+      "balanced_accuracy": 0.650096472460013,
+      "qwk": 0.37237483501973134,
+      "f1_ineffective": 0.38568891144379597,
+      "f1_adequate": 0.7103095786658192,
+      "f1_effective": 0.46830687189431586,
+      "recall_ineffective": 0.572289156626506,
+      "precision_ineffective": 0.29085342518178336,
+      "epoch_minutes": 15.08785107533137
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.6562575692038187,
+      "macro_f1": 0.5514156820907365,
+      "accuracy": 0.6797814583190159,
+      "balanced_accuracy": 0.7016652832074782,
+      "qwk": 0.43952722004743483,
+      "f1_ineffective": 0.34027180457595047,
+      "f1_adequate": 0.7711041796631316,
+      "f1_effective": 0.5428710620331276,
+      "recall_ineffective": 0.7447289156626506,
+      "precision_ineffective": 0.2205128205128205,
+      "epoch_minutes": 15.740787601470947
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.5352081562792576,
+      "macro_f1": 0.5759297301637071,
+      "accuracy": 0.7027008453027284,
+      "balanced_accuracy": 0.6786656354305456,
+      "qwk": 0.4472258637860921,
+      "f1_ineffective": 0.4081739586062353,
+      "f1_adequate": 0.7886623325453113,
+      "f1_effective": 0.5309528993395747,
+      "recall_ineffective": 0.5865963855421686,
+      "precision_ineffective": 0.31297709923664124,
+      "epoch_minutes": 15.75275985399882
+    }
+  ],
+  "best_metric": 0.5759297301637071,
+  "train_minutes": 46.6,
+  "gpu": "NVIDIA L4",
+  "transformers": "4.57.6",
+  "class_weights": [
+    7.47870406440722,
+    0.424979984577979,
+    1.9484251835312425
+  ],
+  "quick": false
+}

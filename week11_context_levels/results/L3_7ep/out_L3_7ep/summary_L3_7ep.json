@@ -1,0 +1,17 @@
+{
+  "model": "L3_7ep",
+  "macro_f1": 0.5698,
+  "accuracy": 0.7271,
+  "balanced_accuracy": 0.615,
+  "qwk": 0.4223,
+  "f1_ineffective": 0.3857,
+  "f1_adequate": 0.8153,
+  "f1_effective": 0.5084,
+  "recall_ineffective": 0.43,
+  "precision_ineffective": 0.3497,
+  "n_val_units": 29102,
+  "quick": false,
+  "gpu": "NVIDIA L4",
+  "transformers": "4.57.6",
+  "finished_at": "2026-10-31T07:33:55.633875+00:00"
+}
