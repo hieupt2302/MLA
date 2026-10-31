@@ -1,0 +1,11 @@
+case_id,discourse_type,snippet,p_ineff_L1,max_theta_that_flips
+1,Counterclaim,There are many reason on why texting while driving is very u,0.029,0.029
+2,Evidence,"To provide reasonings to my strong point, brings me back to ",0.0014,0.0014
+3,Position,I think you shouldn't join the Seagoing Cowboys,0.0096,0.0096
+4,Counterclaim,Not allowing students to use there phones at all,0.0904,0.0904
+5,Position,The Driverless people can cause problems,0.1515,0.1515
+6,Counterclaim,But Sometimes it could be a distraction from you doing all y,0.04,0.04
+7,Position,I reconsider that are principal should let us eight graders ,0.097,0.097
+8,Claim,Some kids will ask there parents to transfer school,0.1236,0.1236
+9,Lead,The future is near and the talk about driverless cars is upo,0.0802,0.0802
+10,Claim,Another cars is a bad idea is because of its gas,0.0315,0.0315

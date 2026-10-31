@@ -1,2 +1,3 @@
-Hệ thống,Macro-F1,Accuracy (%),F1 Ineffective,F1 Adequate,F1 Effective,Runtime (s)
-Random Forest (Feature Set B),0.4834,67.79,0.2304,0.7878,0.4321,73.0
+Hệ thống,Tập,Macro-F1,Accuracy (%),F1 Ineffective,F1 Adequate,F1 Effective,Recall Ineffective,Precision Ineffective,QWK,Runtime (s)
+Random Forest (Feature Set B),Validation (29.102),0.5261,77.34,0.2454,0.8599,0.473,0.2169,0.2826,0.3705,
+Random Forest (Feature Set B),Official Test (93.677),0.5098,78.51,0.2024,0.8701,0.4567,0.1718,0.2463,0.35,88.0

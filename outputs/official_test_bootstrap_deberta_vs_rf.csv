@@ -1,0 +1,4 @@
+So sánh,delta_macro_f1,ci95_low,ci95_high,p_one_sided_delta_le_0,n_bootstrap
+L0 − RF,0.0516,0.0448,0.0584,0.0,1000
+L1 − RF,0.0675,0.0605,0.0749,0.0,1000
+PA − RF,0.0711,0.0643,0.078,0.0,1000

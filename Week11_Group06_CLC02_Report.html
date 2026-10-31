@@ -1,159 +1,878 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Technical Research Report (Week 11) - CLC02 Group 06</title>
-<style>
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.6;
-    color: #1e293b;
-    max-width: 950px;
-    margin: 40px auto;
-    padding: 0 20px;
-    background-color: #ffffff;
-  }
-  h1, h2, h3, h4 { color: #0f2d59; }
-  h1 { font-size: 24pt; border-bottom: 2px solid #0f2d59; padding-bottom: 8px; margin-bottom: 6px; text-align: center; }
-  .subtitle { text-align: center; font-size: 13pt; color: #1e3d59; font-weight: bold; margin-top: 0; margin-bottom: 16px; }
-  .meta-box { text-align: center; font-size: 10pt; color: #475569; margin-bottom: 30px; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 9.5pt;
-  }
-  th, td {
-    padding: 8px 12px;
-    border: 1px solid #cbd5e1;
-    text-align: left;
-  }
-  th {
-    background-color: #0f2d59;
-    color: #ffffff;
-    font-weight: 600;
-  }
-  tr:nth-child(even) { background-color: #f8fafc; }
-  blockquote {
-    border-left: 4px solid #0f2d59;
-    margin: 16px 0;
-    padding: 8px 16px;
-    background-color: #f1f5f9;
-    font-style: italic;
-  }
-  .badge { background: #0f2d59; color: white; padding: 2px 6px; border-radius: 4px; font-size: 8pt; }
-  @media print {
-    body { max-width: 100%; margin: 0; padding: 0; }
-    table { page-break-inside: avoid; }
-  }
-</style>
-</head>
-<body>
-<h1>TECHNICAL RESEARCH REPORT (WEEK 11)</h1>
-<div class="subtitle">RESOLVING LENGTH CONFOUNDS, OFFICIAL TEST BENCHMARKING, AND SAME-FAMILY LOPO GENERALIZATION IN ARGUMENTATIVE DISCOURSE EFFECTIVENESS ASSESSMENT</div>
-<div class="meta-box">
-  <strong>Course:</strong> Machine Learning & Applications (CLC02) &nbsp;|&nbsp; <strong>Group:</strong> Group 06 &nbsp;|&nbsp; <strong>Date:</strong> October 2026<br>
-  <strong>Primary Dataset:</strong> PERSUADE 2.0 (<em>Assessing Writing</em>, 2024) &nbsp;|&nbsp; <strong>Status:</strong> Final Official Test Submission
-</div>
-
-<h2>Executive Abstract</h2>
-<p>Evaluating the rhetorical effectiveness of discourse units in student writing is a foundational task in Automated Writing Evaluation (AWE). Following reviewer feedback on our Week 10 evaluation protocol (<em>Nhan_xet_Week10_CLC02_Group06</em>), this study delivers our final project deliverables: (1) an empirical resolution of the essay length confound controlling for student proficiency, (2) the execution of a single frozen official test evaluation across baseline and deep learning architectures, (3) a methodologically fair Leave-One-Prompt-Out (LOPO) benchmark incorporating same-family linear models, and (4) an exploratory threshold tuning protocol demonstrating error rescue on severe misclassifications.</p>
-
-<h2>1. Methodological Rectification & Responses to Week 10 Review</h2>
-<p>In accordance with instructor Thầy Khánh's directives in <em>Nhan_xet_Week10_CLC02_Group06</em>, Group 06 resolved all mandatory and recommended items:</p>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Week11_Group06_CLC02_Report</title><style>
+body { max-width:1100px; margin:36px auto; padding:0 24px;
+       font:16px/1.55 Calibri,Arial,sans-serif; color:#202a35; }
+h1,h2,h3 { line-height:1.25; color:#183d58; margin-top:1.4em; }
+h1 { font-size:1.85em; } h2 { font-size:1.4em; } h3 { font-size:1.15em; }
+.table-scroll { overflow-x:auto; margin:18px 0; }
+table { border-collapse:collapse; width:100%; font-size:14px; }
+th,td { border:1px solid #aab6c2; padding:7px 9px; vertical-align:top; }
+th { background:#e8eef4; text-align:left; }
+.wide table { min-width:1000px; }
+code { font-family:Consolas,monospace; overflow-wrap:anywhere; }
+a { color:#145c9e; overflow-wrap:anywhere; } hr { border:0; border-top:1px solid #aab6c2; }
+</style></head><body>
+<h1>TECHNICAL RESEARCH REPORT (WEEK 11) — OFFICIAL TEST EVALUATION AND RESPONSE TO THE WEEK 10 REVIEW</h1>
+<h2>Discourse-unit effectiveness prediction on PERSUADE 2.0: length vs. proficiency, one-pass official test, LOPO, and decision thresholds</h2>
+<p><strong>Course:</strong> Machine Learning &amp; Applications (CLC02) | <strong>Group:</strong> 06 | <strong>Dataset:</strong> PERSUADE 2.0 (Crossley et al., 2024) | <strong>Date:</strong> 31 October 2026 <strong>Code and outputs:</strong> <code>outputs/</code>, <code>Person1/</code>, <code>Person2Khoa/</code>, <code>Week11_Person3_DeBERTa_OfficialTest/</code> <strong>Review log for this revision:</strong> <code>RA_SOAT_TUAN11_SO_VOI_NHAN_XET_TUAN10.md</code></p>
+<p><strong>Colab notebooks</strong></p>
 <ul>
-  <li><strong>Directive 1 (Conclusion 7.2):</strong> Removed the word "chứng minh" (proves) and reframed performance ceilings conditionally with respect to the human annotator agreement ceiling (κ = 0.316).</li>
-  <li><strong>Directive 2 (Official Test Single Run):</strong> Benchmarked all 5 systems simultaneously on the sealed 93,677 test holdout.</li>
-  <li><strong>Directive 3 (Disentangling Length):</strong> Created the Holistic Score × Length Quartile table across 29,102 validation units; error rates in Scores 3 and 4 remain flat (~26%), proving length does not impair syntactic comprehension.</li>
-  <li><strong>Directive 4 (Case 2 'Paragraph 36'):</strong> Reframed the citation error as an unverified external source hypothesis.</li>
-  <li><strong>Directive 5 (Word Format):</strong> Exported final report from Microsoft Word (.docx) with proportional column widths to guarantee zero table breakage.</li>
-  <li><strong>Directive 6 (Fair LOPO Baseline):</strong> Added Linear SVM to LOPO folds to compare models within the same architectural families.</li>
+<li>Person 1 (length × proficiency, RF official test): <code>Person1/script_holistic_length_table.ipynb</code>, <code>Person1/run_rf_official_test.ipynb</code> — <a href="https://colab.research.google.com/drive/1YRMpJgGzZ0vWe7nA0W8c7n5JKMruVJHT?usp=sharing">https://colab.research.google.com/drive/1YRMpJgGzZ0vWe7nA0W8c7n5JKMruVJHT?usp=sharing</a></li>
+<li>Person 2 (threshold analysis, Linear SVM LOPO and test): <code>Person2Khoa/Person2Khoa/*.ipynb</code> — <a href="https://colab.research.google.com/drive/1prcSnRHax0SAITnUbGsXks3aQ9pbwJD2?usp=sharing">https://colab.research.google.com/drive/1prcSnRHax0SAITnUbGsXks3aQ9pbwJD2?usp=sharing</a></li>
+<li>Person 3 (DeBERTa L0 / L1 / Prompt-Aware, official test): <code>Week11_Person3_DeBERTa_OfficialTest/07_person3_prompt_aware_official_test.ipynb</code> — <a href="https://colab.research.google.com/drive/1xiYMZ7SjRSAn_ioAvAbNh-PZDkghsiBk?usp=sharing">https://colab.research.google.com/drive/1xiYMZ7SjRSAn_ioAvAbNh-PZDkghsiBk?usp=sharing</a></li>
 </ul>
-
-<h2>2. Disentangling Essay Length from Writing Proficiency (Requirement 3)</h2>
-<p>Table 3.1 demonstrates classification error rates across four length quartiles within each discrete holistic essay score (1 to 6) across 29,102 validation units:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Holistic Essay Score</th>
-      <th>Q1 (Short: 148–315 words)</th>
-      <th>Q2 (Med-Low: 316–422 words)</th>
-      <th>Q3 (Med-High: 423–566 words)</th>
-      <th>Q4 (Long: 567+ words)</th>
-      <th>Empirical Trend</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td><strong>Score 1 (Weak)</strong></td><td>28.39% (N=398)</td><td>26.86% (N=242)</td><td>28.94% (N=235)</td><td>28.57% (N=77)</td><td>Flat (~27–28%)</td></tr>
-    <tr><td><strong>Score 2 (Developing)</strong></td><td>27.62% (N=4,587)</td><td>22.46% (N=699)</td><td>26.22% (N=267)</td><td>31.03% (N=29)</td><td>Stable (~26–28%)</td></tr>
-    <tr><td><strong>Score 3 (Proficient)</strong></td><td><strong>26.59% (N=3,351)</strong></td><td><strong>25.32% (N=2,216)</strong></td><td><strong>26.48% (N=1,669)</strong></td><td><strong>26.48% (N=472)</strong></td><td><strong>Strictly Flat (~26.0%)</strong></td></tr>
-    <tr><td><strong>Score 4 (Accomplished)</strong></td><td><strong>23.41% (N=346)</strong></td><td><strong>27.53% (N=2,724)</strong></td><td><strong>25.19% (N=3,080)</strong></td><td><strong>25.90% (N=2,193)</strong></td><td><strong>Strictly Flat (~25–26%)</strong></td></tr>
-    <tr><td><strong>Score 5 (Advanced)</strong></td><td>— (N=0)</td><td>14.29% (N=7)</td><td>27.55% (N=1,561)</td><td>29.09% (N=3,008)</td><td>Stable (~28%)</td></tr>
-    <tr><td><strong>Score 6 (Exemplary)</strong></td><td>— (N=0)</td><td>— (N=0)</td><td>— (N=0)</td><td>28.80% (N=1,941)</td><td>Constant (28.80%)</td></tr>
-  </tbody>
-</table>
-
-<p><strong>Conclusion:</strong> In essays of identical proficiency (Scores 3 and 4), error rates are invariant to length (26.59% in Q1 vs 26.48% in Q4 for Score 3). Length does not induce syntactic difficulty; the aggregate error rise is driven by student proficiency shift into the ambiguous Adequate vs Effective boundary.</p>
-
-<h2>3. Official Test Holdout Benchmark (Requirement 2)</h2>
-<p>Evaluated on the sealed 93,677 official test units across 10,402 holdout essays in a single frozen pass:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>System Index & Model Name</th>
-      <th>Architecture & Representation</th>
-      <th>Macro-F1</th>
-      <th>Accuracy (%)</th>
-      <th>F1 Ineffective</th>
-      <th>F1 Adequate</th>
-      <th>F1 Effective</th>
-      <th>Runtime</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td><strong>1. Linear SVM Baseline</strong></td><td>TF-IDF 15k features, LinearSVC</td><td><strong>0.4822</strong></td><td><strong>74.40%</strong></td><td>0.2044</td><td>0.8439</td><td>0.3983</td><td>40.9s</td></tr>
-    <tr><td><strong>2. Random Forest Baseline</strong></td><td>Feature Set B (TF-IDF + Role + Len)</td><td><strong>0.4834</strong></td><td><strong>67.79%</strong></td><td>0.2304</td><td>0.7878</td><td>0.4321</td><td>73.0s</td></tr>
-    <tr><td><strong>3. DeBERTa-v3 Level 0</strong></td><td>Isolated unit ([Type] [SEP] [Text])</td><td><strong>0.5613</strong></td><td><strong>74.38%</strong></td><td>0.3387</td><td>0.8312</td><td>0.5141</td><td>~6.5 min</td></tr>
-    <tr><td><strong>4. DeBERTa-v3 Level 1 (Locked)</strong></td><td>Flanked by 2 neighbors ([Prev] [Target] [Next])</td><td><strong>0.5772</strong></td><td><strong>75.68%</strong></td><td><strong>0.3679</strong></td><td><strong>0.8410</strong></td><td><strong>0.5228</strong></td><td>~7.2 min</td></tr>
-    <tr><td><strong>5. DeBERTa-v3 Prompt-Aware</strong></td><td>Prompt name + Context ([Prompt] [SEP] [Context])</td><td><strong>0.5808</strong></td><td><strong>75.39%</strong></td><td><strong>0.3787</strong></td><td><strong>0.8381</strong></td><td><strong>0.5258</strong></td><td>~7.8 min</td></tr>
-  </tbody>
-</table>
-
-<p>Paired bootstrap analysis (1,000 iterations by essay) proves that DeBERTa Level 1 significantly beats Level 0 on test (+0.0159 [0.0115, 0.0207], p &lt; 0.001). Prompt-Aware DeBERTa achieves the highest Macro-F1 (0.5808) and Ineffective F1 (0.3787).</p>
-
-<h2>4. Fair Same-Family LOPO Benchmark</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Held-Out Prompt</th>
-      <th>Tier</th>
-      <th>Units (N)</th>
-      <th>Linear SVM LOPO</th>
-      <th>Random Forest LOPO</th>
-      <th>DeBERTa LOPO</th>
-      <th>DeBERTa Generalization Gap</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td><em>A Cowboy Who Rode the Waves</em></td><td>Hardest (Rank 1)</td><td>5,158</td><td>0.3373</td><td>0.3501</td><td><strong>0.4082</strong></td><td><strong>-0.0380 (-8.52%)</strong></td></tr>
-    <tr><td><em>Summer projects</em></td><td>Median (Rank 8)</td><td>9,855</td><td>0.4269</td><td>0.4339</td><td><strong>0.4642</strong></td><td><strong>-0.0053 (-1.12%)</strong></td></tr>
-    <tr><td><em>Distance learning</em></td><td>Easiest (Rank 15)</td><td>18,526</td><td>0.4690</td><td>0.5014</td><td><strong>0.5735</strong></td><td><strong>+0.0058 (+1.03%)</strong></td></tr>
-  </tbody>
-</table>
-
-<h2>5. Pedagogical Synthesis & Rewritten Conclusion (Requirement 1)</h2>
-<blockquote>
-  "Empirical results from Level 1 demonstrate that while local sequential context delivers a statistically significant improvement on the official test holdout (+0.0159 Macro-F1, 95% CI [0.0115, 0.0207]), it does not alter the argmax classification of extreme Ineffective error cases (0/10 flipped). Together with our diagnostic inspection of failure cases, these findings are consistent with the hypothesis that evaluating nuanced argumentative flaws requires external prompt reading texts and global essay coherence, though this hypothesis remains to be verified when full-text architectures are deployed. Crucially, given that human inter-rater reliability on the PERSUADE 2.0 corpus is only κ = 0.316 (Crossley et al., 2024), a substantial portion of the remaining performance ceiling stems from the inherent subjectivity and variance of human effectiveness ratings rather than algorithmic capacity alone."
-</blockquote>
-
-<h2>6. Individual Contributions</h2>
+<hr>
+<h2>Abstract</h2>
+<p>We classify each annotated discourse unit of a student argumentative essay as Ineffective, Adequate or Effective. This week answers the Week 10 review and runs the official test once.</p>
+<ol start="1">
+<li value="1"><strong>Length vs. proficiency (Requirement 3).</strong> Within the same holistic score, the error rate of DeBERTa Level 1 still rises with essay length. For score-3 essays it goes from 19.3% (shortest quartile) to 28.2% (longest) on validation, and from 17.6% to 29.2% on the official test. A logistic regression with essay-clustered errors gives an odds ratio of 1.19 [1.14, 1.25] per length quartile after controlling for holistic score. It stays at 1.17 [1.11, 1.23] after also controlling for the gold label and discourse type. Proficiency shift explains why the <em>type</em> of error changes with length: in the longest quartile, 92% of errors are Adequate↔Effective confusions. It does not explain the whole <em>rise</em> in error. Hypothesis A (length/complexity) is therefore <strong>not ruled out</strong>, and we report both explanations. An earlier version of this table showed flat error rates; that table came from a join on corrupted IDs (Section 2.3) and is withdrawn.</li>
+<li value="2"><strong>Official test, one pass (Requirement 2; 93,677 units, 10,402 essays).</strong> The protocol systems scored Macro-F1: Random Forest Feature Set B <strong>0.5098</strong>, DeBERTa-v3 Level 0 <strong>0.5613</strong>, and DeBERTa-v3 Level 1, the locked system, <strong>0.5772</strong>. The exploratory Prompt-Aware model scored 0.5808, and a supplementary Linear SVM scored 0.4822. Level 1 beats Level 0 by +0.0159 [0.0115, 0.0207] (essay bootstrap). Prompt-Aware vs. Level 1 is +0.0036 [−0.0002, 0.0074], so they cannot be distinguished. All three DeBERTa models beat RF by 0.05–0.07 Macro-F1. The DeBERTa models scored on test were retrained this week with the locked configuration. On validation they give L1 − L0 = +0.0087 [0.0014, 0.0161], whereas the Week 10 training run gave +0.0022 (CI containing 0). The L0/L1 difference is therefore of the same order as run-to-run variation.</li>
+<li value="3"><strong>Lowering the Ineffective threshold.</strong> At P(Ineffective) ≥ 0.10, 3,670 of 29,102 validation predictions change, and 2 of the 10 studied failure cases (cases 5 and 8) flip to Ineffective. Recall for Ineffective rises from 43.2% to 73.0%. Precision falls from 36.1% to 18.4%, and Macro-F1 falls from 0.579 to 0.517: about 8 new false alarms per newly caught Ineffective unit.</li>
+<li value="4"><strong>LOPO.</strong> On the <em>same</em> validation units, DeBERTa trained without the prompt loses 0.088 Macro-F1 [−0.138, −0.041] on <em>A Cowboy Who Rode the Waves</em>. For <em>Summer projects</em> (−0.009) and <em>Distance learning</em> (+0.004), the confidence intervals include zero.</li>
+</ol>
+<hr>
+<h2>1. Response to the Week 10 review</h2>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>#</th>
+<th>Review item</th>
+<th>What we did</th>
+<th>Where</th>
+</tr></thead><tbody>
+<tr>
+<td>1</td>
+<td><strong>[Required]</strong> Rewrite the conclusion in 7.2 so that it no longer says the data &quot;prove&quot; a ceiling caused by missing input; add a sentence on label reliability</td>
+<td>Rewritten as a hypothesis consistent with, but not tested by, our data. We also removed &quot;prove&quot;, &quot;definitively&quot; and &quot;conclusively&quot; from the whole report. Added the inter-rater κ = 0.316 sentence</td>
+<td>§8</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>[Required]</strong> Score RF (Feature Set B), DeBERTa L0 and L1 in the same test run; state that L0 and L1 were indistinguishable on validation</td>
+<td>Protocol in §1.1 lists the three systems and states this. Test table has the three protocol rows plus two clearly labelled extra rows. We found the first RF test script did <strong>not</strong> implement Feature Set B; the corrected run is reported, and the old number is kept in a footnote</td>
+<td>§1.1, §7</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>[Required]</strong> Error rate by length quartile <em>within</em> each holistic score, plus one sentence answering whether error rises with length within a score</td>
+<td>Table with N and essay-bootstrap CIs, clustered regression, repeated on the test set as a descriptive check. Answer: <strong>yes, it rises</strong>; both hypotheses are kept</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>[Suggested]</strong> Treat &quot;paragraph 36&quot; (case 2) as a hypothesis, or check the source text</td>
+<td>Checked: the numbered <em>Car-free cities</em> source set has 43 paragraphs, and paragraph 36 contains exactly the sentence the student quotes. Our earlier &quot;fabricated citation&quot; reading was wrong and is withdrawn</td>
+<td>§5.2</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>[Suggested]</strong> Export the final version from Word/LaTeX</td>
+<td>Final version exported to <code>.docx</code> from this Markdown source</td>
+<td><code>Week11_Group06_CLC02_Report.docx</code></td>
+</tr>
+<tr>
+<td>—</td>
+<td>Interview walk-through, step 5: lower the Ineffective threshold on the saved probabilities and count how many cases change</td>
+<td>Done; counts in §5.3</td>
+<td>§5.3</td>
+</tr>
+</tbody></table></div>
+<h3>1.1 Test protocol (fixed before the test was opened)</h3>
 <ul>
-  <li><strong>👤 Thành viên 1:</strong> Disentangled length from writing proficiency across 29,102 units (Requirement 3); executed Random Forest on 93,677 test units (Macro-F1 0.4834, runtime 73.0s).</li>
-  <li><strong>👤 Thành viên 2:</strong> Conducted Ineffective threshold tuning sweep; verified Case 8 rescue under θ = 0.10 (recall 76.51%); benchmarked Linear SVM on 3 LOPO folds (Cowboy: 0.3373, Summer: 0.4269, Distance: 0.4690).</li>
-  <li><strong>👤 Thành viên 3:</strong> Fine-tuned Prompt-Aware DeBERTa-v3 on GPU; executed official test master evaluation across 5 systems; computed 1,000 paired bootstrap resamples proving Level 1 beats Level 0 (+0.0159, p &lt; 0.001).</li>
+<li><strong>Primary systems, all scored in the same pass:</strong> (1) Random Forest, Feature Set B (Week 9 configuration); (2) DeBERTa-v3-base Level 0 (<code>[type] [SEP] unit</code>); (3) DeBERTa-v3-base Level 1 (<code>[type] [SEP] Previous: … [SEP] Target: … [SEP] Next: …</code>), the locked system.</li>
+<li><strong>Validation status at lock time:</strong> in the Week 10 run, L0 and L1 could not be distinguished on validation: +0.0022 Macro-F1, 95% essay-bootstrap CI containing 0. L1 was locked because of its higher Ineffective F1 (+0.019), not because it was clearly better.</li>
+<li><strong>Extra systems, labelled as such:</strong> Prompt-Aware DeBERTa (planned in Week 11: L1 input prefixed with <code>Prompt: &lt;prompt name&gt; [SEP]</code>) and Linear SVM on TF-IDF. Neither was part of the Week 10 protocol.</li>
+<li><strong>Fixed configuration:</strong> <code>microsoft/deberta-v3-base</code>, max length 512, batch 8 × gradient accumulation 4, lr 2e-5, 10% warmup, 3 epochs, class-weighted cross-entropy (weights 7.48 / 0.43 / 1.95), seed 42, best epoch selected on validation Macro-F1. Essay-level paired bootstrap with 2,000 resamples.</li>
+<li><strong>Rule:</strong> one scoring pass. No threshold, hyperparameter or model choice uses the test set. The lock file <code>Week11_Person3_DeBERTa_OfficialTest/outputs/week11_person3/OFFICIAL_TEST_LOCK.json</code> records the test file hash and model paths.</li>
 </ul>
-
-</body>
-</html>
+<p><strong>Deviations, reported openly.</strong> (a) The Week 10 DeBERTa checkpoints could no longer be loaded correctly, so L0, L1 and Prompt-Aware were <strong>retrained</strong> in one Colab A100 run with the configuration above (transformers 4.57.6, bf16). Section 4.2 gives their own validation scores. The models scored on test are these retrained models, not the Week 10 checkpoints. (b) The run went from training to validation to test in a single session, because an earlier session was lost when the Colab VM was reclaimed. Validation results were logged before test inference but were not reviewed by a person in between. (c) The first RF test script trained a different model: 100 trees, depth 30, 10k TF-IDF features, min_df 3, one unscaled length feature, trained on train+validation. That run gave Macro-F1 0.4834 and is not Feature Set B. We re-implemented Feature Set B exactly as in Week 9 and trained it on the same 115,187 training units. The script refuses to score the test unless it first reproduces the Week 9 validation Macro-F1 (0.5261 vs 0.5230; scikit-learn 1.6.1, as in Week 9). It was then scored once. No setting was changed after seeing test results.</p>
+<h3>1.2 The Week 8 &quot;6.13% accuracy&quot; defect (for the interview)</h3>
+<p><code>LogisticRegression.classes_</code> sorts labels alphabetically (<code>Adequate, Effective, Ineffective</code>), while our evaluation assumed index 0 = Ineffective. Ineffective F1 (≈0.061) was therefore written into the accuracy field. After fixing the label mapping, LR with tuned thresholds reaches Macro-F1 0.5086 and balanced accuracy 60.32% on validation.</p>
+<hr>
+<h2>2. Data</h2>
+<h3>2.1 Units and split</h3>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Stage</th>
+<th>Train (80%)</th>
+<th>Validation (20%)</th>
+<th>Official test</th>
+</tr></thead><tbody>
+<tr>
+<td>Rows in source CSV</td>
+<td>173,266 (train + validation)</td>
+<td>—</td>
+<td>112,117</td>
+</tr>
+<tr>
+<td>Unannotated segments removed</td>
+<td>28,977</td>
+<td>—</td>
+<td>18,440</td>
+</tr>
+<tr>
+<td>Annotated units</td>
+<td>115,187</td>
+<td>29,102</td>
+<td>93,677</td>
+</tr>
+<tr>
+<td>Essays (<code>essay_id_comp</code>)</td>
+<td>12,475</td>
+<td>3,119</td>
+<td>10,402</td>
+</tr>
+<tr>
+<td>Split</td>
+<td>GroupShuffleSplit by essay, seed 42</td>
+<td>same</td>
+<td>official holdout</td>
+</tr>
+<tr>
+<td>Essays shared with another split</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody></table></div>
+<h3>2.2 One real unit through the pipeline (validation case 8)</h3>
+<ul>
+<li><code>row_idx</code> 108613, essay <code>FE3141FA4163</code>, prompt <em>Cell phones at school</em>, holistic score 2, essay length 169 words. Unit type <strong>Claim</strong>, gold label <strong>Ineffective</strong> (id 0).</li>
+<li><strong>Level 0 input:</strong> <code>Claim [SEP] Some kids will ask there parents to transfer school</code></li>
+<li><strong>Level 1 input:</strong> <code>Claim [SEP] Previous: They will hide them from the teachers … You will just make all the kids mad. [SEP] Target: Some kids will ask there parents to transfer school [SEP] Next: If you chose policy one you will make the student happy.</code></li>
+<li><strong>Prompt-Aware input:</strong> <code>Prompt: Cell phones at school [SEP]</code> + Level 1 input.</li>
+<li><strong>Predicted probabilities (Ineffective / Adequate / Effective), Week 11 models:</strong> L0 0.017 / 0.962 / 0.021; L1 0.058 / 0.937 / 0.005; PA 0.217 / 0.778 / 0.005. All three predict Adequate, so all three are wrong. The Week 10 Level 1 model gave P(Ineffective) = 0.124 for this unit.</li>
+</ul>
+<h3>2.3 Data-integrity note</h3>
+<p>The CSV files we received had been saved through a spreadsheet program, which rounded numeric IDs to scientific notation (for example <code>discourse_id = 1.62263E+12</code>). As a result, 144,289 annotated units carry only <strong>728</strong> distinct <code>discourse_id</code> values. <code>essay_id</code> is mostly intact (one collision merging two essays into one split group, which cannot cause leakage), and <code>essay_id_comp</code> is intact. Every analysis in this report joins units by row position (<code>row_idx</code>) or by <code>essay_id_comp</code>, and each join is checked against discourse type and gold label. The Week 11 length table first circulated in the group joined on <code>discourse_id</code> and was therefore wrong; Section 3 replaces it.</p>
+<hr>
+<h2>3. Essay length vs. writer proficiency (Requirement 3)</h2>
+<h3>3.1 Question</h3>
+<p>Errors rise with essay length. <strong>Hypothesis A:</strong> something about longer essays makes units harder to classify. <strong>Hypothesis B:</strong> longer essays come from stronger writers; their units are more often Adequate or Effective, and that boundary is harder. The review asked us to compare length quartiles <strong>within the same holistic score</strong>.</p>
+<p>All numbers below use one model throughout, DeBERTa Level 1 (the locked system, Week 11 run). Quartile cut points are fixed from the validation set (≤315, 316–422, 423–566, ≥567 words).</p>
+<h3>3.2 Without controlling for proficiency</h3>
+<div class="table-scroll wide"><table>
+<thead><tr>
+<th>Length quartile</th>
+<th>Units</th>
+<th>Essays</th>
+<th>Mean holistic score (per essay)</th>
+<th>% Ineffective</th>
+<th>% Effective</th>
+<th>Error rate (val)</th>
+<th>Errors that are Adequate↔Effective (val)</th>
+<th>Error rate (test)</th>
+</tr></thead><tbody>
+<tr>
+<td>Q1 (≤315)</td>
+<td>7,333</td>
+<td>1,037</td>
+<td>2.38</td>
+<td>8.97</td>
+<td>5.29</td>
+<td>22.0%</td>
+<td>47.5%</td>
+<td>21.1%</td>
+</tr>
+<tr>
+<td>Q2 (316–422)</td>
+<td>7,277</td>
+<td>786</td>
+<td>3.20</td>
+<td>5.02</td>
+<td>10.72</td>
+<td>23.0%</td>
+<td>67.1%</td>
+<td>22.0%</td>
+</tr>
+<tr>
+<td>Q3 (423–566)</td>
+<td>7,226</td>
+<td>690</td>
+<td>3.81</td>
+<td>2.92</td>
+<td>18.34</td>
+<td>27.9%</td>
+<td>83.8%</td>
+<td>25.5%</td>
+</tr>
+<tr>
+<td>Q4 (≥567)</td>
+<td>7,266</td>
+<td>606</td>
+<td>4.67</td>
+<td>1.29</td>
+<td>32.81</td>
+<td>30.5%</td>
+<td>92.0%</td>
+<td>30.4%</td>
+</tr>
+</tbody></table></div>
+<h3>3.3 Within the same holistic score (validation, 29,102 units)</h3>
+<p>Error rate (%) with 95% essay-bootstrap CI; N = units / essays.</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Holistic score</th>
+<th>Q1 (≤315)</th>
+<th>Q2 (316–422)</th>
+<th>Q3 (423–566)</th>
+<th>Q4 (≥567)</th>
+</tr></thead><tbody>
+<tr>
+<td>1</td>
+<td>39.6 [32.6, 45.6]; 356/91</td>
+<td>22.2 [12.9, 32.7]; 63/19</td>
+<td>33.8 [15.8, 51.1]; 74/13</td>
+<td>34.8 [16.7, 64.3]; 23/4</td>
+</tr>
+<tr>
+<td>2</td>
+<td>23.2 [21.3, 25.1]; 3,200/493</td>
+<td>31.4 [27.1, 35.6]; 722/91</td>
+<td>33.2 [26.3, 39.5]; 295/34</td>
+<td>38.8 [27.9, 51.0]; 80/11</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td><strong>19.3</strong> [17.7, 21.1]; 3,517/424</td>
+<td><strong>21.8</strong> [20.0, 23.9]; 3,743/404</td>
+<td><strong>22.9</strong> [19.8, 26.0]; 1,465/143</td>
+<td><strong>28.2</strong> [22.1, 34.3]; 472/40</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td><strong>19.6</strong> [13.4, 26.6]; 260/29</td>
+<td><strong>22.0</strong> [19.9, 23.9]; 2,622/260</td>
+<td><strong>28.5</strong> [26.5, 30.5]; 3,984/379</td>
+<td><strong>31.1</strong> [28.2, 33.9]; 1,961/174</td>
+</tr>
+<tr>
+<td>5</td>
+<td>—</td>
+<td>29.1 [21.3, 38.0]; 127/12</td>
+<td>30.3 [26.9, 34.0]; 1,391/120</td>
+<td>31.7 [29.6, 34.0]; 3,336/277</td>
+</tr>
+<tr>
+<td>6</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>26.8 [24.2, 29.7]; 1,394/100</td>
+</tr>
+</tbody></table></div>
+<p>Same table on the official test (descriptive only; no choice depends on it), scores 3 and 4:</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Holistic score</th>
+<th>Q1</th>
+<th>Q2</th>
+<th>Q3</th>
+<th>Q4</th>
+</tr></thead><tbody>
+<tr>
+<td>3</td>
+<td>17.6 [16.8, 18.5]; 13,684/1,662</td>
+<td>20.8 [19.7, 21.9]; 10,596/1,150</td>
+<td>22.3 [20.8, 24.1]; 4,597/459</td>
+<td>29.2 [26.2, 32.3]; 1,618/154</td>
+</tr>
+<tr>
+<td>4</td>
+<td>23.1 [19.4, 26.8]; 1,267/139</td>
+<td>22.4 [21.3, 23.7]; 9,131/910</td>
+<td>25.1 [24.0, 26.2]; 11,755/1,101</td>
+<td>29.7 [27.8, 31.5]; 4,404/387</td>
+</tr>
+</tbody></table></div>
+<h3>3.4 Regression (essay-clustered standard errors)</h3>
+<p>Logistic regression of unit error on length quartile (0–3). The table gives the odds ratio per quartile.</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Model specification</th>
+<th>Validation OR [95% CI]</th>
+<th>Test OR [95% CI]</th>
+</tr></thead><tbody>
+<tr>
+<td>Length only</td>
+<td>1.17 [1.14, 1.21]</td>
+<td>1.18 [1.16, 1.20]</td>
+</tr>
+<tr>
+<td>+ holistic score</td>
+<td>1.19 [1.14, 1.25]</td>
+<td>1.16 [1.13, 1.19]</td>
+</tr>
+<tr>
+<td>+ holistic score + gold label + discourse type</td>
+<td>1.17 [1.11, 1.23]</td>
+<td>1.13 [1.10, 1.16]</td>
+</tr>
+<tr>
+<td>Score-3 essays only</td>
+<td>1.15 [1.06, 1.24]</td>
+<td>1.21 [1.16, 1.26]</td>
+</tr>
+<tr>
+<td>Score-4 essays only</td>
+<td>1.27 [1.17, 1.37]</td>
+<td>1.17 [1.11, 1.23]</td>
+</tr>
+</tbody></table></div>
+<p>The same pattern holds for DeBERTa L0 and for RF (OR 1.16 and 1.31 after controlling for score; <code>outputs/length_within_score_regression.csv</code>).</p>
+<h3>3.5 Answer</h3>
+<p><strong>Within the same holistic score, the error rate still increases with essay length.</strong> Controlling for proficiency does not shrink the length effect. Controlling also for the gold label and the discourse type shrinks it only slightly. Hypothesis A is therefore not ruled out. What proficiency does explain is the change in error <em>type</em>: short essays contain most of the Ineffective units, while in the longest quartile 92% of errors are Adequate↔Effective confusions.</p>
+<p>Possible reasons for the remaining length effect, none tested yet:</p>
+<ul>
+<li>The model never sees the whole essay, so &quot;attention overload on long input&quot; is not a plausible mechanism. More plausible: units in long essays are themselves longer, and the Level 1 input (unit plus neighbours) is more often truncated at 512 tokens.</li>
+<li>Raters may judge a unit relative to the rest of a long, developed essay, which a local model cannot see.</li>
+<li>Holistic score is coarse (six levels), so some proficiency difference may remain inside each score.</li>
+</ul>
+<p>The Week 10 statement &quot;errors rise with length because long essays are written by stronger students&quot; is therefore only part of the explanation.</p>
+<hr>
+<h2>4. Context ablation (Level 0 vs. Level 1)</h2>
+<h3>4.1 Week 10 training run (validation, 29,102 units)</h3>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Metric</th>
+<th>RF Feature Set B</th>
+<th>DeBERTa L0</th>
+<th>DeBERTa L1</th>
+<th>L1 − L0</th>
+</tr></thead><tbody>
+<tr>
+<td>Macro-F1</td>
+<td>0.5230</td>
+<td>0.5768</td>
+<td>0.5790</td>
+<td>+0.0022 (CI contains 0)</td>
+</tr>
+<tr>
+<td>Accuracy</td>
+<td>77.22%</td>
+<td>73.88%</td>
+<td>73.09%</td>
+<td>−0.79 pts</td>
+</tr>
+<tr>
+<td>F1 Ineffective</td>
+<td>0.2384</td>
+<td>0.3741</td>
+<td>0.3934</td>
+<td>+0.0193</td>
+</tr>
+<tr>
+<td>Precision / Recall Ineffective</td>
+<td>26.7% / 21.5%</td>
+<td>32.0% / 45.0%</td>
+<td>36.1% / 43.2%</td>
+<td>+4.1 / −1.8 pts</td>
+</tr>
+<tr>
+<td>F1 Adequate</td>
+<td>0.8591</td>
+<td>0.8245</td>
+<td>0.8166</td>
+<td>−0.0079</td>
+</tr>
+<tr>
+<td>F1 Effective</td>
+<td>0.4713</td>
+<td>0.5317</td>
+<td>0.5270</td>
+<td>−0.0047</td>
+</tr>
+</tbody></table></div>
+<p>By discourse type, Level 1 raised Ineffective F1 for Claim (+0.043), Concluding Statement (+0.039) and Counterclaim (+0.030), and lowered it for Position (−0.055).</p>
+<h3>4.2 Week 11 retraining run (models scored on the test)</h3>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Metric (validation)</th>
+<th>L0</th>
+<th>L1</th>
+<th>Prompt-Aware</th>
+</tr></thead><tbody>
+<tr>
+<td>Macro-F1</td>
+<td>0.5723</td>
+<td>0.5809</td>
+<td>0.5855</td>
+</tr>
+<tr>
+<td>Accuracy</td>
+<td>72.91%</td>
+<td>74.17%</td>
+<td>74.06%</td>
+</tr>
+<tr>
+<td>F1 Ineffective</td>
+<td>0.3755</td>
+<td>0.3846</td>
+<td>0.3925</td>
+</tr>
+<tr>
+<td>Recall Ineffective</td>
+<td>42.8%</td>
+<td>44.7%</td>
+<td>48.8%</td>
+</tr>
+<tr>
+<td>Cohen κ / QWK</td>
+<td>0.363 / 0.433</td>
+<td>0.374 / 0.445</td>
+<td>0.380 / 0.455</td>
+</tr>
+</tbody></table></div>
+<p>Paired essay bootstrap on validation: L1 − L0 = +0.0087 [0.0014, 0.0161]; PA − L1 = +0.0045 [−0.0025, 0.0113]. Between the two training runs, the same configuration moved by −0.0045 (L0) and +0.0019 (L1). The L1 − L0 gap went from +0.0022 to +0.0087. Bootstrap intervals only capture sampling of essays, not training randomness, so a single-seed L1 − L0 difference of this size should be read with care.</p>
+<hr>
+<h2>5. Failure cases and decision thresholds</h2>
+<h3>5.1 Ten high-confidence Ineffective failures, Level 0 vs. Level 1 (Week 10 models)</h3>
+<p>None of the 10 cases changes its argmax to Ineffective under Level 1. In 8 of 10, P(Ineffective) rises.</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Case</th>
+<th>Type</th>
+<th>Text (start)</th>
+<th>Gold</th>
+<th>L0 pred / P(Ineff)</th>
+<th>L1 pred / P(Ineff)</th>
+<th>What the unit lacks (our reading)</th>
+</tr></thead><tbody>
+<tr>
+<td>1</td>
+<td>Counterclaim</td>
+<td>&quot;There are many reason on why texting while driving is very u…&quot;</td>
+<td>Ineff</td>
+<td>Adeq / 0.022</td>
+<td>Adeq / 0.029</td>
+<td>Counterclaim never answered (needs the whole essay to see)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Evidence</td>
+<td>&quot;To provide reasonings to my strong point, brings me back to…&quot;</td>
+<td>Ineff</td>
+<td>Eff / 0.0004</td>
+<td>Eff / 0.0014</td>
+<td>Correct quotation followed by off-topic reasoning (see 5.2)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Position</td>
+<td>&quot;I think you shouldn&#x27;t join the Seagoing Cowboys&quot;</td>
+<td>Ineff</td>
+<td>Adeq / 0.022</td>
+<td>Adeq / 0.010</td>
+<td>Bare stance with no reason</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Counterclaim</td>
+<td>&quot;Not allowing students to use there phones at all&quot;</td>
+<td>Ineff</td>
+<td>Adeq / 0.038</td>
+<td>Adeq / 0.090</td>
+<td>Fragment; no opposing argument stated</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Position</td>
+<td>&quot;The Driverless people can cause problems&quot;</td>
+<td>Ineff</td>
+<td>Adeq / 0.028</td>
+<td>Adeq / 0.152</td>
+<td>Vague, possibly at odds with the source text</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Counterclaim</td>
+<td>&quot;But Sometimes it could be a distraction from you doing all y…&quot;</td>
+<td>Ineff</td>
+<td>Adeq / 0.031</td>
+<td>Adeq / 0.040</td>
+<td>Counterclaim with no rebuttal</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Position</td>
+<td>&quot;I reconsider that are principal should let us eight graders…&quot;</td>
+<td>Ineff</td>
+<td>Adeq / 0.035</td>
+<td>Adeq / 0.097</td>
+<td>Unclear thesis scope</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Claim</td>
+<td>&quot;Some kids will ask there parents to transfer school&quot;</td>
+<td>Ineff</td>
+<td>Adeq / 0.021</td>
+<td>Adeq / 0.124</td>
+<td>Unsupported prediction</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Lead</td>
+<td>&quot;The future is near and the talk about driverless cars is upo…&quot;</td>
+<td>Ineff</td>
+<td>Adeq / 0.045</td>
+<td>Adeq / 0.080</td>
+<td>Generic hook</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Claim</td>
+<td>&quot;Another cars is a bad idea is because of its gas&quot;</td>
+<td>Ineff</td>
+<td>Adeq / 0.039</td>
+<td>Adeq / 0.032</td>
+<td>Claim with no support</td>
+</tr>
+</tbody></table></div>
+<h3>5.2 Case 2 re-examined (Requirement 4)</h3>
+<p>The unit (prompt <em>Car-free cities</em>) begins: &quot;…brings me back to paragraph 36. It clearly states in bolded writing: &#x27;With all these changes, people who stopped car commuting as a result of the recession may find less reason to resume the habit…&#x27;&quot;. We checked the numbered source set used for this prompt: it has 43 paragraphs, and <strong>paragraph 36 contains exactly this sentence</strong>. The citation is therefore accurate, and our Week 10 reading (&quot;a reference to a paragraph that does not exist&quot;) was wrong. The unit&#x27;s weakness is visible in the unit itself: after the quotation, the student writes about getting a learner&#x27;s permit and a driving test, which does not support the point. The model probably rated the unit Effective because of surface features (length, an explicit quotation, connectives such as &quot;Furthermore&quot;). That explanation is a hypothesis we have not tested. The PERSUADE CSV only lists source titles, not their text, so a model with source access would need the passages added from outside the corpus.</p>
+<h3>5.3 Lowering the Ineffective threshold: how many cases change?</h3>
+<p>Rule: predict Ineffective if P(Ineffective) ≥ θ; otherwise take the larger of Adequate and Effective. The baseline is argmax; there is no &quot;default θ&quot;. Validation only (<code>outputs/ineffective_threshold_tuning_table.csv</code>, <code>outputs/threshold_case_flips.csv</code>).</p>
+<p><strong>Week 10 Level 1 model (the model behind the 10 cases):</strong></p>
+<div class="table-scroll wide"><table>
+<thead><tr>
+<th>Rule</th>
+<th>Recall Ineff</th>
+<th>Precision Ineff</th>
+<th>F1 Ineff</th>
+<th>Macro-F1</th>
+<th>Units changed</th>
+<th>Ineffective newly caught / new false alarms</th>
+<th>Cases flipped (of 10)</th>
+</tr></thead><tbody>
+<tr>
+<td>argmax</td>
+<td>43.2%</td>
+<td>36.1%</td>
+<td>0.393</td>
+<td>0.579</td>
+<td>—</td>
+<td>—</td>
+<td>0</td>
+</tr>
+<tr>
+<td>θ = 0.30</td>
+<td>53.6%</td>
+<td>28.7%</td>
+<td>0.374</td>
+<td>0.566</td>
+<td>895</td>
+<td>138 / 757</td>
+<td>0</td>
+</tr>
+<tr>
+<td>θ = 0.20</td>
+<td>61.8%</td>
+<td>24.5%</td>
+<td>0.350</td>
+<td>0.552</td>
+<td>1,762</td>
+<td>246 / 1,516</td>
+<td>0</td>
+</tr>
+<tr>
+<td>θ = 0.15</td>
+<td>67.4%</td>
+<td>21.9%</td>
+<td>0.330</td>
+<td>0.539</td>
+<td>2,503</td>
+<td>321 / 2,182</td>
+<td>1 (case 5)</td>
+</tr>
+<tr>
+<td>θ = 0.10</td>
+<td>73.0%</td>
+<td>18.4%</td>
+<td>0.295</td>
+<td>0.517</td>
+<td>3,670</td>
+<td>396 / 3,274</td>
+<td>2 (cases 5, 8)</td>
+</tr>
+<tr>
+<td>θ = 0.08</td>
+<td>75.7%</td>
+<td>16.8%</td>
+<td>0.274</td>
+<td>0.503</td>
+<td>4,410</td>
+<td>431 / 3,979</td>
+<td>5 (cases 4, 5, 7, 8, 9)</td>
+</tr>
+</tbody></table></div>
+<p><strong>Reading.</strong> Lowering θ moves the model toward Ineffective (case 8&#x27;s probability is 6× higher with context), but each extra correct catch costs about 7–8 false alarms. Macro-F1 falls monotonically, and the best Macro-F1 is at argmax. For formative feedback, a teacher might accept θ ≈ 0.15–0.20 to review twice as many flagged units. This is a product decision, and on this data it does not improve the classifier. For the Week 11 L1 model that was scored on test, the curve is similar (θ = 0.10: recall 69.6%, Macro-F1 0.535, 3/10 cases flip), but case 8 itself does <strong>not</strong> flip, because its P(Ineffective) is 0.058. Single-case results depend on the training run.</p>
+<hr>
+<h2>6. Leave-one-prompt-out (LOPO)</h2>
+<h3>6.1 What is compared</h3>
+<ul>
+<li><strong>Across model families, same fold:</strong> Linear SVM (TF-IDF), RF (Feature Set B) and DeBERTa L0, each trained on 14 prompts and tested on all units of the held-out prompt.</li>
+<li><strong>Within DeBERTa:</strong> the LOPO model vs. the in-domain model (trained with the prompt present) on <strong>the same units</strong>, namely the validation essays of that prompt, with a paired essay bootstrap. The Week 10 table compared LOPO on all units of the prompt with in-domain on the validation subset, i.e. two different sets of units; this section replaces it.</li>
+</ul>
+<h3>6.2 All units of the held-out prompt</h3>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Held-out prompt</th>
+<th>Units</th>
+<th>Linear SVM</th>
+<th>RF</th>
+<th>DeBERTa L0 (LOPO)</th>
+<th>Ineff F1: SVM / RF / DeBERTa</th>
+</tr></thead><tbody>
+<tr>
+<td>A Cowboy Who Rode the Waves</td>
+<td>5,158</td>
+<td>0.3373</td>
+<td>0.3501</td>
+<td><strong>0.4082</strong></td>
+<td>0.103 / 0.109 / 0.125</td>
+</tr>
+<tr>
+<td>Summer projects</td>
+<td>9,855</td>
+<td>0.4269</td>
+<td>0.4339</td>
+<td><strong>0.4642</strong></td>
+<td>0.041 / 0.000 / 0.076</td>
+</tr>
+<tr>
+<td>Distance learning</td>
+<td>18,526</td>
+<td>0.4690</td>
+<td>0.5014</td>
+<td><strong>0.5735</strong></td>
+<td>0.062 / 0.065 / 0.251</td>
+</tr>
+</tbody></table></div>
+<p>We have no in-domain per-prompt numbers for SVM and RF, so this table shows which family transfers better. It does not show how much each family drops.</p>
+<h3>6.3 LOPO vs. in-domain DeBERTa on the same units (<code>outputs/lopo_deberta_gap_same_units.csv</code>)</h3>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Held-out prompt</th>
+<th>Units / essays</th>
+<th>LOPO</th>
+<th>In-domain (Week 9 L0)</th>
+<th>Gap [95% CI]</th>
+<th>In-domain (Week 11 L0)</th>
+<th>Gap [95% CI]</th>
+</tr></thead><tbody>
+<tr>
+<td>A Cowboy Who Rode the Waves</td>
+<td>1,030 / 134</td>
+<td>0.3584</td>
+<td>0.4462</td>
+<td><strong>−0.088 [−0.138, −0.041]</strong></td>
+<td>0.4755</td>
+<td><strong>−0.117 [−0.171, −0.057]</strong></td>
+</tr>
+<tr>
+<td>Summer projects</td>
+<td>2,074 / 177</td>
+<td>0.4605</td>
+<td>0.4695</td>
+<td>−0.009 [−0.093, +0.078]</td>
+<td>0.5076</td>
+<td>−0.047 [−0.113, +0.012]</td>
+</tr>
+<tr>
+<td>Distance learning</td>
+<td>3,533 / 283</td>
+<td>0.5712</td>
+<td>0.5677</td>
+<td>+0.004 [−0.024, +0.028]</td>
+<td>0.5757</td>
+<td>−0.005 [−0.030, +0.020]</td>
+</tr>
+</tbody></table></div>
+<p><strong>Reading.</strong> Only <em>A Cowboy Who Rode the Waves</em> shows a clear drop when the prompt is unseen. It is a source-based narrative prompt whose essays refer to characters and events of one story, which fits the idea that prompt-specific content matters. With only three prompts this remains an interpretation, not a tested cause. Caveat: the Week 10 LOPO models were trained with transformers 5.20.2. That version later broke DeBERTa-v3 training in our Week 11 runs, so the LOPO numbers may understate DeBERTa somewhat.</p>
+<hr>
+<h2>7. Official test (Requirement 2)</h2>
+<h3>7.1 Results (93,677 units, 10,402 essays, one pass)</h3>
+<div class="table-scroll wide"><table>
+<thead><tr>
+<th>System</th>
+<th>Role</th>
+<th>Macro-F1</th>
+<th>Accuracy</th>
+<th>F1 Ineff</th>
+<th>F1 Adeq</th>
+<th>F1 Eff</th>
+<th>Recall Ineff</th>
+<th>QWK</th>
+<th>Inference time</th>
+</tr></thead><tbody>
+<tr>
+<td>Random Forest, Feature Set B</td>
+<td>protocol</td>
+<td>0.5098</td>
+<td>78.51%</td>
+<td>0.2024</td>
+<td><strong>0.8701</strong></td>
+<td>0.4567</td>
+<td>17.2%</td>
+<td>0.350</td>
+<td>88 s train+predict (CPU)</td>
+</tr>
+<tr>
+<td>DeBERTa-v3 Level 0</td>
+<td>protocol</td>
+<td>0.5613</td>
+<td>74.38%</td>
+<td>0.3387</td>
+<td>0.8312</td>
+<td>0.5141</td>
+<td>37.2%</td>
+<td>0.422</td>
+<td>57 s (A100)</td>
+</tr>
+<tr>
+<td><strong>DeBERTa-v3 Level 1</strong></td>
+<td><strong>protocol, locked</strong></td>
+<td><strong>0.5772</strong></td>
+<td>75.68%</td>
+<td>0.3679</td>
+<td>0.8410</td>
+<td>0.5228</td>
+<td>41.5%</td>
+<td>0.442</td>
+<td>91 s (A100)</td>
+</tr>
+<tr>
+<td>DeBERTa-v3 Prompt-Aware</td>
+<td>exploratory</td>
+<td>0.5808</td>
+<td>75.39%</td>
+<td>0.3787</td>
+<td>0.8381</td>
+<td>0.5258</td>
+<td>44.2%</td>
+<td>0.446</td>
+<td>94 s (A100)</td>
+</tr>
+<tr>
+<td>Linear SVM (TF-IDF) ¹</td>
+<td>supplementary</td>
+<td>0.4822</td>
+<td>74.40%</td>
+<td>0.2044</td>
+<td>0.8439</td>
+<td>0.3983</td>
+<td>—</td>
+<td>—</td>
+<td>41 s (CPU)</td>
+</tr>
+</tbody></table></div>
+<p>¹ Trained on train + validation (144,289 units); the same configuration trained on 115,187 units scores 0.4845 on validation. Footnote on RF: the first RF test run (Section 1.1(c), not Feature Set B) gave 0.4834 / 67.79%. It is kept in <code>outputs/official_test_rf_misspecified_old_result.csv</code> for transparency and is not used in any comparison.</p>
+<h3>7.2 Paired essay bootstrap on the test set</h3>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Comparison</th>
+<th>Δ Macro-F1</th>
+<th>95% CI</th>
+<th>One-sided p (Δ ≤ 0)</th>
+<th>Resamples</th>
+</tr></thead><tbody>
+<tr>
+<td>L1 − L0</td>
+<td>+0.0159</td>
+<td>[+0.0115, +0.0207]</td>
+<td>&lt; 0.0005</td>
+<td>2,000</td>
+</tr>
+<tr>
+<td>PA − L1</td>
+<td>+0.0036</td>
+<td>[−0.0002, +0.0074]</td>
+<td>0.032</td>
+<td>2,000</td>
+</tr>
+<tr>
+<td>PA − L0</td>
+<td>+0.0195</td>
+<td>[+0.0151, +0.0241]</td>
+<td>&lt; 0.0005</td>
+<td>2,000</td>
+</tr>
+<tr>
+<td>L0 − RF</td>
+<td>+0.0516</td>
+<td>[+0.0448, +0.0584]</td>
+<td>&lt; 0.001</td>
+<td>1,000</td>
+</tr>
+<tr>
+<td>L1 − RF</td>
+<td>+0.0675</td>
+<td>[+0.0605, +0.0749]</td>
+<td>&lt; 0.001</td>
+<td>1,000</td>
+</tr>
+<tr>
+<td>PA − RF</td>
+<td>+0.0711</td>
+<td>[+0.0643, +0.0780]</td>
+<td>&lt; 0.001</td>
+<td>1,000</td>
+</tr>
+</tbody></table></div>
+<p>We base decisions on the two-sided 95% CI. PA − L1 has a one-sided p below 0.05, but its two-sided interval includes 0, so we report the two as <strong>not distinguishable</strong>.</p>
+<h3>7.3 What the test says</h3>
+<ol start="1">
+<li value="1">Validation and test agree: L1 0.5809 vs. 0.5772, L0 0.5723 vs. 0.5613, RF 0.5261 vs. 0.5098. No system collapses on unseen essays.</li>
+<li value="2">DeBERTa beats RF Feature Set B by 0.05–0.07 Macro-F1, almost entirely through the minority classes (Ineffective F1 0.34–0.38 vs. 0.20). RF keeps the highest accuracy and Adequate F1 because it predicts Adequate more often.</li>
+<li value="3">Level 1 beats Level 0 on test for this pair of trained models. Given the run-to-run variation in §4.2, we read this as &quot;local context gives a small, consistent gain&quot;. We do not read it as a size we can state precisely.</li>
+<li value="4">Adding the prompt name gives no difference we can distinguish on test.</li>
+</ol>
+<hr>
+<h2>8. Conclusion on context and information needs (rewritten, Requirement 1)</h2>
+<p>Adding the neighbouring units (Level 1) gives a small gain. In the Week 10 run it was not distinguishable from zero on validation (+0.0022). In the Week 11 retraining it was +0.0087 on validation and +0.0159 [0.0115, 0.0207] on the official test. None of the 10 high-confidence Ineffective failures changed its argmax with context, although 8 of 10 moved toward Ineffective. Reading those cases, the missing information seems to lie mostly in the whole essay (an unanswered counterclaim, a bare position) and sometimes in the task itself. Our results are <strong>consistent with the hypothesis</strong> that judging such units needs the whole essay and, for source-based prompts, the source texts. We have not tested this: Level 2 (source text) and Level 3 (whole essay) were not run, and case 2 shows that our own reading of a case can be wrong.</p>
+<p>Label reliability also limits what any model can reach here. Two trained raters agree on these effectiveness labels only at κ ≈ 0.316 (Crossley et al., 2024), so part of what looks like model error is disagreement in the labels themselves. Our model&#x27;s κ against the adjudicated label (0.37 on test) and the rater–rater κ measure different things and should not be compared to claim human-level performance.</p>
+<hr>
+<h2>9. Limitations</h2>
+<ul>
+<li>One training seed per DeBERTa configuration; differences of about 0.005–0.01 Macro-F1 are within run-to-run variation (§4.2).</li>
+<li>The length effect in §3 is a measured association within holistic score; we have not identified its mechanism.</li>
+<li>Threshold analysis (§5.3) is on validation only; we did not choose or report an operating point on test.</li>
+<li>LOPO covers 3 of 15 prompts and was trained with a transformers version later found to break DeBERTa-v3 training.</li>
+<li>Source-dependent explanations (cases 2, 5) rely on source texts that are not part of the PERSUADE CSV.</li>
+</ul>
+<h2>10. Individual contributions and AI use</h2>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Member</th>
+<th>Role</th>
+<th>Work</th>
+<th>Artifacts</th>
+</tr></thead><tbody>
+<tr>
+<td>Member 1</td>
+<td>Data and confounds</td>
+<td>Holistic × length analysis (rerun with the corrected join), RF Feature Set B on test</td>
+<td><code>Person1/script_holistic_length_table.py</code>, <code>Person1/run_rf_official_test.py</code>, <code>Person1/output/</code></td>
+</tr>
+<tr>
+<td>Member 2</td>
+<td>Errors and thresholds</td>
+<td>Threshold analysis and case counting, Linear SVM test and LOPO</td>
+<td><code>script_threshold_tuning_and_case8.py</code>, <code>Person2Khoa/Person2Khoa/</code></td>
+</tr>
+<tr>
+<td>Member 3</td>
+<td>DeBERTa and test governance</td>
+<td>Retrained L0/L1/PA on Colab A100, ran the locked test pass, bootstrap; same-unit LOPO gap</td>
+<td><code>Week11_Person3_DeBERTa_OfficialTest/</code>, <code>script_official_test_evaluation.py</code>, <code>script_lopo_same_units_gap.py</code></td>
+</tr>
+</tbody></table></div>
+<p><strong>AI assistance.</strong> We used Gemini/Antigravity, Claude Code and OpenAI Codex for code drafting, running Colab jobs, report formatting, and a full re-check of this report against the raw data. That re-check found the defects listed in <code>RA_SOAT_TUAN11_SO_VOI_NHAN_XET_TUAN10.md</code>. Every number in this report is produced by a script in the repository from the raw CSVs or saved predictions.</p>
+<h2>References</h2>
+<ul>
+<li>Crossley, S. A., Baffour, P., Tian, Y., Franklin, A., Benner, M., &amp; Boser, U. (2024). A large-scale corpus for assessing written argumentation: PERSUADE 2.0. <em>Assessing Writing</em>, 61, Article 100830. <a href="https://doi.org/10.1016/j.asw.2024.100830">https://doi.org/10.1016/j.asw.2024.100830</a></li>
+<li>He, P., Gao, J., &amp; Chen, W. (2023). DeBERTaV3: Improving DeBERTa using ELECTRA-style pre-training with gradient-disentangled embedding sharing. <em>ICLR</em>.</li>
+<li>Stab, C., &amp; Gurevych, I. (2017). Parsing argumentation structures in persuasive essays. <em>Computational Linguistics</em>, 43(3), 619–659.</li>
+<li>Toulmin, S. E. (1958). <em>The Uses of Argument</em>. Cambridge University Press.</li>
+</ul>
+</body></html>

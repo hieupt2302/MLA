@@ -1,0 +1,11 @@
+{
+  "config": "Feature Set B + RF(200, depth 35, min_samples_split 5, balanced, seed 42)",
+  "train_units": 115187,
+  "val_units": 29102,
+  "test_units": 93677,
+  "week9_val_macro_f1": 0.523,
+  "reproduced_val_macro_f1": 0.5261,
+  "finished_at": "2026-10-30 18:25:34 UTC",
+  "sklearn_version": "1.6.1",
+  "environment": "docker python:3.12-slim, pandas 2.2.3"
+}

@@ -1,0 +1,21 @@
+model,split,length_quartile,n_units,n_essays,mean_holistic_score,pct_ineffective,pct_effective,error_rate_pct,pct_errors_adequate_vs_effective
+RF Feature Set B (tuần 9),validation,Q1 (<=315),7333,1037,2.38,8.97,5.29,18.61,30.48
+RF Feature Set B (tuần 9),validation,Q2 (316-422),7277,786,3.2,5.02,10.72,18.91,61.48
+RF Feature Set B (tuần 9),validation,Q3 (423-566),7226,690,3.81,2.92,18.34,24.44,85.56
+RF Feature Set B (tuần 9),validation,Q4 (>=567),7266,606,4.67,1.29,32.81,29.2,95.62
+DeBERTa L1 (lượt chạy tuần 10),validation,Q1 (<=315),7333,1037,2.38,8.97,5.29,22.34,51.71
+DeBERTa L1 (lượt chạy tuần 10),validation,Q2 (316-422),7277,786,3.2,5.02,10.72,24.39,70.03
+DeBERTa L1 (lượt chạy tuần 10),validation,Q3 (423-566),7226,690,3.81,2.92,18.34,28.59,85.43
+DeBERTa L1 (lượt chạy tuần 10),validation,Q4 (>=567),7266,606,4.67,1.29,32.81,32.36,93.79
+"DeBERTa L0 (tuần 11, mô hình đã chấm test)",validation,Q1 (<=315),7333,1037,2.38,8.97,5.29,23.22,50.21
+"DeBERTa L0 (tuần 11, mô hình đã chấm test)",validation,Q2 (316-422),7277,786,3.2,5.02,10.72,25.37,70.86
+"DeBERTa L0 (tuần 11, mô hình đã chấm test)",validation,Q3 (423-566),7226,690,3.81,2.92,18.34,29.03,83.51
+"DeBERTa L0 (tuần 11, mô hình đã chấm test)",validation,Q4 (>=567),7266,606,4.67,1.29,32.81,30.8,92.98
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",validation,Q1 (<=315),7333,1037,2.38,8.97,5.29,22.0,47.49
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",validation,Q2 (316-422),7277,786,3.2,5.02,10.72,22.96,67.09
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",validation,Q3 (423-566),7226,690,3.81,2.92,18.34,27.93,83.8
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",validation,Q4 (>=567),7266,606,4.67,1.29,32.81,30.48,92.01
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",official_test,Q1 (<=315),29076,4166,2.39,8.2,5.37,21.09,49.01
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",official_test,Q2 (316-422),22525,2441,3.24,4.15,9.8,22.02,70.1
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",official_test,Q3 (423-566),22270,2125,3.87,2.69,17.5,25.5,83.43
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",official_test,Q4 (>=567),19806,1670,4.64,1.56,32.44,30.35,92.02

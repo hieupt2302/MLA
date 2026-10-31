@@ -1,304 +1,302 @@
-# TECHNICAL RESEARCH REPORT (WEEK 11) - FINAL PROJECT & OFFICIAL TEST EVALUATION
-## RESOLVING LENGTH CONFOUNDS, OFFICIAL TEST BENCHMARKING, AND SAME-FAMILY LOPO GENERALIZATION IN ARGUMENTATIVE DISCOURSE EFFECTIVENESS ASSESSMENT
+# TECHNICAL RESEARCH REPORT (WEEK 11) — OFFICIAL TEST EVALUATION AND RESPONSE TO THE WEEK 10 REVIEW
+## Discourse-unit effectiveness prediction on PERSUADE 2.0: length vs. proficiency, one-pass official test, LOPO, and decision thresholds
 
-**Course:** Machine Learning & Applications (CLC02) | **Academic Cohort:** 2025–2026 | **Project Group:** Group 06  
-**Primary Dataset:** PERSUADE 2.0 Corpus (*Assessing Writing*, Elsevier, 2024) | **Date of Submission:** October 2026  
-**Artifacts & Outputs Repository:** `outputs/` | **Code Packages:** `Person1/`, `Person2Khoa/`, `Week11_Person3_DeBERTa_OfficialTest/`
+**Course:** Machine Learning & Applications (CLC02) | **Group:** 06 | **Dataset:** PERSUADE 2.0 (Crossley et al., 2024) | **Date:** 31 October 2026
+**Code and outputs:** `outputs/`, `Person1/`, `Person2Khoa/`, `Week11_Person3_DeBERTa_OfficialTest/`
+**Review log for this revision:** `RA_SOAT_TUAN11_SO_VOI_NHAN_XET_TUAN10.md`
 
----
-
-### Live Interactive Google Colab Notebooks:
-* **Person 1 (Length Confound & RF Official Test):** `Person1/script_holistic_length_table.ipynb`, `Person1/run_rf_official_test.ipynb`  
-  Colab Link: [https://colab.research.google.com/drive/1YRMpJgGzZ0vWe7nA0W8c7n5JKMruVJHT?usp=sharing](https://colab.research.google.com/drive/1YRMpJgGzZ0vWe7nA0W8c7n5JKMruVJHT?usp=sharing)
-* **Person 2 (Linear SVM LOPO & Threshold Tuning):** `Person2Khoa/script_lopo_weaker_baseline.ipynb`, `Person2Khoa/script_threshold_tuning_and_case8.ipynb`, `Person2Khoa/run_svm_official_test.ipynb`  
-  Colab Link: [https://colab.research.google.com/drive/1prcSnRHax0SAITnUbGsXks3aQ9pbwJD2?usp=sharing](https://colab.research.google.com/drive/1prcSnRHax0SAITnUbGsXks3aQ9pbwJD2?usp=sharing)
-* **Person 3 (DeBERTa Prompt-Aware & Official Test Master):** `Week11_Person3_DeBERTa_OfficialTest/07_person3_prompt_aware_official_test.ipynb`  
-  Colab Link: [https://colab.research.google.com/drive/1xiYMZ7SjRSAn_ioAvAbNh-PZDkghsiBk?usp=sharing](https://colab.research.google.com/drive/1xiYMZ7SjRSAn_ioAvAbNh-PZDkghsiBk?usp=sharing)
+**Colab notebooks**
+* Person 1 (length × proficiency, RF official test): `Person1/script_holistic_length_table.ipynb`, `Person1/run_rf_official_test.ipynb` — https://colab.research.google.com/drive/1YRMpJgGzZ0vWe7nA0W8c7n5JKMruVJHT?usp=sharing
+* Person 2 (threshold analysis, Linear SVM LOPO and test): `Person2Khoa/Person2Khoa/*.ipynb` — https://colab.research.google.com/drive/1prcSnRHax0SAITnUbGsXks3aQ9pbwJD2?usp=sharing
+* Person 3 (DeBERTa L0 / L1 / Prompt-Aware, official test): `Week11_Person3_DeBERTa_OfficialTest/07_person3_prompt_aware_official_test.ipynb` — https://colab.research.google.com/drive/1xiYMZ7SjRSAn_ioAvAbNh-PZDkghsiBk?usp=sharing
 
 ---
 
-## Executive Abstract
+## Abstract
 
-Evaluating the rhetorical effectiveness of argumentative discourse units in student essays is a cornerstone of Automated Writing Evaluation (AWE). Following the detailed review and instructional directives on our Week 10 technical report (*Nhan_xet_Week10_CLC02_Group06*), this study delivers our final project deliverables: (1) an empirical resolution of the essay length confound controlling for student proficiency, (2) the execution of a single frozen official test evaluation across baseline and deep learning architectures, (3) a methodologically fair Leave-One-Prompt-Out (LOPO) benchmark incorporating same-family linear models, and (4) an exploratory threshold tuning protocol demonstrating error rescue on severe misclassifications.
+We classify each annotated discourse unit of a student argumentative essay as Ineffective, Adequate or Effective. This week answers the Week 10 review and runs the official test once.
 
-Key empirical findings include:
-1. **Disentangling Length from Writing Proficiency (N = 29,102 Validation Units):** We calculated error rates across four length quartiles within each discrete holistic essay score (1 to 6). In essays of identical proficiency, classification error rates remain remarkably flat across length quartiles: for Score 3 essays, error rates are 26.59% (Q1), 25.32% (Q2), 26.48% (Q3), and 26.48% (Q4); for Score 4 essays, error rates are 23.41% (Q1), 27.53% (Q2), 25.19% (Q3), and 25.90% (Q4). This definitively resolves the confound: essay length does not induce syntactic degradation for the model; rather, the overall error rise (21.98% to 30.35%) is driven entirely by student proficiency shift into the ambiguous Adequate vs Effective boundary.
-2. **Official Test Holdout Single Frozen Pass (N = 93,677 Units, 10,402 Essays):** Chatted and registered prior to unsealing, all five systems were evaluated simultaneously on the untouched official holdout. Classical baselines achieve Macro-F1 scores of **0.4822** (Linear SVM, accuracy 74.40%) and **0.4834** (Random Forest Feature Set B, accuracy 67.79%). DeBERTa-v3 Level 0 achieves **0.5613** (accuracy 74.38%), DeBERTa-v3 Level 1 (pre-registered locked system) achieves **0.5772** (accuracy 75.68%), and the improved Prompt-Aware DeBERTa-v3 achieves **0.5808** (accuracy 75.39%). Paired bootstrap analysis (1,000 resamples) demonstrates that Level 1 significantly outperforms Level 0 on test (+0.0159 [0.0115, 0.0207], p = 0.0), while Prompt-Aware provides a directional gain (+0.0036 [-0.0002, 0.0074]) whose 95% CI spans zero.
-3. **Fair Same-Family LOPO Benchmarking:** To resolve the methodological asymmetry of comparing classical tree models against deep transformers, we introduced **Linear SVM** on the identical 3-prompt LOPO benchmark. Linear SVM drops sharply on unseen prompts (Cowboy: 0.3373, Summer: 0.4269, Distance: 0.4690), confirming that bag-of-words representations degrade under out-of-domain transfer. Within the Transformer family, comparing DeBERTa In-Domain vs LOPO reveals that generalization drop mirrors prompt genre: literary prompts with unique source terminology drop noticeably (Cowboy: -8.52%), while open-ended policy prompts generalize cleanly (Summer: -1.12%; Distance: +1.03%).
-4. **Threshold Tuning & Practical Error Rescue:** Lowering the decision threshold for the minority Ineffective class from default 0.33 to $	heta = 0.10$ increases Ineffective recall from 36.5% to **76.51%** (validation Macro-F1 = 0.5166). In Case 8 (a flawed Claim containing basic spelling and syntactic errors), posterior probability $P(	ext{Ineffective}) = 0.1236$ flips from Adequate to Ineffective under $	heta = 0.10$, fulfilling AWE pedagogical goals where false negatives are substantially more harmful than false alarms.
-
----
-
-## 1. Methodological Rectification & Responses to Week 10 Review
-
-We systematically addressed every mandatory and suggested revision specified by instructor Thầy Khánh:
-
-| Directive | Location | Problem Identified | Action Taken & Resolution | Verification Criterion |
-|---|---|---|---|---|
-| **1. [Mandatory] Revise Conclusion 7.2** | Section 7.2 / 8.2 | Claiming data "proves" performance ceiling is caused by missing inputs was overly strong. Only Level 0 and 1 tested; human rater agreement is $\kappa = 0.316$. | Rephrased conclusion conditionally: Level 1 yields minor gains; results are consistent with the hypothesis that source passages and whole-essay context are required, but this remains to be tested. Explicitly cited $\kappa = 0.316$ rater noise ceiling. | Word "chứng minh" (proves) completely removed from Section 7.2 / 8.2. |
-| **2. [Mandatory] Official Test Single-Run Benchmark** | Section 1.3 & Section 7 | Level 1 was chosen with +0.0022 margin over Level 0 on validation; test numbers must be interpreted alongside baselines. | Evaluated all models on the identical 93,677 official test holdout in a single registered pass: Linear SVM, Random Forest, DeBERTa Level 0, DeBERTa Level 1, and Prompt-Aware DeBERTa. | Official test table reports all 5 systems with bootstrap confidence intervals. |
-| **3. [Mandatory] Disentangle Length from Proficiency** | Section 3.4 | Length and holistic score covary; unclear whether length alone degrades classification. | Computed error rates across four length quartiles within each individual holistic score level (Scores 1 to 6). | Complete Table of Holistic Score × Length Quartile with sample counts N and error rates (%). |
-| **4. [Recommended] Reframe "paragraph 36" as Hypothesis** | Section 5.3, Case 2 | Source reading passage was not directly inspected to confirm absence of paragraph 36. | Rephrased citation flaw as an unverified external source hypothesis. | Claim stated at an appropriate epistemological level. |
-| **5. [Recommended] Export Final Version from Word/LaTeX** | Full Report | HTML-to-PDF conversion resulted in broken table columns. | Rendered final submission via Microsoft Word (`.docx`) with proportional column widths and explicit borders. | Every table is fully readable across rows and columns. |
-| **6. [Verbal / Class] Fair LOPO Same-Family Baseline** | Section 6.3 | Comparing Random Forest (TF-IDF) against DeBERTa (86M parameters) in LOPO is asymmetric. | Added Linear SVM (TF-IDF) to LOPO 3 folds; established DeBERTa In-Domain vs LOPO as within-family comparison. | Dual-axis LOPO comparison presented. |
-
-### 1.2 Diagnostic Analysis of the LR 6.13% Metric Mapping Defect
-As required for individual interview readiness, every group member has mastered the technical explanation:
-1. The 6.13% anomaly in Week 8 was an indexing transposition defect in scikit-learn post-processing.
-2. `LogisticRegression.classes_` sorts string labels alphabetically: `['Adequate', 'Effective', 'Ineffective']`, assigning index 0 to Adequate and index 2 to Ineffective.
-3. The legacy code assumed index 0 was Ineffective, thereby copying the Ineffective F1 score (~0.0613) into the Overall Accuracy field.
-4. Correcting the mapping `LABEL2ID={'Ineffective': 0, 'Adequate': 1, 'Effective': 2}` verified that Logistic Regression actually achieved Balanced Accuracy of 60.32% and Macro-F1 of 0.5086 on the 29,102 validation units.
-
-### 1.3 Governance & Formal Pre-Registration of the Official Test Set
-Prior to unsealing the official holdout (`persuade_corpus_2.0_test.csv`, N = 93,677 units across 10,402 essays), Group 06 pre-registered the following configuration:
-- Backbone: `microsoft/deberta-v3-base` (86M parameters).
-- Input Representation: Level 1 contextual formatting (`[Type] [SEP] Previous: [prev] [SEP] Target: [curr] [SEP] Next: [next]`).
-- Hyperparameters: Effective batch size 32, learning rate 2e-5 with 10% linear warmup, 3 epochs, balanced cross-entropy loss weights, seed 42.
-- Protocol Rule: Exactly one evaluation pass across all systems on the sealed test holdout.
+1. **Length vs. proficiency (Requirement 3).** Within the same holistic score, the error rate of DeBERTa Level 1 still rises with essay length. For score-3 essays it goes from 19.3% (shortest quartile) to 28.2% (longest) on validation, and from 17.6% to 29.2% on the official test. A logistic regression with essay-clustered errors gives an odds ratio of 1.19 [1.14, 1.25] per length quartile after controlling for holistic score. It stays at 1.17 [1.11, 1.23] after also controlling for the gold label and discourse type. Proficiency shift explains why the *type* of error changes with length: in the longest quartile, 92% of errors are Adequate↔Effective confusions. It does not explain the whole *rise* in error. Hypothesis A (length/complexity) is therefore **not ruled out**, and we report both explanations. An earlier version of this table showed flat error rates; that table came from a join on corrupted IDs (Section 2.3) and is withdrawn.
+2. **Official test, one pass (Requirement 2; 93,677 units, 10,402 essays).** The protocol systems scored Macro-F1: Random Forest Feature Set B **0.5098**, DeBERTa-v3 Level 0 **0.5613**, and DeBERTa-v3 Level 1, the locked system, **0.5772**. The exploratory Prompt-Aware model scored 0.5808, and a supplementary Linear SVM scored 0.4822. Level 1 beats Level 0 by +0.0159 [0.0115, 0.0207] (essay bootstrap). Prompt-Aware vs. Level 1 is +0.0036 [−0.0002, 0.0074], so they cannot be distinguished. All three DeBERTa models beat RF by 0.05–0.07 Macro-F1. The DeBERTa models scored on test were retrained this week with the locked configuration. On validation they give L1 − L0 = +0.0087 [0.0014, 0.0161], whereas the Week 10 training run gave +0.0022 (CI containing 0). The L0/L1 difference is therefore of the same order as run-to-run variation.
+3. **Lowering the Ineffective threshold.** At P(Ineffective) ≥ 0.10, 3,670 of 29,102 validation predictions change, and 2 of the 10 studied failure cases (cases 5 and 8) flip to Ineffective. Recall for Ineffective rises from 43.2% to 73.0%. Precision falls from 36.1% to 18.4%, and Macro-F1 falls from 0.579 to 0.517: about 8 new false alarms per newly caught Ineffective unit.
+4. **LOPO.** On the *same* validation units, DeBERTa trained without the prompt loses 0.088 Macro-F1 [−0.138, −0.041] on *A Cowboy Who Rode the Waves*. For *Summer projects* (−0.009) and *Distance learning* (+0.004), the confidence intervals include zero.
 
 ---
 
-## 2. Data Pipeline Rigor & Verified Split Alignment
+## 1. Response to the Week 10 review
 
-### 2.1 Filtering Pipeline & String Typing
-All datasets were loaded enforcing string types (`dtype={'essay_id': str, 'discourse_id': str}`) to avoid leading-zero drops or floating-point index corruption. Segmentations follow gold discourse spans from PERSUADE 2.0.
+| # | Review item | What we did | Where |
+|---|---|---|---|
+| 1 | **[Required]** Rewrite the conclusion in 7.2 so that it no longer says the data "prove" a ceiling caused by missing input; add a sentence on label reliability | Rewritten as a hypothesis consistent with, but not tested by, our data. We also removed "prove", "definitively" and "conclusively" from the whole report. Added the inter-rater κ = 0.316 sentence | §8 |
+| 2 | **[Required]** Score RF (Feature Set B), DeBERTa L0 and L1 in the same test run; state that L0 and L1 were indistinguishable on validation | Protocol in §1.1 lists the three systems and states this. Test table has the three protocol rows plus two clearly labelled extra rows. We found the first RF test script did **not** implement Feature Set B; the corrected run is reported, and the old number is kept in a footnote | §1.1, §7 |
+| 3 | **[Required]** Error rate by length quartile *within* each holistic score, plus one sentence answering whether error rises with length within a score | Table with N and essay-bootstrap CIs, clustered regression, repeated on the test set as a descriptive check. Answer: **yes, it rises**; both hypotheses are kept | §3 |
+| 4 | **[Suggested]** Treat "paragraph 36" (case 2) as a hypothesis, or check the source text | Checked: the numbered *Car-free cities* source set has 43 paragraphs, and paragraph 36 contains exactly the sentence the student quotes. Our earlier "fabricated citation" reading was wrong and is withdrawn | §5.2 |
+| 5 | **[Suggested]** Export the final version from Word/LaTeX | Final version exported to `.docx` from this Markdown source | `Week11_Group06_CLC02_Report.docx` |
+| — | Interview walk-through, step 5: lower the Ineffective threshold on the saved probabilities and count how many cases change | Done; counts in §5.3 | §5.3 |
 
-| Stage | Train Fit Cohort (80%) | Validation Cohort (20%) | Official Test Holdout (Sealed) |
+### 1.1 Test protocol (fixed before the test was opened)
+
+* **Primary systems, all scored in the same pass:** (1) Random Forest, Feature Set B (Week 9 configuration); (2) DeBERTa-v3-base Level 0 (`[type] [SEP] unit`); (3) DeBERTa-v3-base Level 1 (`[type] [SEP] Previous: … [SEP] Target: … [SEP] Next: …`), the locked system.
+* **Validation status at lock time:** in the Week 10 run, L0 and L1 could not be distinguished on validation: +0.0022 Macro-F1, 95% essay-bootstrap CI containing 0. L1 was locked because of its higher Ineffective F1 (+0.019), not because it was clearly better.
+* **Extra systems, labelled as such:** Prompt-Aware DeBERTa (planned in Week 11: L1 input prefixed with `Prompt: <prompt name> [SEP]`) and Linear SVM on TF-IDF. Neither was part of the Week 10 protocol.
+* **Fixed configuration:** `microsoft/deberta-v3-base`, max length 512, batch 8 × gradient accumulation 4, lr 2e-5, 10% warmup, 3 epochs, class-weighted cross-entropy (weights 7.48 / 0.43 / 1.95), seed 42, best epoch selected on validation Macro-F1. Essay-level paired bootstrap with 2,000 resamples.
+* **Rule:** one scoring pass. No threshold, hyperparameter or model choice uses the test set. The lock file `Week11_Person3_DeBERTa_OfficialTest/outputs/week11_person3/OFFICIAL_TEST_LOCK.json` records the test file hash and model paths.
+
+**Deviations, reported openly.**
+(a) The Week 10 DeBERTa checkpoints could no longer be loaded correctly, so L0, L1 and Prompt-Aware were **retrained** in one Colab A100 run with the configuration above (transformers 4.57.6, bf16). Section 4.2 gives their own validation scores. The models scored on test are these retrained models, not the Week 10 checkpoints.
+(b) The run went from training to validation to test in a single session, because an earlier session was lost when the Colab VM was reclaimed. Validation results were logged before test inference but were not reviewed by a person in between.
+(c) The first RF test script trained a different model: 100 trees, depth 30, 10k TF-IDF features, min_df 3, one unscaled length feature, trained on train+validation. That run gave Macro-F1 0.4834 and is not Feature Set B. We re-implemented Feature Set B exactly as in Week 9 and trained it on the same 115,187 training units. The script refuses to score the test unless it first reproduces the Week 9 validation Macro-F1 (0.5261 vs 0.5230; scikit-learn 1.6.1, as in Week 9). It was then scored once. No setting was changed after seeing test results.
+
+### 1.2 The Week 8 "6.13% accuracy" defect (for the interview)
+`LogisticRegression.classes_` sorts labels alphabetically (`Adequate, Effective, Ineffective`), while our evaluation assumed index 0 = Ineffective. Ineffective F1 (≈0.061) was therefore written into the accuracy field. After fixing the label mapping, LR with tuned thresholds reaches Macro-F1 0.5086 and balanced accuracy 60.32% on validation.
+
+---
+
+## 2. Data
+
+### 2.1 Units and split
+
+| Stage | Train (80%) | Validation (20%) | Official test |
 |---|:---:|:---:|:---:|
-| **Raw Rows in Source CSV** | 173,266 raw rows | (Split from train CSV) | 112,117 raw rows |
-| **Excluded Unannotated Units** | 28,977 segments | (Excluded prior to split) | 18,440 segments |
-| **Clean Annotated Units** | 115,187 units | 29,102 units | 93,677 units |
-| **Unique Essays (String ID)** | 12,474 essays | 3,119 essays | 10,402 essays |
-| **Split Strategy** | GroupShuffleSplit (seed=42) | GroupShuffleSplit (seed=42) | Official Holdout Split |
-| **Cross-Essay Leakage** | Exactly 0 essays | Exactly 0 essays | Exactly 0 essays |
+| Rows in source CSV | 173,266 (train + validation) | — | 112,117 |
+| Unannotated segments removed | 28,977 | — | 18,440 |
+| Annotated units | 115,187 | 29,102 | 93,677 |
+| Essays (`essay_id_comp`) | 12,475 | 3,119 | 10,402 |
+| Split | GroupShuffleSplit by essay, seed 42 | same | official holdout |
+| Essays shared with another split | 0 | 0 | 0 |
 
-### 2.2 Trace of a Real Sample Through the Pipeline
-- **Essay ID:** `514559001` | **Discourse ID:** `1622840003` | **Prompt:** *"Cell phones at school"*
-- **Discourse Type:** `Claim` | **Gold Label:** `Adequate` (Mapped to ID 1)
-- **Input Text:** *"Students should be able to use cell phones at school during lunch time."*
-- **Level 0 Formatted Input:** `Claim [SEP] Students should be able to use cell phones at school during lunch time.`
-- **Level 1 Formatted Input:** `Claim [SEP] Previous: [NONE] [SEP] Target: Students should be able to use cell phones at school during lunch time. [SEP] Next: This is because lunch is free time for students.`
-- **Pipeline Prediction:** DeBERTa Level 1 outputs probabilities $[P_0=0.042, P_1=0.812, P_2=0.146] \longrightarrow 	ext{Argmax: Adequate (Correct)}$.
+### 2.2 One real unit through the pipeline (validation case 8)
+* `row_idx` 108613, essay `FE3141FA4163`, prompt *Cell phones at school*, holistic score 2, essay length 169 words. Unit type **Claim**, gold label **Ineffective** (id 0).
+* **Level 0 input:** `Claim [SEP] Some kids will ask there parents to transfer school`
+* **Level 1 input:** `Claim [SEP] Previous: They will hide them from the teachers … You will just make all the kids mad. [SEP] Target: Some kids will ask there parents to transfer school [SEP] Next: If you chose policy one you will make the student happy.`
+* **Prompt-Aware input:** `Prompt: Cell phones at school [SEP]` + Level 1 input.
+* **Predicted probabilities (Ineffective / Adequate / Effective), Week 11 models:** L0 0.017 / 0.962 / 0.021; L1 0.058 / 0.937 / 0.005; PA 0.217 / 0.778 / 0.005. All three predict Adequate, so all three are wrong. The Week 10 Level 1 model gave P(Ineffective) = 0.124 for this unit.
+
+### 2.3 Data-integrity note
+The CSV files we received had been saved through a spreadsheet program, which rounded numeric IDs to scientific notation (for example `discourse_id = 1.62263E+12`). As a result, 144,289 annotated units carry only **728** distinct `discourse_id` values. `essay_id` is mostly intact (one collision merging two essays into one split group, which cannot cause leakage), and `essay_id_comp` is intact. Every analysis in this report joins units by row position (`row_idx`) or by `essay_id_comp`, and each join is checked against discourse type and gold label. The Week 11 length table first circulated in the group joined on `discourse_id` and was therefore wrong; Section 3 replaces it.
 
 ---
 
-## 3. Empirical Investigation of the Essay Length Confound
+## 3. Essay length vs. writer proficiency (Requirement 3)
 
-### 3.1 Observed Phenomenon & Competing Hypotheses
-Earlier evaluations observed that model error rates rose with essay word count:
-$$	ext{Overall Error Rate: } 21.98\% 	ext{ (Quartile 1)} \longrightarrow 30.35\% 	ext{ (Quartile 4)}$$
-Two hypotheses competed to explain this trend:
-- **Hypothesis A (Rhetorical Complexity):** Long essays feature intricate syntactic trees and dispersed rhetoric that overload attention mechanisms.
-- **Hypothesis B (Label Distribution & Proficiency Shift):** Essay length is confounded with student proficiency. More proficient students write longer essays, shifting the task from minority Ineffective detection to subtle Adequate vs Effective differentiation.
+### 3.1 Question
+Errors rise with essay length. **Hypothesis A:** something about longer essays makes units harder to classify. **Hypothesis B:** longer essays come from stronger writers; their units are more often Adequate or Effective, and that boundary is harder. The review asked us to compare length quartiles **within the same holistic score**.
 
-### 3.2 4-Quartile Validation Analysis (N = 29,102 Units)
-Partitioning all 29,102 validation units into four equal-frequency word-count quartiles demonstrates a pronounced proficiency shift:
+All numbers below use one model throughout, DeBERTa Level 1 (the locked system, Week 11 run). Quartile cut points are fixed from the validation set (≤315, 316–422, 423–566, ≥567 words).
 
-| Quartile | Word Count Range | Units (N) | Essays (N) | Mean Holistic Score (1–6) | Pct Ineff | Pct Adeq | Pct Eff | Overall Error Rate |
+### 3.2 Without controlling for proficiency
+
+| Length quartile | Units | Essays | Mean holistic score (per essay) | % Ineffective | % Effective | Error rate (val) | Errors that are Adequate↔Effective (val) | Error rate (test) |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Q1 (Short)** | 148 – 315 | 7,333 | 1,037 | 2.38 | 8.97% | 85.74% | 5.29% | 21.98% |
-| **Q2 (Med-Low)** | 316 – 422 | 7,277 | 786 | 3.20 | 5.02% | 84.27% | 10.72% | 24.50% |
-| **Q3 (Med-High)** | 423 – 566 | 7,226 | 690 | 3.81 | 2.92% | 78.74% | 18.34% | 27.68% |
-| **Q4 (Long)** | 567 – 8,811 | 7,266 | 606 | 4.67 | 1.29% | 65.90% | 32.81% | 30.35% |
+| Q1 (≤315) | 7,333 | 1,037 | 2.38 | 8.97 | 5.29 | 22.0% | 47.5% | 21.1% |
+| Q2 (316–422) | 7,277 | 786 | 3.20 | 5.02 | 10.72 | 23.0% | 67.1% | 22.0% |
+| Q3 (423–566) | 7,226 | 690 | 3.81 | 2.92 | 18.34 | 27.9% | 83.8% | 25.5% |
+| Q4 (≥567) | 7,266 | 606 | 4.67 | 1.29 | 32.81 | 30.5% | 92.0% | 30.4% |
 
-### 3.3 MANDATORY REQUIREMENT 3: Disentangling Length from Writing Proficiency
-To isolate length from student proficiency, we computed classification error rates across all four length quartiles within each discrete holistic essay score (1 to 6) across the 29,102 validation units:
+### 3.3 Within the same holistic score (validation, 29,102 units)
+Error rate (%) with 95% essay-bootstrap CI; N = units / essays.
 
-#### Table 3.1: Model Classification Error Rate (%) by Holistic Essay Score × Length Quartile:
-| Holistic Essay Score | Q1 (Short: 148–315 words) | Q2 (Med-Low: 316–422 words) | Q3 (Med-High: 423–566 words) | Q4 (Long: 567+ words) | Trend Across Length |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Score 1 (Basic/Weak)** | 28.39% | 26.86% | 28.94% | 28.57% | **Flat (~27–28%)** |
-| **Score 2 (Developing)** | 27.62% | 22.46% | 26.22% | 31.03% | **Stable (~26–28%)** |
-| **Score 3 (Proficient)** | **26.59%** | **25.32%** | **26.48%** | **26.48%** | **Strictly Flat (~26.0%)** |
-| **Score 4 (Accomplished)**| **23.41%** | **27.53%** | **25.19%** | **25.90%** | **Strictly Flat (~25–26%)** |
-| **Score 5 (Advanced)** | — | 14.29% | 27.55% | 29.09% | **Stable (~28%)** |
-| **Score 6 (Exemplary)** | — | — | — | 28.80% | **Constant (~28.8%)** |
+| Holistic score | Q1 (≤315) | Q2 (316–422) | Q3 (423–566) | Q4 (≥567) |
+|:---:|:---:|:---:|:---:|:---:|
+| 1 | 39.6 [32.6, 45.6]; 356/91 | 22.2 [12.9, 32.7]; 63/19 | 33.8 [15.8, 51.1]; 74/13 | 34.8 [16.7, 64.3]; 23/4 |
+| 2 | 23.2 [21.3, 25.1]; 3,200/493 | 31.4 [27.1, 35.6]; 722/91 | 33.2 [26.3, 39.5]; 295/34 | 38.8 [27.9, 51.0]; 80/11 |
+| **3** | **19.3** [17.7, 21.1]; 3,517/424 | **21.8** [20.0, 23.9]; 3,743/404 | **22.9** [19.8, 26.0]; 1,465/143 | **28.2** [22.1, 34.3]; 472/40 |
+| **4** | **19.6** [13.4, 26.6]; 260/29 | **22.0** [19.9, 23.9]; 2,622/260 | **28.5** [26.5, 30.5]; 3,984/379 | **31.1** [28.2, 33.9]; 1,961/174 |
+| 5 | — | 29.1 [21.3, 38.0]; 127/12 | 30.3 [26.9, 34.0]; 1,391/120 | 31.7 [29.6, 34.0]; 3,336/277 |
+| 6 | — | — | — | 26.8 [24.2, 29.7]; 1,394/100 |
 
-#### Table 3.2: Sample Counts (N Discourse Units) per Cell:
-| Holistic Essay Score | Q1 (N) | Q2 (N) | Q3 (N) | Q4 (N) | Total Units |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Score 1** | 398 | 242 | 235 | 77 | 952 |
-| **Score 2** | 4,587 | 699 | 267 | 29 | 5,582 |
-| **Score 3** | 3,351 | 2,216 | 1,669 | 472 | 7,708 |
-| **Score 4** | 346 | 2,724 | 3,080 | 2,193 | 8,343 |
-| **Score 5** | 0 | 7 | 1,561 | 3,008 | 4,576 |
-| **Score 6** | 0 | 0 | 0 | 1,941 | 1,941 |
-| **Total** | 8,682 | 5,888 | 6,812 | 7,720 | 29,102 |
+Same table on the official test (descriptive only; no choice depends on it), scores 3 and 4:
 
-### 3.4 Empirical Conclusion on the Length Confound
-When controlling for student holistic proficiency (most reliably represented in Scores 3 and 4, which contain robust sample sizes across all four length quartiles):
-1. **Error Rates are Invariant to Length:** In Score 3 essays, error rates are 26.59% in Q1 and 26.48% in Q4 (delta = -0.11%). In Score 4 essays, error rates are 23.41% in Q1 and 25.90% in Q4 (delta = +2.49%).
-2. **Resolution of the Confound:** Length does not compound syntactic difficulty for the model. The aggregate error increase from 21.98% to 30.35% is an artifact of proficiency shift: Q4 essays are overwhelmingly written by Score 4, 5, and 6 students, where 91.52% of all errors stem from distinguishing Adequate from Effective arguments. Hypothesis B is conclusively verified.
+| Holistic score | Q1 | Q2 | Q3 | Q4 |
+|:---:|:---:|:---:|:---:|:---:|
+| 3 | 17.6 [16.8, 18.5]; 13,684/1,662 | 20.8 [19.7, 21.9]; 10,596/1,150 | 22.3 [20.8, 24.1]; 4,597/459 | 29.2 [26.2, 32.3]; 1,618/154 |
+| 4 | 23.1 [19.4, 26.8]; 1,267/139 | 22.4 [21.3, 23.7]; 9,131/910 | 25.1 [24.0, 26.2]; 11,755/1,101 | 29.7 [27.8, 31.5]; 4,404/387 |
 
----
+### 3.4 Regression (essay-clustered standard errors)
+Logistic regression of unit error on length quartile (0–3). The table gives the odds ratio per quartile.
 
-## 4. Controlled Contextual Ablation Study (Level 0 vs Level 1)
+| Model specification | Validation OR [95% CI] | Test OR [95% CI] |
+|---|:---:|:---:|
+| Length only | 1.17 [1.14, 1.21] | 1.18 [1.16, 1.20] |
+| + holistic score | 1.19 [1.14, 1.25] | 1.16 [1.13, 1.19] |
+| + holistic score + gold label + discourse type | 1.17 [1.11, 1.23] | 1.13 [1.10, 1.16] |
+| Score-3 essays only | 1.15 [1.06, 1.24] | 1.21 [1.16, 1.26] |
+| Score-4 essays only | 1.27 [1.17, 1.37] | 1.17 [1.11, 1.23] |
 
-### 4.1 Validation Performance Summary (N = 29,102 Units)
-On the canonical validation cohort, Level 1 input produces targeted gains for relational discourse units:
+The same pattern holds for DeBERTa L0 and for RF (OR 1.16 and 1.31 after controlling for score; `outputs/length_within_score_regression.csv`).
 
-| Evaluation Metric | Random Forest (Feature Set B) | DeBERTa-v3 Level 0 (Unit Only) | DeBERTa-v3 Level 1 (Local Context) | Absolute Delta (L1 - L0) | Relative Delta (%) |
-|---|:---:|:---:|:---:|:---:|:---:|
-| **Macro-F1** | 0.5230 | 0.5768 | **0.5790** | +0.0022 points | +0.38% |
-| **Accuracy** | 77.22% | 73.88% | 73.09% | -0.79 points | -1.07% |
-| **F1: Ineffective** | 0.2384 | 0.3741 | **0.3934** | **+0.0193 points** | **+5.16%** |
-| **Precision: Ineffective** | 26.70% | 32.00% | **36.10%** | +4.10 points | +12.81% |
-| **Recall: Ineffective** | 21.54% | 45.03% | 43.22% | -1.81 points | -4.02% |
-| **F1: Adequate** | 0.8591 | 0.8245 | 0.8166 | -0.0079 points | -0.96% |
-| **F1: Effective** | 0.4713 | 0.5317 | 0.5270 | -0.0047 points | -0.88% |
+### 3.5 Answer
+**Within the same holistic score, the error rate still increases with essay length.** Controlling for proficiency does not shrink the length effect. Controlling also for the gold label and the discourse type shrinks it only slightly. Hypothesis A is therefore not ruled out. What proficiency does explain is the change in error *type*: short essays contain most of the Ineffective units, while in the longest quartile 92% of errors are Adequate↔Effective confusions.
 
-### 4.2 Discourse Type Breakdown: Winners and Losers of Local Context
-- **Relational Units Benefit:** Claim Ineffective F1 improves **+0.0430 points (+16.17%)**, Concluding Statement improves **+0.0389 points (+11.17%)**, and Counterclaim improves **+0.0303 points (+15.34%)**. Local context helps verify premise transitions.
-- **Autonomous Stance Units Decline:** Position Ineffective F1 declines by **-0.0550 points (-15.13%)**. Thesis statements depend on global prompt alignment rather than immediate sequential neighbors.
+Possible reasons for the remaining length effect, none tested yet:
+* The model never sees the whole essay, so "attention overload on long input" is not a plausible mechanism. More plausible: units in long essays are themselves longer, and the Level 1 input (unit plus neighbours) is more often truncated at 512 tokens.
+* Raters may judge a unit relative to the rest of a long, developed essay, which a local model cannot see.
+* Holistic score is coarse (six levels), so some proficiency difference may remain inside each score.
+
+The Week 10 statement "errors rise with length because long essays are written by stronger students" is therefore only part of the explanation.
 
 ---
 
-## 5. Diagnostic Audit of 10 Failure Cases & Threshold Tuning
+## 4. Context ablation (Level 0 vs. Level 1)
 
-### 5.1 Re-evaluation of the 10 Highest-Confidence Ineffective Failure Cases
-Re-evaluating the 10 failure cases with Level 1 reveals that **0/10 flip to an Ineffective argmax decision**, though 8/10 show an increase in posterior probability $P(	ext{Ineffective})$ (average 2.57x probability ratio):
+### 4.1 Week 10 training run (validation, 29,102 units)
 
-| Case ID | Discourse Type | Text Snippet | Gold Label | L0 Pred | L0 P(Ineff) | L1 Pred | L1 P(Ineff) | Prob Ratio | Failure Mechanism |
-|:---:|---|---|:---:|:---:|:---:|:---:|:---:|:---:|---|
-| **1** | Counterclaim | *"There are many reason on why texting while driving is very u..."* | Ineff | Adeq | 0.0225 | Adeq | 0.0290 | 1.29x | Missing rebuttal across whole essay |
-| **2** | Evidence | *"To provide reasonings to my strong point, brings me back to..."* | Ineff | Eff | 0.0004 | Eff | 0.0014 | 3.50x | Extrinsic: Vacuous citation to reading passage (*"paragraph 36"*) |
-| **3** | Position | *"I think you shouldn't join the Seagoing Cowboys"* | Ineff | Adeq | 0.0221 | Adeq | 0.0096 | 0.43x | Extrinsic: Stance alignment with prompt narrative |
-| **4** | Counterclaim | *"Not allowing students to use there phones at all"* | Ineff | Adeq | 0.0379 | Adeq | 0.0904 | 2.39x | Local syntactic fragment lacking connective premise |
-| **5** | Position | *"The Driverless people can cause problems"* | Ineff | Adeq | 0.0279 | Adeq | 0.1515 | 5.43x | Extrinsic: Factual conflict with prompt source text |
-| **6** | Counterclaim | *"But Sometimes it could be a distraction from you doing all y..."* | Ineff | Adeq | 0.0315 | Adeq | 0.0400 | 1.27x | Dangling transition without subsequent rebuttal |
-| **7** | Position | *"I reconsider that are principal should let us eight graders..."* | Ineff | Adeq | 0.0347 | Adeq | 0.0970 | 2.80x | Extrinsic: Thesis scope dependent on prompt details |
-| **8** | Claim | *"Some kids will ask there parents to transfer school"* | Ineff | Adeq | 0.0207 | Adeq | 0.1236 | 5.97x | Unsubstantiated leap; P(Ineff) increased 6.0x |
-| **9** | Lead | *"The future is near and the talk about driverless cars is upo..."* | Ineff | Adeq | 0.0446 | Adeq | 0.0802 | 1.80x | Extrinsic: Generic hook requiring prompt context |
-| **10** | Claim | *"Another cars is a bad idea is because of its gas"* | Ineff | Adeq | 0.0392 | Adeq | 0.0315 | 0.80x | Local syntax defect with missing connective premise |
-
-### 5.2 Revision of Case 2: Unverified Source Passage Hypothesis (Requirement 4)
-In accordance with instructor feedback, we revised our interpretation of Case 2:
-> *"In Case 2, the student cites 'paragraph 36'. We hypothesize that this refers to an ungrounded or fictional reading passage reference. A human grader familiar with the assignment's source material recognizes that paragraph 36 does not exist or does not support the assertion. Because the model has never ingested the external reading text, it evaluates the sentence purely on syntactic surface form, misclassifying it as Effective. Grounding against source texts remains an unverified hypothesis for future study."*
-
-### 5.3 INSTRUCTOR DIRECTIVE 5: Threshold Tuning Analysis on Ineffective Class
-Following the instructor's explicit recommendation (line 115 of *Nhan_xet_Week10*), we conducted a decision threshold sweep $	heta \in [0.05, 0.49]$ on predicted posterior probabilities `outputs/context_ablation_predictions.csv`:
-
-#### Table 5.1: Threshold Tuning Sweep on Validation Predictions:
-| Threshold $	heta$ | Ineffective Precision (%) | Ineffective Recall (%) | Ineffective F1 | Macro-F1 | Units Predicted Ineffective |
-|:---:|:---:|:---:|:---:|:---:|:---:|
-| **0.05** | 13.91% | 81.48% | 0.2376 | 0.4723 | 7,779 |
-| **0.09** | 17.67% | 74.40% | 0.2855 | 0.5106 | 5,592 |
-| **0.11 (Selected)** | **19.24%** | **71.99%** | **0.3037** | **0.5226** | **4,968** |
-| **0.15** | 21.87% | 67.39% | 0.3302 | 0.5393 | 4,093 |
-| **0.25** | 27.11% | 57.83% | 0.3691 | 0.5624 | 2,833 |
-| **0.33 (Default)** | 29.90% | 51.73% | 0.3789 | 0.5695 | 2,298 |
-| **0.49** | 35.73% | 43.45% | 0.3921 | 0.5784 | 1,615 |
-
-### 5.4 Case 8 Rescue Under Adjusted Decision Threshold
-In Case 8 (Claim: *"Some kids will ask there parents to transfer school"*), the student makes an unsubstantiated leap with basic spelling errors (*"there"* instead of *"their"*).
-- Under default argmax ($	heta = 0.33$), DeBERTa outputs $P(	ext{Ineffective}) = 0.1236$, predicting Adequate.
-- When applying the pedagogical threshold $	heta = 0.10$, **Case 8 flips to Ineffective**, correctly flagging the flawed claim.
-- **AWE Pedagogical Implication:** In diagnostic formative writing feedback, missing an ineffective sentence (false negative) denies the student necessary feedback. Setting $	heta \in [0.10, 0.15]$ prioritizes high recall (72%–76%), delivering actionable error detection.
-
----
-
-## 6. Leave-One-Prompt-Out (LOPO) Generalization & Fair Same-Family Comparison
-
-### 6.1 Methodological Resolution: Fair Same-Family Benchmarking
-To resolve the critique that comparing Random Forest directly against DeBERTa is unfair due to architectural divergence, we established two rigorous comparison axes:
-1. **Classical Same-Family Baseline:** Linear SVM (TF-IDF) vs Random Forest (TF-IDF + features).
-2. **Transformer Within-Family Transfer:** DeBERTa In-Domain vs DeBERTa LOPO on the identical prompt.
-
-### 6.2 3-Prompt LOPO Performance Across Model Families
-We evaluated the three representative prompts spanning difficulty tiers: *A Cowboy Who Rode the Waves* (Hardest), *Summer projects* (Median), and *Distance learning* (Easiest):
-
-#### Table 6.1: Cross-Architecture LOPO Evaluation Table:
-| Held-Out Prompt | Difficulty Tier | Test Units (N) | Linear SVM LOPO (Macro-F1) | Random Forest LOPO (Macro-F1) | DeBERTa LOPO (Macro-F1) | DeBERTa In-Domain (Macro-F1) | DeBERTa Generalization Gap |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| *"A Cowboy Who Rode the Waves"* | Hardest (Rank 1) | 5,158 | 0.3373 | 0.3501 | **0.4082** | 0.4462 | **-0.0380 (-8.52%)** |
-| *Summer projects* | Median (Rank 8) | 9,855 | 0.4269 | 0.4339 | **0.4642** | 0.4695 | **-0.0053 (-1.12%)** |
-| *Distance learning* | Easiest (Rank 15) | 18,526 | 0.4690 | 0.5014 | **0.5735** | 0.5677 | **+0.0058 (+1.03%)** |
-
-#### Table 6.2: Class-Level Ineffective F1 Under LOPO:
-| Held-Out Prompt | Test Units (N) | Linear SVM Ineff F1 | Random Forest Ineff F1 | DeBERTa LOPO Ineff F1 | DeBERTa Gain over Classical |
-|---|:---:|:---:|:---:|:---:|:---:|
-| *"A Cowboy Who Rode the Waves"* | 5,158 | 0.1027 | 0.1085 | **0.1246** | +0.0161 (+14.8%) |
-| *Summer projects* | 9,855 | 0.0410 | 0.0000 | **0.0759** | +0.0349 (Recovered) |
-| *Distance learning* | 18,526 | 0.0621 | 0.0649 | **0.2509** | +0.1860 (+286.6%) |
-
-### 6.3 Empirical Findings on Out-of-Prompt Transfer
-1. **Classical Bag-of-Words Breakdown:** Both Linear SVM (0.3373) and Random Forest (0.3501) drop severely on *A Cowboy Who Rode the Waves*. Because lexical features are prompt-bound, TF-IDF cannot transfer to literary narratives with distinct vocabularies.
-2. **DeBERTa Within-Family Generalization Gap:** Isolating DeBERTa against itself reveals that the out-of-prompt drop is driven by genre:
-   - Source-dependent literary prompts drop significantly (**-8.52%**), reflecting reliance on external characters (*"Dan"*, *"cowboys"*).
-   - Universal civic policy prompts transfer without performance penalty (**+1.03%**), as rhetorical stance markers (*"furthermore"*, *"in my opinion"*) are prompt-invariant.
-
----
-
-## 7. Official Test Set Evaluation (Requirement 2 - The Single Frozen Pass)
-
-### 7.1 Pre-Registration and Protocol Execution
-The official test holdout (`persuade_corpus_2.0_test.csv`, N = 93,677 discourse units across 10,402 essays) was evaluated in a single frozen pass. In accordance with Requirement 2, all baseline and deep learning models were benchmarked simultaneously.
-
-#### Table 7.1: Master Official Test Holdout Results (N = 93,677 Units):
-| System Index & Model Name | Input Representation & Architecture | Macro-F1 | Overall Accuracy (%) | F1 Ineffective (Class 0) | F1 Adequate (Class 1) | F1 Effective (Class 2) | Runtime on Test Set |
-|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **1. Linear SVM Baseline** | TF-IDF 15,000 features, LinearSVC | **0.4822** | **74.40%** | 0.2044 | 0.8439 | 0.3983 | 40.9s (CPU) |
-| **2. Random Forest Baseline** | Feature Set B (TF-IDF + Role + Len) | **0.4834** | **67.79%** | 0.2304 | 0.7878 | 0.4321 | 73.0s (CPU) |
-| **3. DeBERTa-v3 Level 0** | Isolated unit (`[Type] [SEP] [Text]`) | **0.5613** | **74.38%** | 0.3387 | 0.8312 | 0.5141 | ~6.5 min (A100) |
-| **4. DeBERTa-v3 Level 1 (Locked)** | Flanked by 2 neighbors (`[Prev] [Target] [Next]`) | **0.5772** | **75.68%** | **0.3679** | **0.8410** | **0.5228** | ~7.2 min (A100) |
-| **5. DeBERTa-v3 Prompt-Aware** | Prompt name + Context (`[Prompt] [SEP] [Context]`) | **0.5808** | **75.39%** | **0.3787** | **0.8381** | **0.5258** | ~7.8 min (A100) |
-
-### 7.2 Official Test Paired Bootstrap Analysis (1,000 Iterations by Essay)
-To establish statistical significance across full essay clusters, paired bootstrap resampling was executed on the official test predictions (`outputs/official_test_deberta_bootstrap.csv`):
-
-| Model Comparison | Delta Macro-F1 | 95% Bootstrap Confidence Interval | Empirical p-value ($p_{\Delta \le 0}$) | Statistical Significance |
+| Metric | RF Feature Set B | DeBERTa L0 | DeBERTa L1 | L1 − L0 |
 |---|:---:|:---:|:---:|:---:|
-| **Level 1 vs Level 0** | **+0.0159** | **[+0.0115, +0.0207]** | **p < 0.001** | **Statistically Significant Improvement** |
-| **Prompt-Aware vs Level 1** | **+0.0036** | **[-0.0002, +0.0074]** | p = 0.0315 | Interval contains 0; indistinguishable at 95% CI |
-| **Prompt-Aware vs Level 0** | **+0.0195** | **[+0.0151, +0.0241]** | **p < 0.001** | **Statistically Significant Improvement** |
+| Macro-F1 | 0.5230 | 0.5768 | 0.5790 | +0.0022 (CI contains 0) |
+| Accuracy | 77.22% | 73.88% | 73.09% | −0.79 pts |
+| F1 Ineffective | 0.2384 | 0.3741 | 0.3934 | +0.0193 |
+| Precision / Recall Ineffective | 26.7% / 21.5% | 32.0% / 45.0% | 36.1% / 43.2% | +4.1 / −1.8 pts |
+| F1 Adequate | 0.8591 | 0.8245 | 0.8166 | −0.0079 |
+| F1 Effective | 0.4713 | 0.5317 | 0.5270 | −0.0047 |
 
-### 7.3 Key Findings on the Official Test Holdout
-1. **Clear Superiority of Contextual Deep Learning:** DeBERTa-v3 Level 1 (+0.0938 Macro-F1 over Random Forest, +19.4% relative) conclusively outperforms classical TF-IDF baselines on unobserved data.
-2. **Validation to Test Transfer:** While Level 1 achieved only a modest +0.0022 gain on validation, it demonstrated a robust and statistically significant gain of **+0.0159 points [0.0115, 0.0207]** on the 93,677 test units.
-3. **Prompt-Aware Improvement:** Incorporating the prompt name (`Prompt: {prompt_name}`) yields the highest Macro-F1 (**0.5808**) and Ineffective F1 (**0.3787**), confirming that orienting the model to the essay prompt provides beneficial grounding for stance classification.
+By discourse type, Level 1 raised Ineffective F1 for Claim (+0.043), Concluding Statement (+0.039) and Counterclaim (+0.030), and lowered it for Position (−0.055).
 
----
+### 4.2 Week 11 retraining run (models scored on the test)
 
-## 8. Pedagogical Synthesis & Theoretical Inquiries
+| Metric (validation) | L0 | L1 | Prompt-Aware |
+|---|:---:|:---:|:---:|
+| Macro-F1 | 0.5723 | 0.5809 | 0.5855 |
+| Accuracy | 72.91% | 74.17% | 74.06% |
+| F1 Ineffective | 0.3755 | 0.3846 | 0.3925 |
+| Recall Ineffective | 42.8% | 44.7% | 48.8% |
+| Cohen κ / QWK | 0.363 / 0.433 | 0.374 / 0.445 | 0.380 / 0.455 |
 
-### 8.1 Conceptual Hierarchy of Information Requirements
-Our cumulative empirical results support a multi-tiered hierarchy of informational requirements in automated discourse evaluation:
-```
-[Level 0: Isolated Unit]       --> Captures surface syntax; adequate for standard Adequate/Effective text.
-[Level 1: Sequential Neighbors] --> Resolves local premise transitions; yields statistically significant gain (+0.0159 Macro-F1).
-[Level 2: Source Reading Text]  --> Required for verifying factual citations (e.g., Case 2 "paragraph 36", Case 5 driverless facts).
-[Level 3: Global Document Context] --> Required for verifying essay-wide thesis coherence and unpaired counterclaims (Case 1, Case 6).
-```
-
-### 8.2 REWRITTEN CONCLUSION: Empirical Framing and Rater Agreement Ceiling (Requirement 1)
-In strict compliance with Directive 1 of *Nhan_xet_Week10*, we replace all causal assertions with a calibrated scientific synthesis:
-> *"Empirical results from Level 1 demonstrate that while local sequential context delivers a statistically significant overall improvement on the official test holdout (+0.0159 Macro-F1, 95% CI [0.0115, 0.0207]), it does not alter the argmax classification of extreme Ineffective error cases (0/10 flipped). Together with our diagnostic inspection of failure cases, these findings are consistent with the hypothesis that evaluating nuanced argumentative flaws requires external prompt reading texts and global essay coherence, though this hypothesis remains to be verified when full-text architectures are deployed.  
-> Crucially, given that human inter-rater reliability on the PERSUADE 2.0 corpus is only $\kappa = 0.316$ (Crossley et al., 2024), a substantial portion of the remaining performance ceiling stems from the inherent subjectivity and variance of human effectiveness ratings rather than algorithmic capacity alone."*
+Paired essay bootstrap on validation: L1 − L0 = +0.0087 [0.0014, 0.0161]; PA − L1 = +0.0045 [−0.0025, 0.0113].
+Between the two training runs, the same configuration moved by −0.0045 (L0) and +0.0019 (L1). The L1 − L0 gap went from +0.0022 to +0.0087. Bootstrap intervals only capture sampling of essays, not training randomness, so a single-seed L1 − L0 difference of this size should be read with care.
 
 ---
 
-## 9. Individual Contribution Disclosure & Responsible AI Use
+## 5. Failure cases and decision thresholds
 
-### 9.1 Individual Work Packages & Ownership Log
+### 5.1 Ten high-confidence Ineffective failures, Level 0 vs. Level 1 (Week 10 models)
+None of the 10 cases changes its argmax to Ineffective under Level 1. In 8 of 10, P(Ineffective) rises.
 
-| Member | Primary Role | Tasks Owned & Executed | Verification Artifacts Produced | Practical Check / Decision Revised |
-|---|---|---|---|---|
-| **👤 Thành viên 1** | Data & Confound Analysis | Computed Holistic Score × Length Quartile analysis (Requirement 3); ran Random Forest on 93,677 test units. | `Person1/script_holistic_length_table.py`, `Person1/run_rf_official_test.py`, `Person1/output/` | Disproved Hypothesis A: Demonstrated that within Scores 3 and 4, error rates remain strictly flat (~26%) across length. |
-| **👤 Thành viên 2** | Optimization & Threshold Tuning | Conducted Ineffective threshold tuning sweep $	heta \in [0.05, 0.49]$; executed Linear SVM LOPO across 3 prompts; verified Case 8 rescue. | `Person2Khoa/script_threshold_tuning_and_case8.ipynb`, `Person2Khoa/script_lopo_weaker_baseline.ipynb`, `Person2Khoa/output/` | Demonstrated that setting $	heta = 0.10$ flips Case 8 to Ineffective and boosts recall to 76.51%, aligning with AWE needs. |
-| **👤 Thành viên 3** | Deep Learning & Test Governance | Fine-tuned Prompt-Aware DeBERTa-v3 on GPU; executed official test master evaluation script across 5 systems; computed bootstrap CIs. | `Week11_Person3_DeBERTa_OfficialTest/07_person3_prompt_aware_official_test.ipynb`, `outputs/official_test_final_summary.csv` | Pre-registered frozen test configuration; proved Level 1 significantly beats Level 0 (+0.0159, p < 0.001) on test. |
+| Case | Type | Text (start) | Gold | L0 pred / P(Ineff) | L1 pred / P(Ineff) | What the unit lacks (our reading) |
+|:---:|---|---|:---:|:---:|:---:|---|
+| 1 | Counterclaim | "There are many reason on why texting while driving is very u…" | Ineff | Adeq / 0.022 | Adeq / 0.029 | Counterclaim never answered (needs the whole essay to see) |
+| 2 | Evidence | "To provide reasonings to my strong point, brings me back to…" | Ineff | Eff / 0.0004 | Eff / 0.0014 | Correct quotation followed by off-topic reasoning (see 5.2) |
+| 3 | Position | "I think you shouldn't join the Seagoing Cowboys" | Ineff | Adeq / 0.022 | Adeq / 0.010 | Bare stance with no reason |
+| 4 | Counterclaim | "Not allowing students to use there phones at all" | Ineff | Adeq / 0.038 | Adeq / 0.090 | Fragment; no opposing argument stated |
+| 5 | Position | "The Driverless people can cause problems" | Ineff | Adeq / 0.028 | Adeq / 0.152 | Vague, possibly at odds with the source text |
+| 6 | Counterclaim | "But Sometimes it could be a distraction from you doing all y…" | Ineff | Adeq / 0.031 | Adeq / 0.040 | Counterclaim with no rebuttal |
+| 7 | Position | "I reconsider that are principal should let us eight graders…" | Ineff | Adeq / 0.035 | Adeq / 0.097 | Unclear thesis scope |
+| 8 | Claim | "Some kids will ask there parents to transfer school" | Ineff | Adeq / 0.021 | Adeq / 0.124 | Unsupported prediction |
+| 9 | Lead | "The future is near and the talk about driverless cars is upo…" | Ineff | Adeq / 0.045 | Adeq / 0.080 | Generic hook |
+| 10 | Claim | "Another cars is a bad idea is because of its gas" | Ineff | Adeq / 0.039 | Adeq / 0.032 | Claim with no support |
 
-### 9.2 Transparent AI Assistance Disclosure
-- **Tool Used:** Gemini / Antigravity Assistant.
-- **Scope of Use:** Generating boilerplate automation scripts for scikit-learn metrics, drafting formatting templates for Word/HTML report compilation, and debugging PyTorch GPU tensor reshaping.
-- **Verification Method:** Every script was inspected and executed locally; all metrics were independently calculated from raw predictions and cross-verified across team members. No AI-generated text was accepted without empirical validation.
+### 5.2 Case 2 re-examined (Requirement 4)
+The unit (prompt *Car-free cities*) begins: "…brings me back to paragraph 36. It clearly states in bolded writing: 'With all these changes, people who stopped car commuting as a result of the recession may find less reason to resume the habit…'". We checked the numbered source set used for this prompt: it has 43 paragraphs, and **paragraph 36 contains exactly this sentence**. The citation is therefore accurate, and our Week 10 reading ("a reference to a paragraph that does not exist") was wrong. The unit's weakness is visible in the unit itself: after the quotation, the student writes about getting a learner's permit and a driving test, which does not support the point. The model probably rated the unit Effective because of surface features (length, an explicit quotation, connectives such as "Furthermore"). That explanation is a hypothesis we have not tested. The PERSUADE CSV only lists source titles, not their text, so a model with source access would need the passages added from outside the corpus.
+
+### 5.3 Lowering the Ineffective threshold: how many cases change?
+Rule: predict Ineffective if P(Ineffective) ≥ θ; otherwise take the larger of Adequate and Effective. The baseline is argmax; there is no "default θ". Validation only (`outputs/ineffective_threshold_tuning_table.csv`, `outputs/threshold_case_flips.csv`).
+
+**Week 10 Level 1 model (the model behind the 10 cases):**
+
+| Rule | Recall Ineff | Precision Ineff | F1 Ineff | Macro-F1 | Units changed | Ineffective newly caught / new false alarms | Cases flipped (of 10) |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| argmax | 43.2% | 36.1% | 0.393 | 0.579 | — | — | 0 |
+| θ = 0.30 | 53.6% | 28.7% | 0.374 | 0.566 | 895 | 138 / 757 | 0 |
+| θ = 0.20 | 61.8% | 24.5% | 0.350 | 0.552 | 1,762 | 246 / 1,516 | 0 |
+| θ = 0.15 | 67.4% | 21.9% | 0.330 | 0.539 | 2,503 | 321 / 2,182 | 1 (case 5) |
+| θ = 0.10 | 73.0% | 18.4% | 0.295 | 0.517 | 3,670 | 396 / 3,274 | 2 (cases 5, 8) |
+| θ = 0.08 | 75.7% | 16.8% | 0.274 | 0.503 | 4,410 | 431 / 3,979 | 5 (cases 4, 5, 7, 8, 9) |
+
+**Reading.** Lowering θ moves the model toward Ineffective (case 8's probability is 6× higher with context), but each extra correct catch costs about 7–8 false alarms. Macro-F1 falls monotonically, and the best Macro-F1 is at argmax. For formative feedback, a teacher might accept θ ≈ 0.15–0.20 to review twice as many flagged units. This is a product decision, and on this data it does not improve the classifier. For the Week 11 L1 model that was scored on test, the curve is similar (θ = 0.10: recall 69.6%, Macro-F1 0.535, 3/10 cases flip), but case 8 itself does **not** flip, because its P(Ineffective) is 0.058. Single-case results depend on the training run.
 
 ---
 
-## 10. References
+## 6. Leave-one-prompt-out (LOPO)
 
-* **Crossley, S. A., Baffour, P., Tian, Y., Franklin, A., Benner, M., & Boser, U. (2024).** A large-scale corpus for assessing written argumentation: PERSUADE 2.0. *Assessing Writing*, 61, Article 100830. [DOI: 10.1016/j.asw.2024.100830].
-* **He, P., Gao, J., & Chen, W. (2023).** DeBERTaV3: Improving DeBERTa using ELECTRA-style pre-training with gradient-disentangled embedding sharing. *International Conference on Learning Representations (ICLR)*.
-* **Newell, G. E., Beach, R., Smith, J., & VanDerHeide, J. (2011).** Teaching and learning argumentative writing: An integrative review. *Reading Research Quarterly*, 46(3), 273–304.
-* **Stab, C., & Gurevych, I. (2014).** Identifying argumentative discourse structures in persuasive essays. *Conference on Empirical Methods in Natural Language Processing (EMNLP)*, 46–56.
-* **Stab, C., & Gurevych, I. (2017).** Parsing argumentation structures in persuasive essays. *Computational Linguistics*, 43(3), 619–659.
-* **Toulmin, S. E. (1958).** *The Uses of Argument*. Cambridge University Press.
+### 6.1 What is compared
+* **Across model families, same fold:** Linear SVM (TF-IDF), RF (Feature Set B) and DeBERTa L0, each trained on 14 prompts and tested on all units of the held-out prompt.
+* **Within DeBERTa:** the LOPO model vs. the in-domain model (trained with the prompt present) on **the same units**, namely the validation essays of that prompt, with a paired essay bootstrap. The Week 10 table compared LOPO on all units of the prompt with in-domain on the validation subset, i.e. two different sets of units; this section replaces it.
+
+### 6.2 All units of the held-out prompt
+
+| Held-out prompt | Units | Linear SVM | RF | DeBERTa L0 (LOPO) | Ineff F1: SVM / RF / DeBERTa |
+|---|:---:|:---:|:---:|:---:|:---:|
+| A Cowboy Who Rode the Waves | 5,158 | 0.3373 | 0.3501 | **0.4082** | 0.103 / 0.109 / 0.125 |
+| Summer projects | 9,855 | 0.4269 | 0.4339 | **0.4642** | 0.041 / 0.000 / 0.076 |
+| Distance learning | 18,526 | 0.4690 | 0.5014 | **0.5735** | 0.062 / 0.065 / 0.251 |
+
+We have no in-domain per-prompt numbers for SVM and RF, so this table shows which family transfers better. It does not show how much each family drops.
+
+### 6.3 LOPO vs. in-domain DeBERTa on the same units (`outputs/lopo_deberta_gap_same_units.csv`)
+
+| Held-out prompt | Units / essays | LOPO | In-domain (Week 9 L0) | Gap [95% CI] | In-domain (Week 11 L0) | Gap [95% CI] |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| A Cowboy Who Rode the Waves | 1,030 / 134 | 0.3584 | 0.4462 | **−0.088 [−0.138, −0.041]** | 0.4755 | **−0.117 [−0.171, −0.057]** |
+| Summer projects | 2,074 / 177 | 0.4605 | 0.4695 | −0.009 [−0.093, +0.078] | 0.5076 | −0.047 [−0.113, +0.012] |
+| Distance learning | 3,533 / 283 | 0.5712 | 0.5677 | +0.004 [−0.024, +0.028] | 0.5757 | −0.005 [−0.030, +0.020] |
+
+**Reading.** Only *A Cowboy Who Rode the Waves* shows a clear drop when the prompt is unseen. It is a source-based narrative prompt whose essays refer to characters and events of one story, which fits the idea that prompt-specific content matters. With only three prompts this remains an interpretation, not a tested cause. Caveat: the Week 10 LOPO models were trained with transformers 5.20.2. That version later broke DeBERTa-v3 training in our Week 11 runs, so the LOPO numbers may understate DeBERTa somewhat.
+
+---
+
+## 7. Official test (Requirement 2)
+
+### 7.1 Results (93,677 units, 10,402 essays, one pass)
+
+| System | Role | Macro-F1 | Accuracy | F1 Ineff | F1 Adeq | F1 Eff | Recall Ineff | QWK | Inference time |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Random Forest, Feature Set B | protocol | 0.5098 | 78.51% | 0.2024 | **0.8701** | 0.4567 | 17.2% | 0.350 | 88 s train+predict (CPU) |
+| DeBERTa-v3 Level 0 | protocol | 0.5613 | 74.38% | 0.3387 | 0.8312 | 0.5141 | 37.2% | 0.422 | 57 s (A100) |
+| **DeBERTa-v3 Level 1** | **protocol, locked** | **0.5772** | 75.68% | 0.3679 | 0.8410 | 0.5228 | 41.5% | 0.442 | 91 s (A100) |
+| DeBERTa-v3 Prompt-Aware | exploratory | 0.5808 | 75.39% | 0.3787 | 0.8381 | 0.5258 | 44.2% | 0.446 | 94 s (A100) |
+| Linear SVM (TF-IDF) ¹ | supplementary | 0.4822 | 74.40% | 0.2044 | 0.8439 | 0.3983 | — | — | 41 s (CPU) |
+
+¹ Trained on train + validation (144,289 units); the same configuration trained on 115,187 units scores 0.4845 on validation.
+Footnote on RF: the first RF test run (Section 1.1(c), not Feature Set B) gave 0.4834 / 67.79%. It is kept in `outputs/official_test_rf_misspecified_old_result.csv` for transparency and is not used in any comparison.
+
+### 7.2 Paired essay bootstrap on the test set
+
+| Comparison | Δ Macro-F1 | 95% CI | One-sided p (Δ ≤ 0) | Resamples |
+|---|:---:|:---:|:---:|:---:|
+| L1 − L0 | +0.0159 | [+0.0115, +0.0207] | < 0.0005 | 2,000 |
+| PA − L1 | +0.0036 | [−0.0002, +0.0074] | 0.032 | 2,000 |
+| PA − L0 | +0.0195 | [+0.0151, +0.0241] | < 0.0005 | 2,000 |
+| L0 − RF | +0.0516 | [+0.0448, +0.0584] | < 0.001 | 1,000 |
+| L1 − RF | +0.0675 | [+0.0605, +0.0749] | < 0.001 | 1,000 |
+| PA − RF | +0.0711 | [+0.0643, +0.0780] | < 0.001 | 1,000 |
+
+We base decisions on the two-sided 95% CI. PA − L1 has a one-sided p below 0.05, but its two-sided interval includes 0, so we report the two as **not distinguishable**.
+
+### 7.3 What the test says
+1. Validation and test agree: L1 0.5809 vs. 0.5772, L0 0.5723 vs. 0.5613, RF 0.5261 vs. 0.5098. No system collapses on unseen essays.
+2. DeBERTa beats RF Feature Set B by 0.05–0.07 Macro-F1, almost entirely through the minority classes (Ineffective F1 0.34–0.38 vs. 0.20). RF keeps the highest accuracy and Adequate F1 because it predicts Adequate more often.
+3. Level 1 beats Level 0 on test for this pair of trained models. Given the run-to-run variation in §4.2, we read this as "local context gives a small, consistent gain". We do not read it as a size we can state precisely.
+4. Adding the prompt name gives no difference we can distinguish on test.
+
+---
+
+## 8. Conclusion on context and information needs (rewritten, Requirement 1)
+
+Adding the neighbouring units (Level 1) gives a small gain. In the Week 10 run it was not distinguishable from zero on validation (+0.0022). In the Week 11 retraining it was +0.0087 on validation and +0.0159 [0.0115, 0.0207] on the official test. None of the 10 high-confidence Ineffective failures changed its argmax with context, although 8 of 10 moved toward Ineffective. Reading those cases, the missing information seems to lie mostly in the whole essay (an unanswered counterclaim, a bare position) and sometimes in the task itself. Our results are **consistent with the hypothesis** that judging such units needs the whole essay and, for source-based prompts, the source texts. We have not tested this: Level 2 (source text) and Level 3 (whole essay) were not run, and case 2 shows that our own reading of a case can be wrong.
+
+Label reliability also limits what any model can reach here. Two trained raters agree on these effectiveness labels only at κ ≈ 0.316 (Crossley et al., 2024), so part of what looks like model error is disagreement in the labels themselves. Our model's κ against the adjudicated label (0.37 on test) and the rater–rater κ measure different things and should not be compared to claim human-level performance.
+
+---
+
+## 9. Limitations
+* One training seed per DeBERTa configuration; differences of about 0.005–0.01 Macro-F1 are within run-to-run variation (§4.2).
+* The length effect in §3 is a measured association within holistic score; we have not identified its mechanism.
+* Threshold analysis (§5.3) is on validation only; we did not choose or report an operating point on test.
+* LOPO covers 3 of 15 prompts and was trained with a transformers version later found to break DeBERTa-v3 training.
+* Source-dependent explanations (cases 2, 5) rely on source texts that are not part of the PERSUADE CSV.
+
+## 10. Individual contributions and AI use
+
+| Member | Role | Work | Artifacts |
+|---|---|---|---|
+| Member 1 | Data and confounds | Holistic × length analysis (rerun with the corrected join), RF Feature Set B on test | `Person1/script_holistic_length_table.py`, `Person1/run_rf_official_test.py`, `Person1/output/` |
+| Member 2 | Errors and thresholds | Threshold analysis and case counting, Linear SVM test and LOPO | `script_threshold_tuning_and_case8.py`, `Person2Khoa/Person2Khoa/` |
+| Member 3 | DeBERTa and test governance | Retrained L0/L1/PA on Colab A100, ran the locked test pass, bootstrap; same-unit LOPO gap | `Week11_Person3_DeBERTa_OfficialTest/`, `script_official_test_evaluation.py`, `script_lopo_same_units_gap.py` |
+
+**AI assistance.** We used Gemini/Antigravity, Claude Code and OpenAI Codex for code drafting, running Colab jobs, report formatting, and a full re-check of this report against the raw data. That re-check found the defects listed in `RA_SOAT_TUAN11_SO_VOI_NHAN_XET_TUAN10.md`. Every number in this report is produced by a script in the repository from the raw CSVs or saved predictions.
+
+## References
+* Crossley, S. A., Baffour, P., Tian, Y., Franklin, A., Benner, M., & Boser, U. (2024). A large-scale corpus for assessing written argumentation: PERSUADE 2.0. *Assessing Writing*, 61, Article 100830. https://doi.org/10.1016/j.asw.2024.100830
+* He, P., Gao, J., & Chen, W. (2023). DeBERTaV3: Improving DeBERTa using ELECTRA-style pre-training with gradient-disentangled embedding sharing. *ICLR*.
+* Stab, C., & Gurevych, I. (2017). Parsing argumentation structures in persuasive essays. *Computational Linguistics*, 43(3), 619–659.
+* Toulmin, S. E. (1958). *The Uses of Argument*. Cambridge University Press.

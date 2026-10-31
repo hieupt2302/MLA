@@ -1,0 +1,26 @@
+model,split,spec,coef_q_idx_logodds,odds_ratio_per_quartile,or_ci95_low,or_ci95_high,p_value,n_units
+RF Feature Set B (tuần 9),validation,không kiểm soát điểm,0.2138,1.238,1.198,1.28,0.0,29102
+RF Feature Set B (tuần 9),validation,có kiểm soát điểm,0.2659,1.305,1.238,1.375,0.0,29102
+RF Feature Set B (tuần 9),validation,kiểm soát điểm + nhãn gold + loại đơn vị,0.2607,1.298,1.235,1.363,0.0,29102
+RF Feature Set B (tuần 9),validation,chỉ bài điểm 3,0.2655,1.304,1.205,1.411,0.0,9197
+RF Feature Set B (tuần 9),validation,chỉ bài điểm 4,0.3837,1.468,1.334,1.614,0.0,8827
+DeBERTa L1 (lượt chạy tuần 10),validation,không kiểm soát điểm,0.1751,1.191,1.154,1.23,0.0,29102
+DeBERTa L1 (lượt chạy tuần 10),validation,có kiểm soát điểm,0.1868,1.205,1.148,1.265,0.0,29102
+DeBERTa L1 (lượt chạy tuần 10),validation,kiểm soát điểm + nhãn gold + loại đơn vị,0.169,1.184,1.128,1.243,0.0,29102
+DeBERTa L1 (lượt chạy tuần 10),validation,chỉ bài điểm 3,0.1549,1.168,1.076,1.267,0.0002,9197
+DeBERTa L1 (lượt chạy tuần 10),validation,chỉ bài điểm 4,0.2022,1.224,1.126,1.33,0.0,8827
+"DeBERTa L0 (tuần 11, mô hình đã chấm test)",validation,không kiểm soát điểm,0.1341,1.143,1.11,1.178,0.0,29102
+"DeBERTa L0 (tuần 11, mô hình đã chấm test)",validation,có kiểm soát điểm,0.1496,1.161,1.11,1.215,0.0,29102
+"DeBERTa L0 (tuần 11, mô hình đã chấm test)",validation,kiểm soát điểm + nhãn gold + loại đơn vị,0.1296,1.138,1.088,1.191,0.0,29102
+"DeBERTa L0 (tuần 11, mô hình đã chấm test)",validation,chỉ bài điểm 3,0.1545,1.167,1.084,1.256,0.0,9197
+"DeBERTa L0 (tuần 11, mô hình đã chấm test)",validation,chỉ bài điểm 4,0.1405,1.151,1.062,1.247,0.0006,8827
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",validation,không kiểm soát điểm,0.1595,1.173,1.136,1.211,0.0,29102
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",validation,có kiểm soát điểm,0.1758,1.192,1.136,1.251,0.0,29102
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",validation,kiểm soát điểm + nhãn gold + loại đơn vị,0.1551,1.168,1.114,1.225,0.0,29102
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",validation,chỉ bài điểm 3,0.1364,1.146,1.057,1.242,0.0009,9197
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",validation,chỉ bài điểm 4,0.2347,1.265,1.165,1.372,0.0,8827
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",official_test,không kiểm soát điểm,0.1635,1.178,1.156,1.199,0.0,93677
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",official_test,có kiểm soát điểm,0.1479,1.159,1.128,1.191,0.0,93677
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",official_test,kiểm soát điểm + nhãn gold + loại đơn vị,0.1194,1.127,1.097,1.158,0.0,93677
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",official_test,chỉ bài điểm 3,0.1874,1.206,1.155,1.259,0.0,30495
+"DeBERTa L1 (tuần 11, mô hình đã chấm test)",official_test,chỉ bài điểm 4,0.156,1.169,1.111,1.23,0.0,26557
