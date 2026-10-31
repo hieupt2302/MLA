@@ -1,0 +1,59 @@
+{
+  "name": "L1w2",
+  "cfg": {
+    "model_name": "microsoft/deberta-v3-base",
+    "max_length": 512,
+    "eff_batch": 32,
+    "lr": 2e-05,
+    "epochs": 3,
+    "warmup_ratio": 0.1,
+    "seed": 42
+  },
+  "batch_gpu": 16,
+  "grad_accum": 2,
+  "train_minutes": 89.6,
+  "epoch_evals": [
+    {
+      "eval_loss": 0.9993457794189453,
+      "eval_macro_f1": 0.5357317180132943,
+      "eval_accuracy": 0.6577898426225002,
+      "eval_f1_ineffective": 0.3813495072024261,
+      "eval_runtime": 132.6237,
+      "eval_samples_per_second": 219.433,
+      "eval_steps_per_second": 1.719,
+      "epoch": 1.0,
+      "step": 3600
+    },
+    {
+      "eval_loss": 0.8553441166877747,
+      "eval_macro_f1": 0.5865870250202541,
+      "eval_accuracy": 0.7408425537763728,
+      "eval_f1_ineffective": 0.39855508729680916,
+      "eval_runtime": 132.67,
+      "eval_samples_per_second": 219.356,
+      "eval_steps_per_second": 1.719,
+      "epoch": 2.0,
+      "step": 7200
+    },
+    {
+      "eval_loss": 0.9692608714103699,
+      "eval_macro_f1": 0.5786920235967924,
+      "eval_accuracy": 0.7358257164456051,
+      "eval_f1_ineffective": 0.38075438075438073,
+      "eval_runtime": 132.6847,
+      "eval_samples_per_second": 219.332,
+      "eval_steps_per_second": 1.718,
+      "epoch": 3.0,
+      "step": 10800
+    }
+  ],
+  "best_metric": 0.5865870250202541,
+  "gpu": "NVIDIA L4",
+  "transformers": "4.57.6",
+  "class_weights": [
+    7.47870406440722,
+    0.424979984577979,
+    1.9484251835312425
+  ],
+  "quick": false
+}

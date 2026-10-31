@@ -1,0 +1,42 @@
+{
+  "name": "L2",
+  "cfg": {
+    "model_name": "microsoft/deberta-v3-base",
+    "max_length": 512,
+    "eff_batch": 32,
+    "lr": 2e-05,
+    "epochs": 3,
+    "warmup_ratio": 0.1,
+    "seed": 42
+  },
+  "epoch_evals": [
+    {
+      "epoch": 1.0,
+      "eval_accuracy": 0.7848945089684558,
+      "eval_f1_ineffective": 0.363237139272271,
+      "eval_loss": 0.9527013897895813,
+      "eval_macro_f1": 0.5681294429656449,
+      "eval_runtime": 98.5638,
+      "eval_samples_per_second": 295.261,
+      "eval_steps_per_second": 2.313,
+      "step": 3600
+    },
+    {
+      "epoch": 2.0,
+      "eval_accuracy": 0.7309119648134149,
+      "eval_f1_ineffective": 0.3772204806687565,
+      "eval_loss": 0.8223632574081421,
+      "eval_macro_f1": 0.5784357741054357,
+      "eval_runtime": 98.5331,
+      "eval_samples_per_second": 295.353,
+      "eval_steps_per_second": 2.314,
+      "step": 7200
+    }
+  ],
+  "best_metric": 0.5784357741054357,
+  "best_checkpoint": "/content/ckpt_L2/checkpoint-7200",
+  "gpu": "NVIDIA L4",
+  "transformers": "4.57.6",
+  "recovered_from_checkpoint": true,
+  "quick": false
+}

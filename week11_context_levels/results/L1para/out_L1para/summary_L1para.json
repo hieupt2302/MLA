@@ -1,0 +1,17 @@
+{
+  "model": "L1para",
+  "macro_f1": 0.5686,
+  "accuracy": 0.7044,
+  "balanced_accuracy": 0.6644,
+  "qwk": 0.4346,
+  "f1_ineffective": 0.3882,
+  "f1_adequate": 0.7927,
+  "f1_effective": 0.5249,
+  "recall_ineffective": 0.5655,
+  "precision_ineffective": 0.2956,
+  "n_val_units": 29102,
+  "quick": false,
+  "gpu": "NVIDIA L4",
+  "transformers": "4.57.6",
+  "finished_at": "2026-10-31T09:55:59.756922+00:00"
+}

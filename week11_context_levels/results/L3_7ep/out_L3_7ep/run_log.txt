@@ -1,0 +1,67 @@
+[2026-10-31 05:41:59 UTC] [L3_7ep] Train 115,187 đơn vị / 12,475 bài | Val 29,102 đơn vị / 3,119 bài (khớp split tuần 9–11)
+[2026-10-31 05:42:12 UTC] [L3_7ep] Token đánh dấu: ['[CLAIM]', '[CONCLUDING_STATEMENT]', '[COUNTERCLAIM]', '[EVIDENCE]', '[LEAD]', '[POSITION]', '[REBUTTAL]']
+[2026-10-31 05:42:54 UTC] [L3_7ep] [train] 12,475 bài -> 12,481 cửa sổ | token/bài p50/p90/p99/max = [470.0, 819.0, 1201.0, 1800.0] | bài > 1536 token: 0.07% | đơn vị bị cắt cuối: 0
+[2026-10-31 05:43:04 UTC] [L3_7ep] [val] 3,119 bài -> 3,119 cửa sổ | token/bài p50/p90/p99/max = [464.0, 811.0, 1204.0, 1515.0] | bài > 1536 token: 0.00% | đơn vị bị cắt cuối: 0
+[2026-10-31 05:43:04 UTC] [L3_7ep] Dựng dữ liệu xong sau 52s
+[2026-10-31 05:43:11 UTC] [L3_7ep] 8 bài tràn VRAM
+[2026-10-31 05:43:14 UTC] [L3_7ep] Thử 4 bài x 1536 token: đỉnh VRAM 14.0/22.0 GB
+[2026-10-31 05:43:14 UTC] [L3_7ep] batch 4 bài x grad_accum 2 | 3121 batch/epoch | 10927 bước tối ưu | class weights [7.4787, 0.425, 1.9484]
+[2026-10-31 05:44:53 UTC] [L3_7ep] epoch 1 bước 200 | loss 1.0540 | 99s
+[2026-10-31 05:46:41 UTC] [L3_7ep] epoch 1 bước 400 | loss 0.9759 | 207s
+[2026-10-31 05:48:37 UTC] [L3_7ep] epoch 1 bước 600 | loss 0.9328 | 323s
+[2026-10-31 05:50:40 UTC] [L3_7ep] epoch 1 bước 800 | loss 0.9180 | 446s
+[2026-10-31 05:52:21 UTC] [L3_7ep] epoch 1 bước 1000 | loss 0.9044 | 547s
+[2026-10-31 05:54:07 UTC] [L3_7ep] epoch 1 bước 1200 | loss 0.8920 | 653s
+[2026-10-31 05:56:02 UTC] [L3_7ep] epoch 1 bước 1400 | loss 0.8815 | 768s
+[2026-10-31 05:58:30 UTC] [L3_7ep] epoch 1: train loss 0.8761 | val Macro-F1 0.4847 | F1 Ineff 0.3287 | Acc 0.5808 | 15.3 phút
+[2026-10-31 06:00:30 UTC] [L3_7ep] epoch 2 bước 200 | loss 0.7399 | 119s
+[2026-10-31 06:02:22 UTC] [L3_7ep] epoch 2 bước 400 | loss 0.7480 | 231s
+[2026-10-31 06:04:22 UTC] [L3_7ep] epoch 2 bước 600 | loss 0.7495 | 351s
+[2026-10-31 06:06:13 UTC] [L3_7ep] epoch 2 bước 800 | loss 0.7586 | 462s
+[2026-10-31 06:08:07 UTC] [L3_7ep] epoch 2 bước 1000 | loss 0.7513 | 577s
+[2026-10-31 06:10:05 UTC] [L3_7ep] epoch 2 bước 1200 | loss 0.7467 | 694s
+[2026-10-31 06:12:01 UTC] [L3_7ep] epoch 2 bước 1400 | loss 0.7400 | 810s
+[2026-10-31 06:14:22 UTC] [L3_7ep] epoch 2: train loss 0.7382 | val Macro-F1 0.4738 | F1 Ineff 0.2360 | Acc 0.5739 | 15.9 phút
+[2026-10-31 06:16:21 UTC] [L3_7ep] epoch 3 bước 200 | loss 0.6487 | 119s
+[2026-10-31 06:18:17 UTC] [L3_7ep] epoch 3 bước 400 | loss 0.6378 | 235s
+[2026-10-31 06:20:16 UTC] [L3_7ep] epoch 3 bước 600 | loss 0.6388 | 355s
+[2026-10-31 06:22:04 UTC] [L3_7ep] epoch 3 bước 800 | loss 0.6374 | 463s
+[2026-10-31 06:24:02 UTC] [L3_7ep] epoch 3 bước 1000 | loss 0.6365 | 581s
+[2026-10-31 06:25:58 UTC] [L3_7ep] epoch 3 bước 1200 | loss 0.6343 | 697s
+[2026-10-31 06:27:44 UTC] [L3_7ep] epoch 3 bước 1400 | loss 0.6334 | 802s
+[2026-10-31 06:30:10 UTC] [L3_7ep] epoch 3: train loss 0.6349 | val Macro-F1 0.5486 | F1 Ineff 0.3587 | Acc 0.6819 | 15.8 phút
+[2026-10-31 06:31:59 UTC] [L3_7ep] epoch 4 bước 200 | loss 0.5382 | 109s
+[2026-10-31 06:33:57 UTC] [L3_7ep] epoch 4 bước 400 | loss 0.5296 | 227s
+[2026-10-31 06:36:02 UTC] [L3_7ep] epoch 4 bước 600 | loss 0.5292 | 352s
+[2026-10-31 06:37:49 UTC] [L3_7ep] epoch 4 bước 800 | loss 0.5282 | 459s
+[2026-10-31 06:39:43 UTC] [L3_7ep] epoch 4 bước 1000 | loss 0.5216 | 572s
+[2026-10-31 06:41:34 UTC] [L3_7ep] epoch 4 bước 1200 | loss 0.5203 | 683s
+[2026-10-31 06:43:30 UTC] [L3_7ep] epoch 4 bước 1400 | loss 0.5196 | 800s
+[2026-10-31 06:45:58 UTC] [L3_7ep] epoch 4: train loss 0.5167 | val Macro-F1 0.5610 | F1 Ineff 0.3929 | Acc 0.6904 | 15.8 phút
+[2026-10-31 06:47:53 UTC] [L3_7ep] epoch 5 bước 200 | loss 0.4125 | 114s
+[2026-10-31 06:49:57 UTC] [L3_7ep] epoch 5 bước 400 | loss 0.4188 | 238s
+[2026-10-31 06:51:56 UTC] [L3_7ep] epoch 5 bước 600 | loss 0.4145 | 357s
+[2026-10-31 06:53:49 UTC] [L3_7ep] epoch 5 bước 800 | loss 0.4122 | 470s
+[2026-10-31 06:55:38 UTC] [L3_7ep] epoch 5 bước 1000 | loss 0.4088 | 580s
+[2026-10-31 06:57:27 UTC] [L3_7ep] epoch 5 bước 1200 | loss 0.4116 | 689s
+[2026-10-31 06:59:25 UTC] [L3_7ep] epoch 5 bước 1400 | loss 0.4095 | 807s
+[2026-10-31 07:01:46 UTC] [L3_7ep] epoch 5: train loss 0.4091 | val Macro-F1 0.5512 | F1 Ineff 0.3784 | Acc 0.6800 | 15.8 phút
+[2026-10-31 07:03:39 UTC] [L3_7ep] epoch 6 bước 200 | loss 0.3324 | 113s
+[2026-10-31 07:05:27 UTC] [L3_7ep] epoch 6 bước 400 | loss 0.3327 | 221s
+[2026-10-31 07:07:26 UTC] [L3_7ep] epoch 6 bước 600 | loss 0.3346 | 340s
+[2026-10-31 07:09:24 UTC] [L3_7ep] epoch 6 bước 800 | loss 0.3344 | 458s
+[2026-10-31 07:11:17 UTC] [L3_7ep] epoch 6 bước 1000 | loss 0.3325 | 571s
+[2026-10-31 07:13:15 UTC] [L3_7ep] epoch 6 bước 1200 | loss 0.3286 | 689s
+[2026-10-31 07:15:13 UTC] [L3_7ep] epoch 6 bước 1400 | loss 0.3278 | 807s
+[2026-10-31 07:17:34 UTC] [L3_7ep] epoch 6: train loss 0.3279 | val Macro-F1 0.5698 | F1 Ineff 0.3857 | Acc 0.7271 | 15.8 phút
+[2026-10-31 07:19:23 UTC] [L3_7ep] epoch 7 bước 200 | loss 0.2658 | 109s
+[2026-10-31 07:21:12 UTC] [L3_7ep] epoch 7 bước 400 | loss 0.2685 | 218s
+[2026-10-31 07:23:09 UTC] [L3_7ep] epoch 7 bước 600 | loss 0.2684 | 335s
+[2026-10-31 07:25:12 UTC] [L3_7ep] epoch 7 bước 800 | loss 0.2712 | 458s
+[2026-10-31 07:27:06 UTC] [L3_7ep] epoch 7 bước 1000 | loss 0.2708 | 571s
+[2026-10-31 07:29:05 UTC] [L3_7ep] epoch 7 bước 1200 | loss 0.2736 | 691s
+[2026-10-31 07:31:01 UTC] [L3_7ep] epoch 7 bước 1400 | loss 0.2726 | 806s
+[2026-10-31 07:33:24 UTC] [L3_7ep] epoch 7: train loss 0.2746 | val Macro-F1 0.5637 | F1 Ineff 0.3719 | Acc 0.7278 | 15.8 phút
+[2026-10-31 07:33:24 UTC] [L3_7ep] Train xong sau 110.2 phút | best val Macro-F1 0.5698
+[2026-10-31 07:33:25 UTC] [L3_7ep] Lưu /content/out_L3_7ep/val_predictions_L3_7ep.csv
+[2026-10-31 07:33:55 UTC] [L3_7ep] KẾT QUẢ L3_7ep (validation): macro_f1 0.5698 | accuracy 0.7271 | balanced_accuracy 0.615 | qwk 0.4223 | f1_ineffective 0.3857 | f1_adequate 0.8153 | f1_effective 0.5084 | recall_ineffective 0.43 | precision_ineffective 0.3497

@@ -8,7 +8,9 @@ Bảng 6.x cũ so DeBERTa LOPO (chấm trên TẤT CẢ đơn vị của đề, 
 validation. Ta giữ đúng các đơn vị validation đó và so với dự đoán in-domain (cùng đầu vào Level 0)
 trên chính các đơn vị ấy -> so sánh có ghép cặp, bootstrap theo bài.
 
-Chạy: python script_lopo_same_units_gap.py --train_csv <train.csv>
+Chạy: python script_lopo_same_units_gap.py --train_csv <train.csv>          (lượt LOPO tuần 10)
+      python script_lopo_same_units_gap.py --train_csv <train.csv> --rerun  (lượt chạy lại tuần 11,
+      week11_lopo_rerun/outputs/predictions_fold{1,2,3}.csv có row_idx -> ghép thẳng)
 """
 import argparse
 import os
@@ -22,6 +24,8 @@ import pandas as pd
 from sklearn.metrics import f1_score
 
 LABEL2ID = {"Ineffective": 0, "Adequate": 1, "Effective": 2}
+RERUN_DIR = "week11_lopo_rerun/outputs"
+RERUN_FOLD = {'"A Cowboy Who Rode the Waves"': 1, "Summer projects": 2, "Distance learning": 3}
 PROMPTS = {'"A Cowboy Who Rode the Waves"': "A_Cowboy_Who_Rode_the_Waves",
            "Summer projects": "Summer_projects", "Distance learning": "Distance_learning"}
 P3 = "Week11_Person3_DeBERTa_OfficialTest/outputs/week11_person3"
@@ -50,6 +54,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--train_csv", default="persuade_corpus_2.0_train.csv")
     ap.add_argument("--output_dir", default="outputs")
+    ap.add_argument("--rerun", action="store_true", help="dùng dự đoán LOPO chạy lại tuần 11 (transformers 4.57.6)")
     args = ap.parse_args()
     rng = np.random.default_rng(42)
 
@@ -69,23 +74,34 @@ def main():
 
     rows = []
     for prompt, tag in PROMPTS.items():
-        lp = pd.read_csv(f"outputs/lopo_deberta_predictions/predictions_{tag}.csv")
-        fold = lab[lab["prompt_name"] == prompt].reset_index(drop=True)
-        assert len(fold) == len(lp), f"{prompt}: {len(fold)} vs {len(lp)}"
-        assert (fold["discourse_type"].values == lp["discourse_type"].values).all()
-        assert (fold["label"].values == lp["true_label"].values).all()
-        fold["lopo_pred"] = lp["pred_label"].values
-        in_val = fold[fold["essay_id_comp"].isin(val_essays)].reset_index(drop=True)
-
         vmask = (val["prompt_name"] == prompt).values
         vsub = val[vmask].reset_index(drop=True)
-        # Ghép đơn vị validation của đề với dòng LOPO tương ứng (cùng bài, cùng thứ tự trong bài)
-        vsub["k"] = vsub.groupby("essay_id_comp").cumcount()
-        in_val["k"] = in_val.groupby("essay_id_comp").cumcount()
-        m = vsub.merge(in_val[["essay_id_comp", "k", "discourse_type", "label", "lopo_pred"]],
-                       on=["essay_id_comp", "k"], suffixes=("", "_lopo"))
-        assert len(m) == len(vsub) and (m["discourse_type"] == m["discourse_type_lopo"]).all() \
-            and (m["label"] == m["label_lopo"]).all(), f"{prompt}: ghép đơn vị lệch"
+        if args.rerun:
+            # Lượt chạy lại lưu row_idx (cùng quy tắc lọc với notebook 07) -> ghép thẳng
+            lp = pd.read_csv(f"{RERUN_DIR}/predictions_fold{RERUN_FOLD[prompt]}.csv")
+            fold = units.loc[lp["row_idx"].values].reset_index(drop=True)
+            assert (fold["prompt_name"] == prompt).all() and (fold["label"].values == lp["true_label"].values).all()
+            assert len(fold) == (units["prompt_name"] == prompt).sum(), f"{prompt}: thiếu đơn vị"
+            fold["lopo_pred"] = lp["pred_label"].values
+            vsub["row_idx"] = val_idx[vmask]
+            m = vsub.merge(lp[["row_idx", "true_label", "pred_label"]], on="row_idx")
+            assert len(m) == len(vsub) and (m["label"] == m["true_label"]).all(), f"{prompt}: ghép đơn vị lệch"
+            m["lopo_pred"] = m["pred_label"]
+        else:
+            lp = pd.read_csv(f"outputs/lopo_deberta_predictions/predictions_{tag}.csv")
+            fold = lab[lab["prompt_name"] == prompt].reset_index(drop=True)
+            assert len(fold) == len(lp), f"{prompt}: {len(fold)} vs {len(lp)}"
+            assert (fold["discourse_type"].values == lp["discourse_type"].values).all()
+            assert (fold["label"].values == lp["true_label"].values).all()
+            fold["lopo_pred"] = lp["pred_label"].values
+            in_val = fold[fold["essay_id_comp"].isin(val_essays)].reset_index(drop=True)
+            # Ghép đơn vị validation của đề với dòng LOPO tương ứng (cùng bài, cùng thứ tự trong bài)
+            vsub["k"] = vsub.groupby("essay_id_comp").cumcount()
+            in_val["k"] = in_val.groupby("essay_id_comp").cumcount()
+            m = vsub.merge(in_val[["essay_id_comp", "k", "discourse_type", "label", "lopo_pred"]],
+                           on=["essay_id_comp", "k"], suffixes=("", "_lopo"))
+            assert len(m) == len(vsub) and (m["discourse_type"] == m["discourse_type_lopo"]).all() \
+                and (m["label"] == m["label_lopo"]).all(), f"{prompt}: ghép đơn vị lệch"
         y, lopo = m["label"].values, m["lopo_pred"].values
 
         rec = {"held_out_prompt": prompt.strip('"'), "n_units_same_set": len(m), "n_essays": m["essay_id_comp"].nunique(),
@@ -104,7 +120,8 @@ def main():
         print(rec)
 
     os.makedirs(args.output_dir, exist_ok=True)
-    pd.DataFrame(rows).to_csv(os.path.join(args.output_dir, "lopo_deberta_gap_same_units.csv"), index=False)
+    name = "lopo_deberta_rerun_gap_same_units.csv" if args.rerun else "lopo_deberta_gap_same_units.csv"
+    pd.DataFrame(rows).to_csv(os.path.join(args.output_dir, name), index=False)
 
 
 if __name__ == "__main__":

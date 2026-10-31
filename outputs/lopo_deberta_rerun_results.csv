@@ -1,0 +1,4 @@
+fold,held_out_prompt,n_train_units,n_test_units,n_test_essays,macro_f1,accuracy,balanced_accuracy,qwk,f1_ineffective,f1_adequate,f1_effective,recall_ineffective,train_minutes
+1,A Cowboy Who Rode the Waves,139131,5158,688,0.4019,0.647,0.4978,0.1827,0.152,0.7768,0.277,0.4612,44.3
+2,Summer projects,134434,9855,875,0.4378,0.6024,0.4787,0.2874,0.1074,0.6365,0.5694,0.0909,42.8
+3,Distance learning,125763,18526,1498,0.5381,0.6952,0.6149,0.4371,0.2437,0.7566,0.6142,0.3466,40.2

@@ -1,0 +1,12 @@
+system,models,macro_f1_argmax,macro_f1_bias_crossfit,accuracy_bias_crossfit,f1_ineffective_bias_crossfit,pred_ineffective_share,bias_half1_b0_b2,bias_half2_b0_b2,bias_at_grid_edge,delta_vs_L1_bias,ci95_vs_L1_bias
+L0,L0,0.5723,0.5847,0.7849,0.3639,0.0458,"(np.float64(-0.6), np.float64(-0.7))","(np.float64(-0.4), np.float64(-1.0))",False,-0.0088,"[-0.0170, -0.0007]"
+L1,L1,0.5809,0.5935,0.7859,0.3824,0.0473,"(np.float64(-0.6), np.float64(-0.6))","(np.float64(-0.5), np.float64(-0.9))",False,,
+PA,PA,0.5855,0.6006,0.7886,0.3936,0.0446,"(np.float64(-0.7), np.float64(-0.6))","(np.float64(-0.6), np.float64(-0.5))",False,0.0071,"[-0.0000, +0.0139]"
+L1w2,L1w2,0.5867,0.6009,0.7821,0.3986,0.0538,"(np.float64(-0.7), np.float64(-0.5))","(np.float64(-0.3), np.float64(-0.5))",False,0.0074,"[-0.0008, +0.0155]"
+L1para,L1para,0.5686,0.5927,0.7847,0.3837,0.0615,"(np.float64(-1.2), np.float64(-1.0))","(np.float64(-0.3), np.float64(-1.1))",False,-0.0008,"[-0.0092, +0.0078]"
+L2,L2,0.5785,0.5921,0.786,0.3772,0.044,"(np.float64(-1.6), np.float64(-0.4))","(np.float64(-0.9), np.float64(-0.6))",False,-0.0014,"[-0.0096, +0.0066]"
+L3,L3,0.5759,0.6187,0.8006,0.4343,0.0511,"(np.float64(-1.3), np.float64(-1.2))","(np.float64(-0.9), np.float64(-1.2))",False,0.0252,"[+0.0159, +0.0347]"
+L3_7ep,L3_7ep,0.5698,0.5816,0.7795,0.3819,0.0487,"(np.float64(-1.0), np.float64(-1.0))","(np.float64(-0.2), np.float64(-1.2))",False,-0.0119,"[-0.0213, -0.0022]"
+L0+L1+PA,L0+L1+PA,0.5968,0.6038,0.7893,0.4046,0.0587,"(np.float64(-0.1), np.float64(-0.6))","(np.float64(0.3), np.float64(-0.9))",False,0.0103,"[+0.0047, +0.0163]"
+L1+L1w2+L3,L1+L1w2+L3,0.604,0.6227,0.8068,0.4367,0.0477,"(np.float64(-0.5), np.float64(-0.9))","(np.float64(-0.6), np.float64(-0.9))",False,0.0291,"[+0.0228, +0.0359]"
+tất cả 8,L0+L1+PA+L1w2+L1para+L2+L3+L3_7ep,0.6096,0.6194,0.7979,0.4273,0.0491,"(np.float64(-0.4), np.float64(-0.6))","(np.float64(-0.1), np.float64(-0.6))",False,0.0259,"[+0.0193, +0.0329]"

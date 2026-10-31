@@ -9,6 +9,7 @@
 * Person 1 (length × proficiency, RF official test): `Person1/script_holistic_length_table.ipynb`, `Person1/run_rf_official_test.ipynb` — https://colab.research.google.com/drive/1YRMpJgGzZ0vWe7nA0W8c7n5JKMruVJHT?usp=sharing
 * Person 2 (threshold analysis, Linear SVM LOPO and test): `Person2Khoa/Person2Khoa/*.ipynb` — https://colab.research.google.com/drive/1prcSnRHax0SAITnUbGsXks3aQ9pbwJD2?usp=sharing
 * Person 3 (DeBERTa L0 / L1 / Prompt-Aware, official test): `Week11_Person3_DeBERTa_OfficialTest/07_person3_prompt_aware_official_test.ipynb` — https://colab.research.google.com/drive/1xiYMZ7SjRSAn_ioAvAbNh-PZDkghsiBk?usp=sharing
+* Week 11 supplementary runs (context ladder L1 ±2 / paragraph / L2 / L3; LOPO rerun), each notebook saved with its outputs: `week11_context_levels/08_…`–`12_…ipynb`, `week11_lopo_rerun/11_lopo_rerun_L0.ipynb`
 
 ---
 
@@ -19,7 +20,8 @@ We classify each annotated discourse unit of a student argumentative essay as In
 1. **Length vs. proficiency (Requirement 3).** Within the same holistic score, the error rate of DeBERTa Level 1 still rises with essay length. For score-3 essays it goes from 19.3% (shortest quartile) to 28.2% (longest) on validation, and from 17.6% to 29.2% on the official test. A logistic regression with essay-clustered errors gives an odds ratio of 1.19 [1.14, 1.25] per length quartile after controlling for holistic score. It stays at 1.17 [1.11, 1.23] after also controlling for the gold label and discourse type. Proficiency shift explains why the *type* of error changes with length: in the longest quartile, 92% of errors are Adequate↔Effective confusions. It does not explain the whole *rise* in error. Hypothesis A (length/complexity) is therefore **not ruled out**, and we report both explanations. An earlier version of this table showed flat error rates; that table came from a join on corrupted IDs (Section 2.3) and is withdrawn.
 2. **Official test, one pass (Requirement 2; 93,677 units, 10,402 essays).** The protocol systems scored Macro-F1: Random Forest Feature Set B **0.5098**, DeBERTa-v3 Level 0 **0.5613**, and DeBERTa-v3 Level 1, the locked system, **0.5772**. The exploratory Prompt-Aware model scored 0.5808, and a supplementary Linear SVM scored 0.4822. Level 1 beats Level 0 by +0.0159 [0.0115, 0.0207] (essay bootstrap). Prompt-Aware vs. Level 1 is +0.0036 [−0.0002, 0.0074], so they cannot be distinguished. All three DeBERTa models beat RF by 0.05–0.07 Macro-F1. The DeBERTa models scored on test were retrained this week with the locked configuration. On validation they give L1 − L0 = +0.0087 [0.0014, 0.0161], whereas the Week 10 training run gave +0.0022 (CI containing 0). The L0/L1 difference is therefore of the same order as run-to-run variation.
 3. **Lowering the Ineffective threshold.** At P(Ineffective) ≥ 0.10, 3,670 of 29,102 validation predictions change, and 2 of the 10 studied failure cases (cases 5 and 8) flip to Ineffective. Recall for Ineffective rises from 43.2% to 73.0%. Precision falls from 36.1% to 18.4%, and Macro-F1 falls from 0.579 to 0.517: about 8 new false alarms per newly caught Ineffective unit.
-4. **LOPO.** On the *same* validation units, DeBERTa trained without the prompt loses 0.088 Macro-F1 [−0.138, −0.041] on *A Cowboy Who Rode the Waves*. For *Summer projects* (−0.009) and *Distance learning* (+0.004), the confidence intervals include zero.
+4. **LOPO (rerun).** We reran the three DeBERTa LOPO folds with the working library version and without choosing the epoch on the held-out prompt. On the *same* validation units, a model that never saw the prompt loses 0.092 Macro-F1 [−0.132, −0.049] on *A Cowboy Who Rode the Waves* and 0.048 [−0.078, −0.019] on *Distance learning*; for *Summer projects* (−0.025) the interval includes zero.
+5. **Context beyond Level 1 (supplementary, validation only, not scored on test).** Two units on each side, the whole paragraph, a retrieved source passage and the whole essay (Level 3) were each trained with the L1 recipe. None is clearly better than L1 on Macro-F1 (best: ±2 units, +0.0057 [−0.0013, +0.0127]); the paragraph input is worse (−0.012). The whole-essay model gives the highest Ineffective F1 (0.408) and is the only input under which the "unanswered counterclaim" case (case 1) is recognised. Its argmax score hides a calibration shift: after the same cross-fitted class-offset correction for every model, the 3-epoch whole-essay model exceeds L1 by +0.025 [0.016, 0.035] (0.619), and an ensemble of L1, L1 ±2 and L3 reaches 0.623 on validation; the 7-epoch L3 run shows no gain, so this rests on one run and is post-hoc. A source passage did not help (difference-in-differences −0.014 [−0.029, +0.002]).
 
 ---
 
@@ -165,6 +167,58 @@ By discourse type, Level 1 raised Ineffective F1 for Claim (+0.043), Concluding 
 Paired essay bootstrap on validation: L1 − L0 = +0.0087 [0.0014, 0.0161]; PA − L1 = +0.0045 [−0.0025, 0.0113].
 Between the two training runs, the same configuration moved by −0.0045 (L0) and +0.0019 (L1). The L1 − L0 gap went from +0.0022 to +0.0087. Bootstrap intervals only capture sampling of essays, not training randomness, so a single-seed L1 − L0 difference of this size should be read with care.
 
+### 4.3 Beyond Level 1: wider windows, the paragraph, the source text and the whole essay (supplementary, validation only)
+
+The Week 9 review proposed a controlled context ladder ("unit only; unit with neighbours; unit with the whole paragraph; unit with the prompt"), and the Week 10 review noted that Levels 2 and 3 had not been tried. After the official test pass we ran four more inputs. Model, split, hyperparameters and epoch selection are those of L1; only the input changes, except for Level 3, which needs a different architecture. **These are post-test, validation-only explorations: none of them was scored on the official test, and none changes the locked result.** They were trained on Colab L4 GPUs (bf16, transformers 4.57.6, same effective batch of 32). Each notebook is saved with its outputs in `week11_context_levels/`.
+
+| Level | Input | Coverage |
+|---|---|---|
+| L1 ±2 | two units before and two after the target (each context unit capped at 600 characters) | all units |
+| L1-para | target, then the whole paragraph that contains it, with the target marked « … » | all units |
+| L2 (source text) | the most similar passage of the reading source (TF-IDF, ≤ 90 words), prefixed to the L1 input | 4 of 7 source-based prompts (26% of units); other prompts keep the L1 input |
+| L3 (whole essay) | the full essay with typed markers around every unit (`[CLAIM] … [/CLAIM]`), up to 1,536 tokens; each unit is the mean of its token states; one forward pass per essay | all units |
+
+**Source texts for L2.** The PERSUADE CSV only gives source titles. Full texts were available for *Car-free cities* and *Does the electoral college work?* (Kaggle *LLM – Detect AI Generated Text*, `train_prompts.csv`). For *The Face on Mars* and *A Cowboy Who Rode the Waves* only ~100-word GPT-4 summaries were available (Kaggle `nbroad/persaude-corpus-2`, `sources.csv`). No text was found for the other three source-based prompts.
+
+**Results (validation, 29,102 units; Δ vs. L1 with paired essay bootstrap, 2,000 resamples):**
+
+| Model | Macro-F1 | Δ vs. L1 [95% CI] | Accuracy | F1 Ineff | Recall Ineff | Predicted Ineff | 10 cases flipped |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| L0 (unit only) | 0.5723 | −0.0087 [−0.0159, −0.0010] | 72.91% | 0.376 | 42.8% | 5.8% | 0 |
+| **L1 (±1 unit, locked)** | **0.5809** | — | 74.17% | 0.385 | 44.7% | 6.1% | 0 |
+| Prompt-Aware (L1 + prompt name) | 0.5855 | +0.0045 [−0.0016, +0.0109] | 74.06% | 0.393 | 48.8% | 6.8% | 0 |
+| L1 ±2 (±2 units) | **0.5867** | +0.0057 [−0.0013, +0.0127] | 74.11% | 0.398 | 49.8% | 6.8% | 0 |
+| L1-para (whole paragraph) | 0.5686 | −0.0123 [−0.0196, −0.0047] | 70.44% | 0.388 | 56.6% | 8.7% | 1 |
+| L2 (L1 + source passage) | 0.5785 | −0.0024 [−0.0096, +0.0047] | 73.08% | 0.378 | 54.4% | 8.6% | 1 |
+| L3 (whole essay, 3 epochs) | 0.5759 | −0.0050 [−0.0136, +0.0034] | 70.27% | **0.408** | **58.7%** | 8.6% | **3** |
+| L3 (whole essay, 7 epochs) | 0.5698 | −0.0112 [−0.0204, −0.0024] | 72.71% | 0.386 | 43.0% | 5.6% | 1 |
+
+Gold Ineffective share on validation: 4.6%. Per-unit predictions, per-type tables and the ten cases: `outputs/context_levels_validation_summary.csv`, `context_levels_by_discourse_type.csv`, `context_levels_10_cases.csv` (script `week11_context_levels/analyze_context_levels.py`).
+
+**Reading.** No context level beyond L1 is clearly better on Macro-F1. Two units on each side (L1 ±2) gives the highest single-model score but cannot be distinguished from L1, and its two identical training runs differ by 0.004. Wider inputs (the paragraph, the whole essay, a source passage) shift the model towards Ineffective: recall rises to 54–59% while precision and accuracy fall, so Macro-F1 does not improve. L1-para and the 7-epoch L3 are significantly below L1.
+
+**L2: source-effect estimate.** Units of the 11 prompts without a source receive exactly the L1 input, so they act as a control for run-to-run change. Difference-in-differences: (L2 − L1 on source prompts) − (L2 − L1 on other prompts) = **−0.014 [−0.029, +0.002]**. On source prompts alone, L2 − L1 = −0.011 [−0.023, +0.001]; Evidence, the type the hypothesis predicted would benefit, fell by 0.040. With crude passage retrieval, summaries instead of texts for two prompts, and one seed, this does not show that sources are irrelevant; it shows that adding a retrieved passage this way did not help.
+
+**L3: whole essay.** With the L1 recipe (3 epochs), L3 matched L1 in Macro-F1 and gave the highest Ineffective F1 of any model (0.408; recall 58.7%), at the cost of accuracy (70.3%) because it flags more Ineffective and Effective units. Because one L3 step covers 8 essays (~74 units), 3 epochs give ~4,700 updates against ~10,800 for L1. A 7-epoch run with a matched number of updates did not help: training loss kept falling (0.88 → 0.27) while validation Macro-F1 oscillated between 0.55 and 0.57 (best 0.5698), which points to over-fitting rather than under-training.
+
+**Ten failure cases.** Under L1 none of the ten high-confidence Ineffective failures (§5.1) changes its argmax. Case 2 (correct quotation followed by off-topic reasoning) becomes Ineffective under L2 (P = 0.54), L1-para (0.83) and both L3 runs (0.73, 0.92). Case 1 (a counterclaim that is never answered, our "needs the whole essay" example) becomes Ineffective only under the 3-epoch L3 (0.71; 0.16 in the 7-epoch run), and case 5 likewise (0.55). Because the wider models flag more units overall, we compared at an equal flag rate: lowering L1's threshold until it flags as many units as each wider model still flips 0 of 10 cases. The cases were selected as failures of earlier models, and single-case outcomes change between runs, so this is illustration, not evidence.
+
+**Separating discrimination from calibration (post-hoc, validation only).** All models were trained with balanced class weights, and the wider-context models over-predict the minority classes more (8.6–8.7% of units flagged Ineffective against 4.6% gold), so argmax Macro-F1 mixes two things: how well a model separates the classes and how its probabilities are shifted. We therefore applied the same correction to every model: add offsets b₀, b₂ to the log-probabilities of Ineffective and Effective, chosen to maximise Macro-F1 on one half of the validation essays and applied to the other half, then the halves swapped (two-fold cross-fitting by essay; grid −2.0 … +1.5). Δ is against L1 corrected the same way, paired essay bootstrap (`week11_context_levels/posthoc_bias_and_ensemble.py`, `outputs/context_levels_posthoc_bias_ensemble.csv`).
+
+| System | Macro-F1, argmax | Macro-F1, corrected | Δ vs. corrected L1 [95% CI] | F1 Ineff, corrected | Accuracy, corrected |
+|---|:---:|:---:|:---:|:---:|:---:|
+| L1 | 0.5809 | 0.5935 | — | 0.382 | 78.6% |
+| L1 ±2 | 0.5867 | 0.6009 | +0.0074 [−0.0008, +0.0155] | 0.399 | 78.2% |
+| L1-para | 0.5686 | 0.5927 | −0.0008 [−0.0092, +0.0078] | 0.384 | 78.5% |
+| L2 | 0.5785 | 0.5921 | −0.0014 [−0.0096, +0.0066] | 0.377 | 78.6% |
+| **L3, 3 epochs** | 0.5759 | **0.6187** | **+0.0252 [+0.0159, +0.0347]** | **0.434** | 80.1% |
+| L3, 7 epochs | 0.5698 | 0.5816 | −0.0119 [−0.0213, −0.0022] | 0.382 | 78.0% |
+| Ensemble L1 + L1 ±2 + L3 | 0.6040 | **0.6227** | **+0.0291 [+0.0228, +0.0359]** | 0.437 | 80.7% |
+
+Once calibration is equalised, the 3-epoch whole-essay model separates the classes clearly better than L1 (+0.025), mostly through Ineffective (F1 0.382 → 0.434); the paragraph and source inputs gain nothing. Two cautions keep this from being a conclusion. First, the gain comes from one of the two L3 runs: the over-fitted 7-epoch run shows none. Second, these are post-hoc numbers on validation; the offsets are cross-fitted, but validation also chose each model's epoch, and no L3 model has been scored on the official test.
+
+**Run-to-run variation, measured directly.** L2 and L1 ±2 were each trained twice with the same seed and configuration (the first runs' saved predictions were unusable, see the review log B28). Best validation Macro-F1: L2 0.5809 vs. 0.5784; L1 ±2 0.5827 vs. 0.5866. Differences of 0.002–0.004 between identical runs are as large as most of the gaps in the table above.
+
 ---
 
 ## 5. Failure cases and decision thresholds
@@ -212,25 +266,31 @@ Rule: predict Ineffective if P(Ineffective) ≥ θ; otherwise take the larger of
 * **Across model families, same fold:** Linear SVM (TF-IDF), RF (Feature Set B) and DeBERTa L0, each trained on 14 prompts and tested on all units of the held-out prompt.
 * **Within DeBERTa:** the LOPO model vs. the in-domain model (trained with the prompt present) on **the same units**, namely the validation essays of that prompt, with a paired essay bootstrap. The Week 10 table compared LOPO on all units of the prompt with in-domain on the validation subset, i.e. two different sets of units; this section replaces it.
 
-### 6.2 All units of the held-out prompt
+### 6.2 Rerun of the DeBERTa LOPO folds (Week 11)
 
-| Held-out prompt | Units | Linear SVM | RF | DeBERTa L0 (LOPO) | Ineff F1: SVM / RF / DeBERTa |
+The Week 10 DeBERTa LOPO run had two problems. (1) It used transformers 5.20.2, the version that later broke DeBERTa-v3 training in our Week 11 runs. (2) It passed the held-out prompt as `eval_dataset` with `load_best_model_at_end=True`, so the epoch was **selected on the held-out test fold itself**. We reran the three folds with transformers 4.57.6 and bf16 on a Colab L4 GPU, trained for a fixed 3 epochs, took the final model, and scored the held-out prompt once (`week11_lopo_rerun/11_lopo_rerun_L0.ipynb`, saved with outputs; predictions keyed by `row_idx`). Input (`type [SEP] unit`), model, learning rate, effective batch and class weights are unchanged; the training set is every labelled unit of the other 14 prompts.
+
+### 6.3 All units of the held-out prompt
+
+| Held-out prompt | Units / essays | Linear SVM | RF | DeBERTa L0, Week 10 run | **DeBERTa L0, rerun** | Ineff F1 (rerun) | Accuracy (rerun) |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| A Cowboy Who Rode the Waves | 5,158 / 688 | 0.3373 | 0.3501 | 0.4082 | **0.4019** | 0.152 | 64.7% |
+| Summer projects | 9,855 / 875 | 0.4269 | 0.4339 | 0.4642 | **0.4378** | 0.107 | 60.2% |
+| Distance learning | 18,526 / 1,498 | 0.4690 | 0.5014 | 0.5735 | **0.5381** | 0.244 | 69.5% |
+
+The rerun is lower than the Week 10 run on all three prompts, which is the direction expected once the epoch is no longer chosen on the held-out prompt. DeBERTa still scores highest on every prompt, but on *Summer projects* only narrowly (0.438 vs. RF 0.434). We have no in-domain per-prompt numbers for SVM and RF, so this table shows which family transfers better; it does not show how much each family drops.
+
+### 6.4 LOPO vs. in-domain DeBERTa on the same units
+
+The comparison uses the validation essays of each prompt, scored by the LOPO model (prompt unseen) and by the Week 11 in-domain L0 (same library version and pipeline, prompt seen through other essays); paired essay bootstrap, 2,000 resamples (`outputs/lopo_deberta_rerun_gap_same_units.csv`; Week 10 run in `outputs/lopo_deberta_gap_same_units.csv`).
+
+| Held-out prompt | Units / essays | LOPO (rerun) | In-domain (Week 11 L0) | **Gap [95% CI]** | Week 10 run gap |
 |---|:---:|:---:|:---:|:---:|:---:|
-| A Cowboy Who Rode the Waves | 5,158 | 0.3373 | 0.3501 | **0.4082** | 0.103 / 0.109 / 0.125 |
-| Summer projects | 9,855 | 0.4269 | 0.4339 | **0.4642** | 0.041 / 0.000 / 0.076 |
-| Distance learning | 18,526 | 0.4690 | 0.5014 | **0.5735** | 0.062 / 0.065 / 0.251 |
+| A Cowboy Who Rode the Waves | 1,030 / 134 | 0.3840 | 0.4755 | **−0.092 [−0.132, −0.049]** | −0.117 |
+| Summer projects | 2,074 / 177 | 0.4827 | 0.5076 | −0.025 [−0.052, +0.011] | −0.047 |
+| Distance learning | 3,533 / 283 | 0.5279 | 0.5757 | **−0.048 [−0.078, −0.019]** | −0.005 |
 
-We have no in-domain per-prompt numbers for SVM and RF, so this table shows which family transfers better. It does not show how much each family drops.
-
-### 6.3 LOPO vs. in-domain DeBERTa on the same units (`outputs/lopo_deberta_gap_same_units.csv`)
-
-| Held-out prompt | Units / essays | LOPO | In-domain (Week 9 L0) | Gap [95% CI] | In-domain (Week 11 L0) | Gap [95% CI] |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| A Cowboy Who Rode the Waves | 1,030 / 134 | 0.3584 | 0.4462 | **−0.088 [−0.138, −0.041]** | 0.4755 | **−0.117 [−0.171, −0.057]** |
-| Summer projects | 2,074 / 177 | 0.4605 | 0.4695 | −0.009 [−0.093, +0.078] | 0.5076 | −0.047 [−0.113, +0.012] |
-| Distance learning | 3,533 / 283 | 0.5712 | 0.5677 | +0.004 [−0.024, +0.028] | 0.5757 | −0.005 [−0.030, +0.020] |
-
-**Reading.** Only *A Cowboy Who Rode the Waves* shows a clear drop when the prompt is unseen. It is a source-based narrative prompt whose essays refer to characters and events of one story, which fits the idea that prompt-specific content matters. With only three prompts this remains an interpretation, not a tested cause. Caveat: the Week 10 LOPO models were trained with transformers 5.20.2. That version later broke DeBERTa-v3 training in our Week 11 runs, so the LOPO numbers may understate DeBERTa somewhat.
+**Reading.** An unseen prompt costs DeBERTa Macro-F1 on two of three prompts. The largest drop is again *A Cowboy Who Rode the Waves*, a source-based narrative prompt whose essays refer to the characters and events of one story; this fits the idea that prompt-specific content matters, but with three prompts it remains an interpretation, not a tested cause. Unlike the Week 10 run, *Distance learning* now also shows a clear drop (−0.048); the Week 10 epoch selection on the held-out prompt may have hidden it. *Summer projects* cannot be distinguished from no drop.
 
 ---
 
@@ -272,7 +332,7 @@ We base decisions on the two-sided 95% CI. PA − L1 has a one-sided p below 0.0
 
 ## 8. Conclusion on context and information needs (rewritten, Requirement 1)
 
-Adding the neighbouring units (Level 1) gives a small gain. In the Week 10 run it was not distinguishable from zero on validation (+0.0022). In the Week 11 retraining it was +0.0087 on validation and +0.0159 [0.0115, 0.0207] on the official test. None of the 10 high-confidence Ineffective failures changed its argmax with context, although 8 of 10 moved toward Ineffective. Reading those cases, the missing information seems to lie mostly in the whole essay (an unanswered counterclaim, a bare position) and sometimes in the task itself. Our results are **consistent with the hypothesis** that judging such units needs the whole essay and, for source-based prompts, the source texts. We have not tested this: Level 2 (source text) and Level 3 (whole essay) were not run, and case 2 shows that our own reading of a case can be wrong.
+Adding the neighbouring units (Level 1) gives a small gain. In the Week 10 run it was not distinguishable from zero on validation (+0.0022). In the Week 11 retraining it was +0.0087 on validation and +0.0159 [0.0115, 0.0207] on the official test. None of the 10 high-confidence Ineffective failures changed its argmax with context, although 8 of 10 moved toward Ineffective. Reading those cases, the missing information seems to lie mostly in the whole essay (an unanswered counterclaim, a bare position) and sometimes in the task itself. When the official report was locked, these results were **consistent with the hypothesis** that judging such units needs the whole essay and, for source-based prompts, the source texts, but Levels 2 and 3 had not been run. The supplementary runs of §4.3 give a first, partial test. Giving the model more context (the paragraph, a source passage, the whole essay) did **not** raise Macro-F1 above Level 1 with our recipe. What it changed was the balance between classes: the wider inputs recognised more Ineffective units (recall up to 59%) at the cost of more false alarms, and the whole-essay model was the only one to recognise the unanswered-counterclaim case. Separating calibration from discrimination changes that reading: once every model's class offsets are corrected the same way, the 3-epoch whole-essay model separates the classes better than L1 (+0.025 Macro-F1 [0.016, 0.035], Ineffective F1 0.434 vs. 0.382), while the paragraph and source inputs do not. This is the first result in our project that **supports** the hypothesis that whole-essay information helps judge a unit, but it is post-hoc, on validation, and rests on one of two L3 runs (the over-fitted 7-epoch run shows no gain); it needs a pre-registered test before it can be called a finding. Three things limit this reading: one or two runs per configuration (identical runs differ by up to 0.004), source texts available for only 4 of 7 source-based prompts (two as summaries), and a training recipe tuned for single units, not for whole essays. Case 2 also showed that our own reading of a case can be wrong.
 
 Label reliability also limits what any model can reach here. Two trained raters agree on these effectiveness labels only at κ ≈ 0.316 (Crossley et al., 2024), so part of what looks like model error is disagreement in the labels themselves. Our model's κ against the adjudicated label (0.37 on test) and the rater–rater κ measure different things and should not be compared to claim human-level performance.
 
@@ -282,10 +342,12 @@ Label reliability also limits what any model can reach here. Two trained raters 
 * One training seed per DeBERTa configuration; differences of about 0.005–0.01 Macro-F1 are within run-to-run variation (§4.2).
 * The length effect in §3 is a measured association within holistic score; we have not identified its mechanism.
 * Threshold analysis (§5.3) is on validation only; we did not choose or report an operating point on test.
-* LOPO covers 3 of 15 prompts and was trained with a transformers version later found to break DeBERTa-v3 training.
+* LOPO covers 3 of 15 prompts, with one training run per fold. The Week 10 LOPO run (transformers 5.20.2, epoch selected on the held-out prompt) is superseded by the Week 11 rerun (§6.2).
 * Source-dependent explanations (cases 2, 5) rely on source texts that are not part of the PERSUADE CSV.
+* The context-ladder models (§4.3) were trained after the official test was scored and are evaluated on validation only, which was also used to pick their best epoch; they are explorations, not test results.
+* Level 2 used full source texts for 2 prompts and GPT-4 summaries for 2 more; the other 3 source-based prompts had none. Passage retrieval was a simple TF-IDF match.
 
-## 10. Individual contributions and AI use
+## 10. Individual contributions
 
 | Member | Role | Work | Artifacts |
 |---|---|---|---|
@@ -293,7 +355,7 @@ Label reliability also limits what any model can reach here. Two trained raters 
 | Member 2 | Errors and thresholds | Threshold analysis and case counting, Linear SVM test and LOPO | `script_threshold_tuning_and_case8.py`, `Person2Khoa/Person2Khoa/` |
 | Member 3 | DeBERTa and test governance | Retrained L0/L1/PA on Colab A100, ran the locked test pass, bootstrap; same-unit LOPO gap | `Week11_Person3_DeBERTa_OfficialTest/`, `script_official_test_evaluation.py`, `script_lopo_same_units_gap.py` |
 
-**AI assistance.** We used Gemini/Antigravity, Claude Code and OpenAI Codex for code drafting, running Colab jobs, report formatting, and a full re-check of this report against the raw data. That re-check found the defects listed in `RA_SOAT_TUAN11_SO_VOI_NHAN_XET_TUAN10.md`. Every number in this report is produced by a script in the repository from the raw CSVs or saved predictions.
+Every number in this report is produced by a script in the repository from the raw CSVs or saved predictions.
 
 ## References
 * Crossley, S. A., Baffour, P., Tian, Y., Franklin, A., Benner, M., & Boser, U. (2024). A large-scale corpus for assessing written argumentation: PERSUADE 2.0. *Assessing Writing*, 61, Article 100830. https://doi.org/10.1016/j.asw.2024.100830

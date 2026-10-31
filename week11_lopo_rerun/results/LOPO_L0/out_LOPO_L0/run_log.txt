@@ -1,0 +1,7 @@
+[2026-10-31 07:35:40 UTC] [LOPO_L0] Train 115,187 đơn vị / 12,475 bài | Val 29,102 đơn vị / 3,119 bài (khớp split tuần 9–11)
+[2026-10-31 07:35:47 UTC] [LOPO_L0] fold 1: giấu 'A Cowboy Who Rode the Waves' | train 139,131 đơn vị / 14 đề | test 5,158 đơn vị / 688 bài
+[2026-10-31 08:21:10 UTC] [LOPO_L0] fold 1: train 44.3 phút | loss 1.094 -> 0.550 | Macro-F1 0.4019 | Acc 0.647 | F1 Ineff 0.152
+[2026-10-31 08:21:10 UTC] [LOPO_L0] fold 2: giấu 'Summer projects' | train 134,434 đơn vị / 14 đề | test 9,855 đơn vị / 875 bài
+[2026-10-31 09:05:11 UTC] [LOPO_L0] fold 2: train 42.8 phút | loss 1.099 -> 0.519 | Macro-F1 0.4378 | Acc 0.6024 | F1 Ineff 0.1074
+[2026-10-31 09:05:12 UTC] [LOPO_L0] fold 3: giấu 'Distance learning' | train 125,763 đơn vị / 14 đề | test 18,526 đơn vị / 1,498 bài
+[2026-10-31 09:47:22 UTC] [LOPO_L0] fold 3: train 40.2 phút | loss 1.097 -> 0.539 | Macro-F1 0.5381 | Acc 0.6952 | F1 Ineff 0.2437

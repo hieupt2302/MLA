@@ -1,0 +1,14 @@
+[04:08:05] [ctxpara] tạo phiên L4
+[colab] Session READY.
+Installation Complete (via uv)!
+[colab] Uploaded '/workspace/week11_context_levels/upload/val_predictions_L1.csv' to '/content/val_predictions_L1.csv'
+[colab] Uploaded '/workspace/week11_context_levels/upload/val_predictions_L0.csv' to '/content/val_predictions_L0.csv'
+[colab] Uploaded '/workspace/week11_context_levels/upload/source_texts.json' to '/content/source_texts.json'
+
+[04:08:26] [ctxpara] chạy week11_context_levels/12_L1para_paragraph_context.ipynb QUICK=1
+[04:09:59] [ctxpara] xong week11_context_levels/12_L1para_paragraph_context.ipynb QUICK=1
+
+[04:10:07] [ctxpara] chạy week11_context_levels/12_L1para_paragraph_context.ipynb QUICK=0
+[05:39:28] [ctxpara] LỖI trong C:/Users/Admin/Desktop/MLA/week11_context_levels/12_L1para_paragraph_context_output.ipynb — dừng
+[colab] Session terminated.
+[05:39:32] [ctxpara] HẾT

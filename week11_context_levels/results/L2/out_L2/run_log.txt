@@ -1,0 +1,20 @@
+[2026-10-31 05:20:28 UTC] [L2] Train 115,187 đơn vị / 12,475 bài | Val 29,102 đơn vị / 3,119 bài (khớp split tuần 9–11)
+[2026-10-31 05:20:29 UTC] [L2] Nguồn: Car-free cities | full_text | 47 đoạn | Kaggle LLM-Detect train_prompts.csv
+[2026-10-31 05:20:29 UTC] [L2] Nguồn: Does the electoral college work? | full_text | 23 đoạn | Kaggle LLM-Detect train_prompts.csv
+[2026-10-31 05:20:29 UTC] [L2] Nguồn: A Cowboy Who Rode the Waves | gpt4_summary | 1 đoạn | Kaggle nbroad/persaude-corpus-2 sources.csv
+[2026-10-31 05:20:29 UTC] [L2] Nguồn: The Face on Mars | gpt4_summary | 1 đoạn | Kaggle nbroad/persaude-corpus-2 sources.csv
+[2026-10-31 05:20:30 UTC] [L2] train: 26.0% đơn vị có đoạn nguồn
+[2026-10-31 05:20:30 UTC] [L2] val: 26.3% đơn vị có đoạn nguồn
+[2026-10-31 05:20:51 UTC] [L2] [L2] độ dài token p50/p90/p99 = [156.0, 296.0, 470.0] | bị cắt 0.63% | Target bị cắt 0.18%
+[2026-10-31 05:21:27 UTC] [L2] Thử batch 32 x 512: đỉnh VRAM 19.7/22.0 GB
+[2026-10-31 05:21:28 UTC] [L2] Thử batch 16 x 512: đỉnh VRAM 10.3/22.0 GB
+[2026-10-31 05:21:28 UTC] [L2] [L2] batch GPU 16 x grad_accum 2 = 32 | class weights [7.4787, 0.425, 1.9484]
+[2026-10-31 06:31:16 UTC] [L2] [L2] epoch 1: val Macro-F1 0.5681 | F1 Ineff 0.3632
+[2026-10-31 06:31:16 UTC] [L2] [L2] epoch 2: val Macro-F1 0.5784 | F1 Ineff 0.3772
+[2026-10-31 06:31:16 UTC] [L2] [L2] epoch 3: val Macro-F1 0.5692 | F1 Ineff 0.3750
+[2026-10-31 06:31:16 UTC] [L2] [L2] train xong sau 69.8 phút | best val Macro-F1 0.5784
+[2026-10-31 06:37:24 UTC] [L2] Cứu từ /content/ckpt_L2/checkpoint-7200 | best_metric lúc train 0.5784 | các epoch: 0.5681, 0.5784
+[2026-10-31 06:43:26 UTC] [L2] Macro-F1 dự đoán tuần tự − best_metric lúc train = +0.00007
+[2026-10-31 06:43:26 UTC] [L2] Lưu /content/out_L2/val_predictions_L2.csv
+[2026-10-31 06:45:34 UTC] [L2] Hiệu ứng nguồn (diff-in-diff vs L1): {'did_source_effect': -0.0139, 'ci_low': np.float64(-0.0294), 'ci_high': np.float64(0.002)}
+[2026-10-31 06:45:34 UTC] [L2] KẾT QUẢ L2 (validation): macro_f1 0.5785 | accuracy 0.7308 | balanced_accuracy 0.6557 | qwk 0.4538 | f1_ineffective 0.3776 | f1_adequate 0.8167 | f1_effective 0.5412 | recall_ineffective 0.5444 | precision_ineffective 0.2891

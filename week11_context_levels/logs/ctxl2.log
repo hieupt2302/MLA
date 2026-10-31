@@ -1,0 +1,15 @@
+[02:48:14] [ctxl2] tạo phiên L4
+[colab] Session READY.
+Installation Complete (via uv)!
+[colab] Uploaded '/workspace/week11_context_levels/upload/val_predictions_L1.csv' to '/content/val_predictions_L1.csv'
+[colab] Uploaded '/workspace/week11_context_levels/upload/val_predictions_L0.csv' to '/content/val_predictions_L0.csv'
+[colab] Uploaded '/workspace/week11_context_levels/upload/source_texts.json' to '/content/source_texts.json'
+
+[02:48:43] [ctxl2] chạy week11_context_levels/09_L2_source_text.ipynb QUICK=1
+[02:50:23] [ctxl2] xong week11_context_levels/09_L2_source_text.ipynb QUICK=1
+
+[02:50:28] [ctxl2] chạy week11_context_levels/09_L2_source_text.ipynb QUICK=0
+[04:06:44] [ctxl2] xong week11_context_levels/09_L2_source_text.ipynb QUICK=0
+[04:06:46] [ctxl2] đã tải results_L2.zip
+[colab] Session terminated.
+[04:06:50] [ctxl2] HẾT

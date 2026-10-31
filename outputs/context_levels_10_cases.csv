@@ -1,0 +1,11 @@
+case,type,P_ineff_L0,pred_L0,P_ineff_L1,pred_L1,P_ineff_PA,pred_PA,P_ineff_L1para,pred_L1para,P_ineff_L1w2,pred_L1w2,P_ineff_L2,pred_L2,P_ineff_L3,pred_L3,P_ineff_L3_7ep,pred_L3_7ep
+1,Counterclaim,0.014,Adeq,0.027,Adeq,0.065,Adeq,0.031,Adeq,0.084,Adeq,0.027,Adeq,0.713,Ineff,0.161,Adeq
+2,Evidence,0.001,Eff,0.008,Eff,0.002,Eff,0.832,Ineff,0.028,Eff,0.54,Ineff,0.733,Ineff,0.924,Ineff
+3,Position,0.01,Adeq,0.006,Adeq,0.019,Adeq,0.023,Adeq,0.029,Adeq,0.026,Adeq,0.007,Adeq,0.0,Adeq
+4,Counterclaim,0.016,Adeq,0.17,Adeq,0.075,Adeq,0.041,Adeq,0.056,Adeq,0.165,Adeq,0.01,Adeq,0.0,Adeq
+5,Position,0.013,Adeq,0.103,Adeq,0.163,Adeq,0.346,Adeq,0.078,Adeq,0.085,Adeq,0.549,Ineff,0.153,Adeq
+6,Counterclaim,0.04,Adeq,0.035,Adeq,0.046,Adeq,0.015,Adeq,0.073,Adeq,0.04,Adeq,0.033,Adeq,0.001,Adeq
+7,Position,0.046,Adeq,0.052,Adeq,0.139,Adeq,0.239,Adeq,0.101,Adeq,0.252,Adeq,0.123,Adeq,0.013,Adeq
+8,Claim,0.017,Adeq,0.058,Adeq,0.217,Adeq,0.143,Adeq,0.117,Adeq,0.165,Adeq,0.295,Adeq,0.006,Adeq
+9,Lead,0.043,Adeq,0.143,Adeq,0.188,Adeq,0.342,Adeq,0.1,Adeq,0.077,Adeq,0.127,Adeq,0.006,Adeq
+10,Claim,0.011,Adeq,0.039,Adeq,0.083,Adeq,0.167,Adeq,0.132,Adeq,0.196,Adeq,0.011,Adeq,0.0,Adeq

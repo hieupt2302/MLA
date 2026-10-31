@@ -11,7 +11,7 @@
 | Mức | Số mục | Ý nghĩa |
 |---|:---:|---|
 | 🔴 Nghiêm trọng | 8 (B1–B7, B25) | Sai số liệu hoặc sai kết luận khoa học. Nếu thầy chạy lại sẽ phát hiện ngay. |
-| 🟠 Lớn | 9 (B8–B16) | Không đáp ứng đúng tiêu chí "Xong khi" của thầy, hoặc nói quá bằng chứng. |
+| 🟠 Lớn | 12 (B8–B16, B27–B29) | Không đáp ứng đúng tiêu chí "Xong khi" của thầy, hoặc nói quá bằng chứng. |
 | 🟡 Nhỏ | 9 (B17–B24, B26) | Trình bày, định dạng, nhất quán. |
 
 **Ba phát hiện quan trọng nhất**
@@ -63,8 +63,13 @@
 | B12 | §3.4, Tóm tắt, mục 9.1 | Chuỗi "21,98% → 30,35%" (lỗi theo độ dài toàn bài) không thuộc mô hình nào hiện có. Lỗi theo nhóm độ dài phải lấy từ **cùng mô hình** với bảng trong-điểm | Báo cáo mới dùng một mô hình cho cả hai bảng: L1 tuần 11, val 22,0% → 30,5%; test 21,1% → 30,4% |
 | B13 | §6.3 ý 1 | "TF-IDF không chuyển giao, sụt giảm nghiêm trọng". Nhưng SVM/RF không có số in-domain theo từng đề, nên không thể nói "sụt giảm" | Chỉ so giữa các mô hình trên cùng fold; bỏ câu "sụt giảm" |
 | B14 | §6.1 | Gọi Linear SVM là "same-family baseline" trong khi SVM và RF khác họ, và cả hai đều khác họ DeBERTa. Phép so sánh cùng họ thật sự là DeBERTa LOPO với DeBERTa in-domain | Đổi tên: "baseline cổ điển bổ sung" và "đối chứng trong cùng họ DeBERTa" |
-| B15 | §9.2 AI disclosure | Chỉ ghi "Gemini / Antigravity". Thực tế lượt chạy Người 3 (Colab qua Docker), lượt rà soát này và việc sinh notebook có dùng Claude Code / Codex | Bổ sung trung thực. **Nhóm cần tự xác nhận danh sách công cụ cuối cùng** |
-| B16 | LOPO DeBERTa tuần 10 | `lopo_run_metadata.json` ghi `transformers 5.20.2` trên T4. Tuần 11 đã thấy transformers 5.x làm DeBERTa-v3 train lỗi (NaN / không học). Kết quả LOPO vẫn học được (Macro-F1 0,41–0,57) nhưng có thể thấp hơn thực lực | Ghi thành hạn chế; không chạy lại (tốn ~6 giờ GPU, không phải yêu cầu của thầy) |
+| B15 | §9.2 AI disclosure | Chỉ ghi "Gemini / Antigravity". Thực tế lượt chạy Người 3 (Colab qua Docker), lượt rà soát này và việc sinh notebook có dùng Claude Code / Codex | Theo quyết định của nhóm (31/10/2026): bỏ hẳn phần khai báo công cụ AI khỏi báo cáo |
+| B16 | LOPO DeBERTa tuần 10 | `lopo_run_metadata.json` ghi `transformers 5.20.2` trên T4. Tuần 11 đã thấy transformers 5.x làm DeBERTa-v3 train lỗi (NaN / không học). Kết quả LOPO vẫn học được (Macro-F1 0,41–0,57) nhưng có thể thấp hơn thực lực | ✅ **Đã chạy lại** (31/10) bằng transformers 4.57.6 + bf16 trên Colab L4, cố định 3 epoch, không chọn epoch trên đề giấu (sửa luôn B27); notebook `week11_lopo_rerun/11_lopo_rerun_L0.ipynb` (lưu kèm output). Toàn đề: Cowboy 0,4019 · Summer 0,4378 · Distance 0,5381 (cũ 0,4082 / 0,4642 / 0,5735 — số cũ cao hơn, đúng chiều khi bỏ việc chọn epoch trên tập kiểm tra). So in-domain tuần 11 trên cùng đơn vị: Cowboy **−0,092 [−0,132; −0,049]**, Summer −0,025 [−0,052; +0,011], Distance **−0,048 [−0,078; −0,019]** (cũ: +0,004 → nay giảm rõ). Báo cáo §6.2–6.4 |
+
+| **B27** | LOPO DeBERTa tuần 10 (`06_lopo_deberta_colab.ipynb`) | Đề bị giấu được đặt làm `eval_dataset` với `load_best_model_at_end=True, metric_for_best_model="macro_f1"`, tức **chọn epoch bằng chính tập kiểm tra ngoại đề** (rò rỉ thông tin từ tập kiểm tra vào lựa chọn mô hình) | Lượt chạy lại train cố định 3 epoch, lấy mô hình cuối, chấm đề giấu đúng một lần |
+| **B28** | Notebook bổ sung 08 (L1 ±2) và 09 (L2), lượt chạy đầu 31/10 | Bật `group_by_length=True` để tăng tốc; trong transformers 4.57.6, `Trainer.predict()` khi đó cũng dùng `LengthGroupedSampler` (không seed riêng) nên **thứ tự dự đoán bị xáo**. Điểm validation lúc train vẫn đúng (L2 0,5809; L1 ±2 0,5827), nhưng file dự đoán lệch hàng (Macro-F1 tính lại chỉ 0,33) và không dựng lại được thứ tự | Phát hiện trước khi dùng số nào. Sửa: ép `SequentialSampler` khi predict + assert nhãn khớp từng dòng và Macro-F1 cuối = `best_metric`. Train lại L2 và L1 ±2; output lỗi giữ trong `*_run1_UNORDERED_PREDICTIONS_*` |
+
+| **B29** | Bản sửa B28, lượt chạy 31/10 (L1-para, L2 lượt 2) | Assert "Macro-F1 dự đoán cuối = best_metric lúc train" đặt dung sai 1e-6, quá chặt: lúc train đánh giá gom batch theo độ dài, lúc dự đoán batch tuần tự, padding khác nhau nên bf16 lệch rất nhỏ (L2: +0,00007). Assert làm dừng notebook trước khi lưu dự đoán | L2: cứu từ checkpoint tốt nhất còn trên đĩa (notebook `09r_…`, dự đoán tuần tự, lệch +0,00007). L1-para lượt 1 mất (phiên đã tắt), chạy lại. Dung sai sửa thành 0,005 (lỗi xáo thứ tự B28 làm tụt ~0,25 nên vẫn bị bắt) và luôn ghi log mức lệch |
 
 ### 🟡 Nhỏ
 
@@ -136,10 +141,14 @@ Với mô hình L1 tuần 11 (mô hình đã chấm test), θ = 0,10 cho: recall
 | `RESEARCH_REPORT_WEEK11_…md`, `Week11_Group06_CLC02_Report.docx/.html` | Viết lại các mục 1, 2.2, 3, 4, 5, 6, 7, 8, 9, thêm mục hạn chế |
 | `RESEARCH_REPORT_WEEK10_…md` | Khôi phục bản gốc tuần 10 (đã bị builder ghi đè) |
 | `build_week11_research_report.py` | Đọc md làm nguồn duy nhất, không chép cứng nội dung; không ghi đè file tuần 10 |
+| `week11_context_levels/` (mới) | Notebook 08 (L1 ±2), 09 (L2 nguồn), 09r (cứu L2), 10 / 10b (L3 cả bài, 3 / 7 epoch), 12 (cả đoạn) — sinh từ `build_notebooks.py`, mỗi notebook lưu kèm output; `analyze_context_levels.py`; `posthoc_bias_and_ensemble.py` (hiệu chỉnh lệch lớp kiểm chéo, chỉ validation: L3 +0,025, ghép L1+L1±2+L3 = 0,623); kết quả `results/*.zip`. Báo cáo §4.3 |
+| `week11_lopo_rerun/` (mới) | Notebook 11 LOPO chạy lại (B16, B27) kèm output; dự đoán `outputs/predictions_fold{1,2,3}.csv`. Báo cáo §6.2–6.4 |
+| `outputs/` (mới) | `context_levels_validation_summary.csv`, `context_levels_by_discourse_type.csv`, `context_levels_10_cases.csv`, `lopo_deberta_rerun_results.csv`, `lopo_deberta_rerun_gap_same_units.csv` |
+| `script_lopo_same_units_gap.py` | thêm cờ `--rerun` (ghép thẳng theo `row_idx`) |
+| `KNOWLEDGE_BASE/` (mới) | 16 file md + 14 hình để học và chuẩn bị vấn đáp |
 
 ## E. Việc nhóm cần tự quyết / tự làm
 
 1. **Xác nhận việc chấm lại RF Feature Set B trên test.** Đây là sửa lỗi cài đặt, không chọn siêu tham số trên test: cấu hình được cố định từ tuần 9, và script chỉ chấm test khi tái tạo được validation. Báo cáo đã công khai cả số cũ lẫn số mới. Nếu nhóm muốn giữ nguyên tắc tuyệt đối "test chỉ mở một lần", hãy giữ số cũ, nhưng **phải** ghi rõ đó không phải Feature Set B, nghĩa là yêu cầu 2 chưa đạt.
-2. **Danh sách công cụ AI trong mục 9.2**: mỗi thành viên tự xác nhận mình đã dùng gì.
-3. **Người 1 và Người 2 phải nắm phần đính chính** (B1, B4) trước interview. Thầy yêu cầu "mỗi người giải thích được bảng phân rã lỗi ở nhóm dài nhất", nên con số cũ "phẳng 26%" mà nói ra là sai.
-4. Không mở và lưu lại bất kỳ CSV nào bằng Excel.
+2. **Người 1 và Người 2 phải nắm phần đính chính** (B1, B4) trước interview. Thầy yêu cầu "mỗi người giải thích được bảng phân rã lỗi ở nhóm dài nhất", nên con số cũ "phẳng 26%" mà nói ra là sai.
+3. Không mở và lưu lại bất kỳ CSV nào bằng Excel.

@@ -1,0 +1,20 @@
+[04:27:06] [ctxl3] tạo phiên L4
+[colab] Session READY.
+Installation Complete (via uv)!
+[colab] Uploaded '/workspace/week11_context_levels/upload/val_predictions_L1.csv' to '/content/val_predictions_L1.csv'
+[colab] Uploaded '/workspace/week11_context_levels/upload/val_predictions_L0.csv' to '/content/val_predictions_L0.csv'
+[colab] Uploaded '/workspace/week11_context_levels/upload/source_texts.json' to '/content/source_texts.json'
+
+[04:27:29] [ctxl3] chạy week11_context_levels/10_L3_whole_essay.ipynb QUICK=1
+[04:28:36] [ctxl3] xong week11_context_levels/10_L3_whole_essay.ipynb QUICK=1
+
+[04:29:11] [ctxl3] chạy week11_context_levels/10_L3_whole_essay.ipynb QUICK=0
+[05:18:14] [ctxl3] xong week11_context_levels/10_L3_whole_essay.ipynb QUICK=0
+[05:18:16] [ctxl3] đã tải results_L3.zip
+
+[05:18:30] [ctxl3] chạy week11_context_levels/09_L2_source_text.ipynb QUICK=1
+[05:19:43] [ctxl3] xong week11_context_levels/09_L2_source_text.ipynb QUICK=1
+
+[05:20:03] [ctxl3] chạy week11_context_levels/09_L2_source_text.ipynb QUICK=0
+[06:37:04] [ctxl3] LỖI trong C:/Users/Admin/Desktop/MLA/week11_context_levels/09_L2_source_text_output.ipynb — dừng
+[06:37:04] [ctxl3] HẾT

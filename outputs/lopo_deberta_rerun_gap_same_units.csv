@@ -1,0 +1,4 @@
+held_out_prompt,n_units_same_set,n_essays,lopo_macro_f1_all_units,lopo_macro_f1_same_units,indomain_w9_macro_f1,gap_lopo_minus_w9,gap_w9_ci95,indomain_w11_macro_f1,gap_lopo_minus_w11,gap_w11_ci95
+A Cowboy Who Rode the Waves,1030,134,0.4019,0.384,0.4462,-0.0622,"[-0.1058, -0.0205]",0.4755,-0.0915,"[-0.1315, -0.0493]"
+Summer projects,2074,177,0.4378,0.4827,0.4695,0.0133,"[-0.0491, +0.0808]",0.5076,-0.0249,"[-0.0524, +0.0105]"
+Distance learning,3533,283,0.5381,0.5279,0.5677,-0.0397,"[-0.0663, -0.0102]",0.5757,-0.0478,"[-0.0777, -0.0192]"

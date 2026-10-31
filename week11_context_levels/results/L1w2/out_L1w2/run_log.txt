@@ -1,0 +1,12 @@
+[2026-10-31 06:47:15 UTC] [L1w2] Train 115,187 đơn vị / 12,475 bài | Val 29,102 đơn vị / 3,119 bài (khớp split tuần 9–11)
+[2026-10-31 06:47:38 UTC] [L1w2] [L1w2] độ dài token p50/p90/p99 = [205.0, 346.0, 491.0] | bị cắt 0.68% | Target bị cắt 0.08%
+[2026-10-31 06:48:24 UTC] [L1w2] Thử batch 32 x 512: đỉnh VRAM 19.7/22.0 GB
+[2026-10-31 06:48:24 UTC] [L1w2] Thử batch 16 x 512: đỉnh VRAM 10.3/22.0 GB
+[2026-10-31 06:48:24 UTC] [L1w2] [L1w2] batch GPU 16 x grad_accum 2 = 32 | class weights [7.4787, 0.425, 1.9484]
+[2026-10-31 08:17:58 UTC] [L1w2] [L1w2] epoch 1: val Macro-F1 0.5357 | F1 Ineff 0.3813
+[2026-10-31 08:17:58 UTC] [L1w2] [L1w2] epoch 2: val Macro-F1 0.5866 | F1 Ineff 0.3986
+[2026-10-31 08:17:58 UTC] [L1w2] [L1w2] epoch 3: val Macro-F1 0.5787 | F1 Ineff 0.3808
+[2026-10-31 08:17:58 UTC] [L1w2] [L1w2] train xong sau 89.6 phút | best val Macro-F1 0.5866
+[2026-10-31 08:24:17 UTC] [L1w2] [L1w2] Macro-F1 dự đoán cuối − best_metric lúc train = +0.00008
+[2026-10-31 08:24:18 UTC] [L1w2] Lưu /content/out_L1w2/val_predictions_L1w2.csv
+[2026-10-31 08:24:49 UTC] [L1w2] KẾT QUẢ L1w2 (validation): macro_f1 0.5867 | accuracy 0.7411 | balanced_accuracy 0.6444 | qwk 0.4527 | f1_ineffective 0.3983 | f1_adequate 0.8255 | f1_effective 0.5361 | recall_ineffective 0.4977 | precision_ineffective 0.332
