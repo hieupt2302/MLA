@@ -1,7 +1,9 @@
 WEEK 11 - NGUOI 3: DeBERTa L0 / L1 / Prompt-Aware + Official Test (cham 1 lan, 29/10/2026)
 
 Bang chinh: outputs/official_test_final_summary.csv (5 he thong, so that)
-  SVM 0.4822 | RF 0.4834 | L0 0.5613 | L1 0.5772 | PA 0.5808 (Macro-F1, 93.677 cau test)
+  SVM 0.4822 | RF 0.5098 | L0 0.5613 | L1 0.5772 | PA 0.5808 (Macro-F1, 93.677 cau test)
+  (RF 0.4834 truoc day KHONG phai Feature Set B -> da cham lai dung FSB, xem Person1/README_NGUOI1.txt)
+  Bang 5 he thong cap nhat: <repo>/outputs/official_test_final_summary.csv (script_official_test_evaluation.py)
 Bootstrap theo bai (test): outputs/official_test_deberta_bootstrap.csv
   L1-L0 +0.0159 [0.0115, 0.0207] | PA-L1 +0.0036 [-0.0002, 0.0074] (chua phan biet duoc)
 Validation cung lan chay: outputs/week11_person3/validation_L0_L1_PA.csv (+ bootstrap)
