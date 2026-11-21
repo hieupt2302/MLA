@@ -1,0 +1,2965 @@
+OpenAI Codex v0.164.0
+--------
+workdir: c:\Users\Admin\Desktop\MLA
+model: gpt-6.1-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a1f872-e48f-7d33-a1cd-32f25c822b2f
+--------
+user
+# Codex task A — visuals and demo scripts for three individual videos
+
+You are working in the repository root `c:\Users\Admin\Desktop\MLA` (Windows, Python 3.14 as `python`, with pandas, numpy, matplotlib, scikit-learn installed). Read `VIDEO_CA_NHAN/README.md`, `VIDEO_CA_NHAN/_chung/STYLE.md`, and for each person `01_SCRIPT_EN.md`, `02_SLIDE_SPEC.md`, `03_DEMO_RUNBOOK.md` in the three folders `VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length`, `VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold`, `VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder`.
+
+## Hard rules
+
+- Write ONLY these files: `VIDEO_CA_NHAN/build/make_visuals.py`, `VIDEO_CA_NHAN/Nguoi_*/demo/demo_nguoi{1,2,3}.py`, and PNGs under `VIDEO_CA_NHAN/**/visuals/`. Do not modify anything else (not the .md files, not `MLA_Final/`, not `final_report/`). Do not git commit.
+- Never type a result number by hand into code when it can be read from a file. Every number printed or drawn must come from these files (paths relative to repo root):
+  - `MLA_Final/Results/predictions/*.csv` (per-unit predictions; key `row_idx`; `true_label`/`pred_label` use Ineffective=0, Adequate=1, Effective=2; `pred_proba_0` = P(Ineffective))
+  - `MLA_Final/Results/tables/*.csv` (E1, R2, R5, D4, D7, context_levels_10_cases.csv, R8 …)
+  - `MLA_Final/Data/samples/_units_slim.csv.gz` (columns: split,row_idx,essay_id_comp,prompt_name,task,discourse_type,label,unit_words,essay_word_count,holistic_essay_score,length_q,ell_status; `split` ∈ train/validation/test; `row_idx` for train+validation indexes the annotated TRAIN file, for test the annotated TEST file)
+  - `MLA_Final/Code/configs/OFFICIAL_TEST_LOCK.json`
+  - `VAN_DAP_4_TIEU_CHI/trace_mau_that/outputs/tokens_per_level.csv` (optional, only for visuals)
+  - Raw CSVs (optional, large, gitignored): `data/persuade_raw/persuade_corpus_2.0_train.csv`, `..._test.csv`. Load them exactly like `final_report/scripts/common.py` (`load_raw` + `annotated_units`; the reset index after filtering IS `row_idx`). Read only needed columns.
+- Scripts must run from the repo root with `python <path>` and resolve paths relative to their own file location (`Path(__file__).resolve()`), so they also work on a teammate's copy. Use UTF-8 stdout (`sys.stdout.reconfigure(encoding="utf-8")`).
+
+## 1. `VIDEO_CA_NHAN/build/make_visuals.py`
+
+Produces 1920×1080-friendly PNGs (figsize 12.8×7.2 in at dpi 150, unless noted) with the palette in STYLE.md (label colours fixed: Ineffective #DC2626, Adequate #94A3B8, Effective #2563EB; navy #0F172A text; Calibri-like sans font, minimum 14 pt on figures, titles ≥ 20 pt). No chart titles that duplicate slide titles; keep annotations large. Outputs:
+
+1. Copy (shutil.copy) from `final_report/figures/` into each person's `visuals/`:
+   - Nguoi_1: fig18_rf_lopo_15_prompts.png, fig09_essay_length_vs_holistic_score.png, fig20_error_within_score_by_length.png
+   - Nguoi_2: fig04_context_levels.png, fig14_L1_minus_L0_per_class.png, fig22_threshold_tradeoff.png
+   - Nguoi_3: fig26_test_governance.png, fig19_context_ladder_validation.png, fig17_lopo_vs_indomain_same_units.png, fig23_ten_cases_by_context_level.png
+2. `_chung/visuals/intro_label_mix.png` (figsize 7.2×5.4): horizontal 100%-stacked bars for train / validation / test from `E1_split_label_distribution.csv` (% Ineffective, % Adequate, % Effective), value labels inside segments (show Ineffective % outside if the segment is narrow), units count at the right of each bar.
+3. `Nguoi_1_Data_Classical_Length/visuals/v1_example_trace_rf.png`: a left-to-right annotated flow of FOUR boxes for test `row_idx` 47059:
+   ① "Raw CSV record" — raw record number (from raw test CSV if present: position in the raw file, expected 57,633), prompt, type, the unit text in quotes, raw label string "Ineffective".
+   ② "Clean & encode" — drop rows without a label → `row_idx 47,059`; label "Ineffective" → id 0; "join key: row_idx (never discourse_id)".
+   ③ "Feature Set B" — TF-IDF word 1–2-grams (≤15,000), one-hot type = Position, 5 structural features with this unit's actual values: unit words, unit characters, essay words (expected 225 → Q1 ≤315), relative start position (discourse_start / essay character length if available, else omit), unit/essay length ratio. Compute from the raw CSV if present; otherwise use `_units_slim` (unit_words, essay_word_count, length_q) and omit the others.
+   ④ "Random Forest (200 trees, depth 35)" — a small horizontal bar chart inside the box of P(Ineff/Adeq/Eff) from `test_predictions_rf_feature_set_b.csv` (expected 0.544/0.342/0.114) and the text "→ predicts Ineffective ✓ (gold Ineffective)"; below the box a grey note "Locked DeBERTa L1: P(Ineffective) = 0.978" read from `test_predictions_L1.csv`.
+   Draw arrows between boxes. Text must be legible at 1080p (≥ 14 pt).
+4. `Nguoi_1_Data_Classical_Length/visuals/v2_rf_recall_by_length.png`: grouped bars, x = essay-length quartile Q1..Q4 (labels "Q1 ≤315" etc.), two bars per group: Random Forest FS-B and DeBERTa L1 (locked), y = Ineffective recall (%) on the official test, computed by joining test predictions to `_units_slim` (split == "test") on row_idx and using `length_q`. Annotate each bar with the % and under each group "n = <gold Ineffective count>". Expected: RF 23.3 / 13.7 / 6.9 / 0.6; L1 45.1 / 38.4 / 35.6 / 35.0; n = 2,384 / 934 / 598 / 309. Colours: RF #94A3B8 (grey), DeBERTa #2563EB.
+5. `Nguoi_2_DeBERTa_Context_Threshold/visuals/v1_case8_L0_vs_L1.png`: validation row_idx 108613 (case 8). Left: two stacked text panels "Level 0 input" and "Level 1 input" showing the exact model input strings (`{type} [SEP] {text}` and `{type} [SEP] Previous: {prev} [SEP] Target: {curr} [SEP] Next: {next}`, `[NONE]` at essay boundaries; neighbours = previous/next annotated unit of the same essay in the annotated train file ordered by row_idx). Wrap long text; truncate the previous unit to ~160 characters with "…" if needed; highlight "Target: …" in blue bold. If the raw train CSV is missing, fall back to the 60-char excerpt in `D7_raw_examples_traced.csv` and write "(neighbour text needs raw CSV)". Right: horizontal bars of P(Ineff/Adeq/Eff) for L0 and L1 from `val_predictions_L0.csv` / `val_predictions_L1.csv` (expected L0 0.017/0.962/0.021, L1 0.058/0.937/0.005), with "gold: Ineffective · both predict Adequate ✗". Add the token counts from `tokens_per_level.csv` (Ca 8: L0 13 tokens, L1 95 tokens) if that file exists.
+6. `Nguoi_3_TestGovernance_LOPO_Ladder/visuals/v1_case2_ladder.png`: case 2 (validation row_idx 10303). Left column: the ladder levels with a one-line description of what is added (L0 unit only; L1 ±1 unit (prev = Position "I don't buy it…", next = none); Prompt-Aware; L1 ±2; Paragraph (747 tokens → truncated at 512); L2 + source passage; L3 whole essay, 3 epochs; L3 whole essay, 7 epochs) — token counts from `tokens_per_level.csv` if present. Right: horizontal bars of P(Ineffective) per level from `MLA_Final/Results/predictions/context_levels_10_cases.csv` row case == 2 (columns P_ineff_L0, P_ineff_L1, P_ineff_PA, P_ineff_L1w2, P_ineff_L1para, P_ineff_L2, P_ineff_L3, P_ineff_L3_7ep and pred_*), red bars where pred is Ineff, grey otherwise, value labels, a dashed vertical guide at 0.5 labelled "≈ decision region". Top caption line with the unit's first ~110 characters from the raw train CSV if present (else from R8 `text_excerpt`).
+
+## 2. Demo scripts (print-only, big and clean, < 10 s without raw CSV)
+
+Common: argument `--no-raw` to skip raw CSVs; print section headers ①②③ exactly like the expected outputs in each `03_DEMO_RUNBOOK.md`; widths ≤ 100 characters; thousands separators; no tracebacks if optional files are missing (print a one-line note instead).
+
+- `Nguoi_1_Data_Classical_Length/demo/demo_nguoi1.py`: ① trace test row_idx 47059 (raw text if raw test CSV is available; label string → id; essay words → quartile; RF probabilities and prediction; DeBERTa L1 P(Ineff)); ② ID check: if raw train CSV available count annotated units and distinct `discourse_id`, else read `D4_identifier_integrity.csv` and say "(from saved table D4)"; ③ Ineffective recall by essay-length quartile on test for RF and L1 (gold count, RF recall, L1 recall), plus a final line "RF catches X of 309 gold Ineffective units in the longest essays".
+- `Nguoi_2_DeBERTa_Context_Threshold/demo/demo_nguoi2.py --theta 0.10`: ① case 8 L0 and L1 input strings (as in visual 5) and saved probabilities for L0 and L1; ② flag rule on locked L1 validation predictions: predicted = Ineffective if P(Ineff) ≥ θ, otherwise the larger of Adequate/Effective; print for argmax and for θ: units flagged, recall, precision, Macro-F1 (sklearn f1_score average="macro"), extra correct flags and extra false alarms vs argmax, false alarms per extra catch. Expected for θ=0.10: flagged 4,633, recall 69.6%, precision 19.9%, Macro-F1 0.535; argmax 1,761 / 44.7% / 33.7% / 0.581; extra 330 correct, 2,542 false alarms. ③ whether case 8 is flagged at θ.
+- `Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py`: ① read the lock JSON; if raw test CSV exists compute SHA-256 in 8 MB chunks and print both hashes (first 16 hex chars) and `matches lock: True/False` with "(labels not read)"; ② recompute official-test Macro-F1 for L0, L1, PA from `test_predictions_{L0,L1,PA}.csv` and print next to the paper values from `R2_test_per_class.csv` (match rows by system name containing "L0", "L1", "Prompt-Aware"); ③ case 2 ladder table from `context_levels_10_cases.csv`; ④ LOPO gaps (LOPO minus in-domain Macro-F1 on the same validation essays) from `R5_lopo_vs_indomain_per_class.csv`.
+
+## 3. Done when
+
+- `python VIDEO_CA_NHAN/build/make_visuals.py` runs without error and creates every PNG listed above (print the list with pixel sizes).
+- All three demo scripts run without error both with and without `--no-raw`, and their printed numbers equal the expected values above (if any differs, do NOT force it: print the real value and report the discrepancy in your final message).
+- Final message: list of files written, the full stdout of each demo script (with raw CSVs), and any discrepancy.
+
+hook: SessionStart
+hook: SessionStart
+hook: SessionStart Completed
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+hook: UserPromptSubmit Completed
+codex
+Tôi sẽ đọc các kịch bản và bảng dữ liệu, rồi tạo đúng các PNG và demo được yêu cầu. Tôi dùng ponytail để giữ phần mã gọn và kiểm tra số liệu trực tiếp từ nguồn.
+
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content C:/Users/Admin/.codex/plugins/cache/ponytail/ponytail/5.3.3/skills/ponytail/SKILL.md; Get-ChildItem VIDEO_CA_NHAN -Recurse -File | Select-Object FullName' in C:\Users\Admin\Desktop\MLA
+ succeeded in 390ms:
+---
+name: ponytail
+description: >
+  Lazy senior dev mode: the smallest change that fully solves the task, and a
+  reply a busy human understands in one read. Use on any coding task (writing,
+  fixing, refactoring, reviewing, choosing dependencies) and when the user says
+  "ponytail", "be lazy", "simplest solution", "yagni", or complains about
+  over-engineering or bloat. Levels: lite, full (default), ultra.
+argument-hint: "[lite|full|ultra|off]"
+license: MIT
+---
+
+# Ponytail
+
+You are a lazy senior developer. The best code is the code never written. You solve the whole problem with the least new code. End your reply with one or two lines: what you skipped or did not check, and any risk the user must know.
+
+Active for the whole session until the user says "stop ponytail" or "normal mode". Switch level: `/ponytail lite|full|ultra`.
+
+## Before you write
+
+Read the task and the code it touches. List every place your change must reach: callers, tests, fixtures, config, exports. Check what your change could break for users: data it would destroy or expose, callers that stop working. That is scope. Extra features are not.
+
+## The smallest complete change
+
+Take the first option that fully works:
+
+1. Does it need to exist? Skip features, options and flexibility nobody asked for, and name them in one line. A vague request ("build me X") gets the smallest version that does the core job.
+2. Already in this codebase (a helper, component, service, pattern)? Use it the way the surrounding code does.
+3. Standard library or a platform feature? Use it, unless the project has its own. A house component beats a native widget.
+4. An installed dependency? Use it. Never add a dependency for a few lines.
+5. Can it be one line a reader gets at a glance? One line.
+6. Otherwise: the minimum code that works.
+
+- Be lazy about the solution, never about the change itself: finish every part the task needs, including the callers, tests and fixtures your change breaks.
+- No abstraction, wrapper, type conversion, option, config, boilerplate or "for later" code nobody asked for. Keep values in the form the platform already gives you. Deletion beats addition. Keep the structure the codebase already has: its layers, interfaces and conventions.
+- The shortest working diff wins, once you know everything it must touch. A one-liner that needs decoding is not short.
+- Comment only the why the code cannot show, in one line.
+- Bug fix: before you edit, grep every caller of the function you touch, then fix the root cause once in the shared code.
+- Code you move or merge keeps its error handling and validation.
+- Between options of equal size, take the one that is correct on edge cases.
+- Lazy code without its check is unfinished: new non-trivial logic (a branch, a loop, a parser, money or security, or a whole new script or app) leaves one small test or an assert-based self-check. Trivial changes need none.
+- A shortcut with a known limit gets a code comment in this form: `shortcut: <the limit>, <when to upgrade>`.
+
+Never cut: validation at trust boundaries, error handling that prevents data loss, security, accessibility, the calibration real hardware needs, anything the user asked for.
+
+## Levels
+
+| Level | Behavior |
+|-------|----------|
+| **lite** | Build what was asked. Name the smaller option in one line and let the user pick. |
+| **full** | The rules above. Default. |
+| **ultra** | Also question the request: before building, push back on any part the need does not justify. |
+
+FullName                                                                                            
+--------                                                                                            
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\README.md                                                  
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\build\codex_A.log                                          
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\build\codex_B.log                                          
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\build\CODEX_TASK_A_visuals_demos.md                        
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\build\CODEX_TASK_B_pptx_docx.md                            
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_1_Data_Classical_Length\01_SCRIPT_EN.md              
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_1_Data_Classical_Length\02_SLIDE_SPEC.md             
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_1_Data_Classical_Length\03_DEMO_RUNBOOK.md           
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_1_Data_Classical_Length\04_GHI_CHU_TIENG_VIET.md     
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_2_DeBERTa_Context_Threshold\01_SCRIPT_EN.md          
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_2_DeBERTa_Context_Threshold\02_SLIDE_SPEC.md         
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_2_DeBERTa_Context_Threshold\03_DEMO_RUNBOOK.md       
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_2_DeBERTa_Context_Threshold\04_GHI_CHU_TIENG_VIET.md 
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_3_TestGovernance_LOPO_Ladder\01_SCRIPT_EN.md         
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_3_TestGovernance_LOPO_Ladder\02_SLIDE_SPEC.md        
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_3_TestGovernance_LOPO_Ladder\03_DEMO_RUNBOOK.md      
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\Nguoi_3_TestGovernance_LOPO_Ladder\04_GHI_CHU_TIENG_VIET.md
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\_chung\QUAY_VA_XUAT_VIDEO.md                               
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\_chung\slide_intro_problem.md                              
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\_chung\STYLE.md                                            
+
+
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content VIDEO_CA_NHAN/README.md,VIDEO_CA_NHAN/_chung/STYLE.md; Get-ChildItem VIDEO_CA_NHAN/Nguoi_*/* -Include 01_SCRIPT_EN.md,02_SLIDE_SPEC.md,03_DEMO_RUNBOOK.md | ForEach-Object { Get-Content $_ }; Get-Content final_report/scripts/common.py; Get-ChildItem -Path . -Filter AGENTS.md' in C:\Users\Admin\Desktop\MLA
+ succeeded in 194ms:
+# VIDEO CÃ NHÃ‚N â€” GROUP 06 (CLC02)
+
+Bá»™ ná»™i dung Ä‘á»ƒ má»—i thÃ nh viÃªn quay **má»™t video riÃªng** (`Video/StudentID_Name.mp4`, 10% Ä‘iá»ƒm).
+
+**NgÃ y soáº¡n:** 20/11/2026
+**Nguá»“n chuáº©n cá»§a phÃ¢n vai:** `final_report/PHAN_CONG_VA_ON_TAP_GROUP06.md`, pháº§n 3.
+**Nguá»“n chuáº©n cá»§a sá»‘ liá»‡u:**
+- `final_report/report_src/*.md` (báº£n luáº­n);
+- `final_report/tables/*.csv` vÃ  `MLA_Final/Results/`.
+
+Má»—i sá»‘ trong script Ä‘á»u ghi rÃµ file nguá»“n trong `02_SLIDE_SPEC.md`.
+
+---
+
+## 1. Ai quay video nÃ o
+
+Chia theo **vai**, láº¥y cÃ´ng viá»‡c **tuáº§n 10â€“11** lÃ m trá»¥c. NgÆ°á»i giá»¯ vai á»Ÿ tuáº§n 10â€“11 quay video cá»§a vai Ä‘Ã³. Pháº§n tuáº§n 9 chá»‰ nháº¯c má»™t cÃ¢u.
+
+| ThÆ° má»¥c | Vai | Máº¡ch chÃ­nh | VÃ­ dá»¥ tháº­t (khÃ´ng trÃ¹ng nhau) |
+|---|---|---|---|
+| `Nguoi_1_Data_Classical_Length/` | NgÆ°á»i 1: dá»¯ liá»‡u, mÃ´ hÃ¬nh cá»• Ä‘iá»ƒn, Ä‘á»™ dÃ i | RF Feature Set B, RF LOPO 15 Ä‘á», Ä‘á»™ dÃ i bÃ i so vá»›i Ä‘iá»ƒm | Test `row_idx` 47059: Position, Ä‘á» "Facial action coding system", gold Ineffective |
+| `Nguoi_2_DeBERTa_Context_Threshold/` | NgÆ°á»i 2: DeBERTa, ngá»¯ cáº£nh, ngÆ°á»¡ng, SVM | L0 so vá»›i L1 trÃªn cÃ¹ng Ä‘Æ¡n vá»‹; quÃ©t ngÆ°á»¡ng; ca 8 | Ca 8: validation `row_idx` 108613, Claim, Ä‘á» "Cell phones at school" |
+| `Nguoi_3_TestGovernance_LOPO_Ladder/` | NgÆ°á»i 3: phÃ¢n tÃ­ch lá»—i, LOPO, quáº£n lÃ½ test | Cháº¥m test má»™t láº§n, file khÃ³a; LOPO; thang ngá»¯ cáº£nh | Ca 2: validation `row_idx` 10303, Evidence, Ä‘á» "Car-free cities" |
+
+TÃªn vÃ  MSSV Ä‘iá»n vÃ o chá»— `[tá»± Ä‘iá»n: â€¦]` trong `01_SCRIPT_EN.md` vÃ  slide 1 cá»§a tá»«ng thÆ° má»¥c.
+
+## 2. Má»—i thÆ° má»¥c cÃ³ gÃ¬
+
+| File | DÃ¹ng Ä‘á»ƒ lÃ m gÃ¬ |
+|---|---|
+| `01_SCRIPT_EN.md` | Lá»i nÃ³i tiáº¿ng Anh theo timecode. Cue `[SLIDE n]`, `[DEMO]`, `[CUT]` bÃ¡o lÃºc chuyá»ƒn cáº£nh |
+| `02_SLIDE_SPEC.md` | Ná»™i dung tá»«ng slide: tiÃªu Ä‘á», bullet, hÃ¬nh, chÃº thÃ­ch, nguá»“n sá»‘ liá»‡u. `build/build_pptx.py` Ä‘á»c file nÃ y |
+| `03_DEMO_RUNBOOK.md` | Lá»‡nh cháº¡y, file cáº§n má»Ÿ, chá»— zoom, chá»— cáº¯t, output mong Ä‘á»£i |
+| `04_GHI_CHU_TIENG_VIET.md` | Giáº£i thÃ­ch tá»«ng Ã½ báº±ng tiáº¿ng Viá»‡t, tá»« khÃ³ vÃ  cÃ¡ch Ä‘á»c, cÃ¢u dá»… nÃ³i sai, cÃ¢u tháº§y cÃ³ thá»ƒ há»i |
+| `demo/demo_nguoiN.py` | Script demo, cháº¡y dÆ°á»›i 10 giÃ¢y, chá»‰ Ä‘á»c file Ä‘Ã£ lÆ°u trong `MLA_Final/` |
+| `visuals/` | HÃ¬nh dÃ¹ng trong slide (PNG) |
+| `output/` | `Nguoi_N_slides.pptx` (script náº±m trong speaker notes), `Nguoi_N_script.docx` (báº£n teleprompter), `preview/` (áº£nh tá»«ng slide) |
+
+ThÆ° má»¥c `_chung/` cÃ³:
+- `STYLE.md`: quy Æ°á»›c slide;
+- `slide_intro_problem.md`: Ä‘oáº¡n giá»›i thiá»‡u bÃ i toÃ¡n, cáº£ 3 ngÆ°á»i dÃ¹ng chung;
+- `QUAY_VA_XUAT_VIDEO.md`: cÃ¡ch quay, cÃ¡ch xuáº¥t, checklist xem láº¡i.
+
+## 3. Äá»‘i chiáº¿u vá»›i yÃªu cáº§u cá»§a Ä‘á»
+
+Má»—i script cÃ³ cÃ¹ng khung khoáº£ng 7 phÃºt 30 giÃ¢y:
+
+| YÃªu cáº§u cá»§a Ä‘á» | á»ž Ä‘Ã¢u trong video | Slide/cáº£nh |
+|---|---|---|
+| Present in English, in your own voice | Cáº£ video, tá»± Ä‘á»c, khÃ´ng dÃ¹ng TTS | â€” |
+| Briefly introduce the problem | 0:10â€“0:45 | Slide 2 (chung) |
+| Identify your contribution | 0:45â€“1:15 vÃ  tÃ³m táº¯t cuá»‘i | Slide 3, Slide 9 |
+| Real example, from data to prediction | 1:15â€“2:45 | Slide 4 |
+| Chart, table or annotated example: what the data shows | 2:45â€“4:15 | Slide 5â€“6 |
+| Demonstrate with notebook/saved outputs | 4:15â€“6:15 | Slide 7 rá»“i quay mÃ n hÃ¬nh (DEMO) |
+| Interpret one result, error or limitation | 6:15â€“7:10 | Slide 8 |
+| MP4 â‰¥1080p, clear audio, readable, trimmed, reviewed | â€” | `_chung/QUAY_VA_XUAT_VIDEO.md` |
+
+## 4. Quy trÃ¬nh cho má»—i ngÆ°á»i
+
+1. Äá»c `04_GHI_CHU_TIENG_VIET.md` Ä‘á»ƒ hiá»ƒu rÃµ tá»«ng Ã½.
+2. Cháº¡y thá»­ `03_DEMO_RUNBOOK.md` trÃªn mÃ¡y mÃ¬nh. Script demo chá»‰ cáº§n thÆ° má»¥c `MLA_Final/`; CSV gá»‘c khÃ´ng báº¯t buá»™c.
+3. Má»Ÿ `output/Nguoi_N_slides.pptx` vÃ  sá»­a tÃªn/MSSV á»Ÿ slide 1.
+4. Äá»c to script 2â€“3 láº§n, báº¥m giá». NÃ³i tá»± nhiÃªn vÃ  Ä‘Æ°á»£c phÃ©p diá»…n Ä‘áº¡t láº¡i; **chá»‰ giá»¯ nguyÃªn cÃ¡c con sá»‘**.
+5. Quay theo `_chung/QUAY_VA_XUAT_VIDEO.md`, xuáº¥t `StudentID_Name.mp4` vÃ  chÃ©p vÃ o `Video/` cá»§a thÆ° má»¥c ná»™p.
+
+## 5. Dá»±ng láº¡i pptx/docx sau khi sá»­a md
+
+Cháº¡y tá»« thÆ° má»¥c gá»‘c repo, Python 3.10+ cÃ³ `python-pptx`, `python-docx`, `matplotlib`, `pandas`:
+
+```
+python VIDEO_CA_NHAN/build/make_visuals.py
+python VIDEO_CA_NHAN/build/build_pptx.py
+python VIDEO_CA_NHAN/build/build_script_docx.py
+powershell -ExecutionPolicy Bypass -File VIDEO_CA_NHAN/build/render_preview.ps1
+python VIDEO_CA_NHAN/build/check_numbers.py
+```
+
+## 6. LÆ°u Ã½ trÆ°á»›c khi ná»™p
+
+- `MLA_Final/README.md` má»¥c 1 Ä‘ang mÃ´ táº£ vai **khÃ¡c** vá»›i PHAN_CONG:
+  - ghi thang ngá»¯ cáº£nh rá»™ng lÃ  cá»§a Role 2 (há»“ sÆ¡ ghi lÃ  cá»§a NgÆ°á»i 3);
+  - ghi RF LOPO 15 Ä‘á» lÃ  cá»§a Role 3 (há»“ sÆ¡ ghi lÃ  cá»§a NgÆ°á»i 1);
+  - ghi validation gate RF lÃ  0,523 (báº£n tÃ¡i táº¡o lÃ  0,5261).
+
+  Äá» yÃªu cáº§u README, bÃ¡o cÃ¡o vÃ  video lÃ  cÃ¹ng má»™t phiÃªn báº£n, nÃªn cáº§n sá»­a README cho khá»›p vá»›i video.
+- KhÃ´ng ai Ä‘Æ°á»£c nÃ³i má»™t viá»‡c cá»§a vai khÃ¡c lÃ  "I did". Pháº§n cá»§a ngÆ°á»i khÃ¡c thÃ¬ nÃ³i "my teammate â€¦" hoáº·c "the group â€¦".
+# Quy Æ°á»›c slide vÃ  Ä‘á»‹nh dáº¡ng file nguá»“n
+
+## 1. Thiáº¿t káº¿ slide
+
+- KÃ­ch thÆ°á»›c 16:9 (13,333 Ã— 7,5 inch). Xuáº¥t áº£nh/video á»Ÿ 1920Ã—1080.
+- Báº£ng mÃ u giá»‘ng `build_editable_pptx.py` (Ä‘Ã£ dÃ¹ng cho slide giá»¯a ká»³):
+
+  | Vai trÃ² | MÃ u |
+  |---|---|
+  | Ná»n | `#F8FAFC` |
+  | Chá»¯ chÃ­nh / thanh tiÃªu Ä‘á» | navy `#0F172A` |
+  | Nháº¥n máº¡nh | blue `#2563EB` |
+  | Chá»¯ phá»¥ | gray `#64748B` |
+  | ÄÃºng / tá»‘t | green `#16A34A` |
+  | Cáº£nh bÃ¡o / giá»›i háº¡n | orange `#D97706` |
+  | Sai / Ineffective | red `#DC2626` |
+
+  MÃ u nhÃ£n **cá»‘ Ä‘á»‹nh** trong má»i hÃ¬nh: Ineffective = `#DC2626`, Adequate = `#94A3B8`, Effective = `#2563EB`.
+- Font: tiÃªu Ä‘á» Trebuchet MS 34â€“36pt Ä‘áº­m; thÃ¢n Calibri **â‰¥ 20pt**; chÃº thÃ­ch hÃ¬nh â‰¥ 14pt; dÃ²ng nguá»“n 12pt mÃ u xÃ¡m.
+- Má»—i slide tá»‘i Ä‘a 5 bullet, má»—i bullet tá»‘i Ä‘a khoáº£ng 14 tá»«. Pháº§n cÃ²n láº¡i Ä‘á»ƒ lá»i nÃ³i.
+- GÃ³c dÆ°á»›i pháº£i má»—i slide cÃ³ sá»‘ slide vÃ  "Group 06 Â· CLC02 Â· <Role>".
+- HÃ¬nh chiáº¿m Ã­t nháº¥t 55% chiá»u rá»™ng khi slide cÃ³ hÃ¬nh. KhÃ´ng kÃ©o giÃ£n mÃ©o hÃ¬nh, giá»¯ tá»‰ lá»‡.
+
+## 2. Äá»‹nh dáº¡ng `02_SLIDE_SPEC.md` (Ä‘á»ƒ `build/build_pptx.py` Ä‘á»c)
+
+Má»—i slide báº¯t Ä‘áº§u báº±ng má»™t dÃ²ng `## Slide <n> | <layout>`. Sau Ä‘Ã³ lÃ  cÃ¡c khÃ³a:
+
+```
+## Slide 4 | bullets_image
+title: Má»™t dÃ²ng tiÃªu Ä‘á»
+subtitle: (tuá»³ chá»n) dÃ²ng phá»¥ dÆ°á»›i tiÃªu Ä‘á»
+bullets:
+- bullet 1
+- bullet 2
+image: visuals/v1_example_trace.png
+caption: ChÃº thÃ­ch dÆ°á»›i hÃ¬nh
+callout: (tuá»³ chá»n) má»™t cÃ¢u nháº¥n máº¡nh, in trong há»™p mÃ u
+source: (tuá»³ chá»n) nguá»“n sá»‘ liá»‡u, in nhá» cuá»‘i slide
+```
+
+**CÃ¡c layout:**
+
+| Layout | Bá»‘ cá»¥c |
+|---|---|
+| `title` | TiÃªu Ä‘á» lá»›n, `subtitle`, vÃ  cÃ¡c dÃ²ng `bullets` lÃ m thÃ´ng tin ngÆ°á»i nÃ³i |
+| `bullets` | TiÃªu Ä‘á» + bullets + `callout` |
+| `bullets_image` | Bullets bÃªn trÃ¡i (khoáº£ng 38%), hÃ¬nh bÃªn pháº£i |
+| `image` | Má»™t hÃ¬nh lá»›n chiáº¿m gáº§n háº¿t slide, `caption` á»Ÿ dÆ°á»›i |
+| `table` | TiÃªu Ä‘á» + báº£ng markdown náº±m dÆ°á»›i khÃ³a `table:` + `callout` |
+| `demo` | Slide chuyá»ƒn cáº£nh "Live demo": `bullets` lÃ  cÃ¡c bÆ°á»›c sáº½ lÃ m |
+
+**Quy táº¯c:**
+- Báº£ng markdown Ä‘áº·t ngay sau dÃ²ng `table:`, viáº¿t theo cÃº phÃ¡p `| a | b |` bÃ¬nh thÆ°á»ng.
+- `image:` lÃ  Ä‘Æ°á»ng dáº«n tÆ°Æ¡ng Ä‘á»‘i tÃ­nh tá»« thÆ° má»¥c cá»§a ngÆ°á»i Ä‘Ã³. HÃ¬nh chung thÃ¬ dÃ¹ng `../_chung/visuals/...`.
+
+## 3. Äá»‹nh dáº¡ng `01_SCRIPT_EN.md`
+
+- Má»—i Ä‘oáº¡n báº¯t Ä‘áº§u báº±ng `## [SLIDE n] m:ssâ€“m:ss â€” tiÃªu Ä‘á»` hoáº·c `## [DEMO] m:ssâ€“m:ss â€” tiÃªu Ä‘á»`.
+- Lá»i nÃ³i lÃ  cÃ¡c Ä‘oáº¡n vÄƒn thÆ°á»ng.
+- DÃ²ng báº¯t Ä‘áº§u báº±ng `>` lÃ  **chá»‰ dáº«n sÃ¢n kháº¥u**, khÃ´ng Ä‘á»c: báº¥m chuá»™t, zoom, cáº¯tâ€¦
+- `build_pptx.py` Ä‘Æ°a lá»i nÃ³i cá»§a `[SLIDE n]` vÃ o speaker notes cá»§a slide n. Lá»i cá»§a `[DEMO]` Ä‘Æ°a vÃ o notes cá»§a slide `demo`.
+- `build_script_docx.py` in toÃ n bá»™ thÃ nh báº£n teleprompter:
+  - lá»i nÃ³i cá»¡ 16pt;
+  - chá»‰ dáº«n in nghiÃªng mÃ u xÃ¡m;
+  - timecode in Ä‘áº­m.
+"""Shared paths, loaders and metric helpers for the final-report scripts.
+
+Every number used in FINAL_REPORT.md is produced either by these scripts (from the raw
+PERSUADE 2.0 CSVs and the saved prediction files) or read from the outputs/ CSVs that the
+original experiment scripts wrote. Nothing is typed in by hand.
+
+Run from the repository root:  python final_report/scripts/01_data_checks_eda.py
+"""
+import os
+import sys
+
+import numpy as np
+import pandas as pd
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+FR = os.path.join(ROOT, "final_report")
+TABLES = os.path.join(FR, "tables")
+FIGS = os.path.join(FR, "figures")
+EVID = os.path.join(FR, "evidence")
+for d in (TABLES, FIGS, EVID):
+    os.makedirs(d, exist_ok=True)
+
+TRAIN_CSV = os.path.join(ROOT, "data", "persuade_raw", "persuade_corpus_2.0_train.csv")
+TEST_CSV = os.path.join(ROOT, "data", "persuade_raw", "persuade_corpus_2.0_test.csv")
+P3 = os.path.join(ROOT, "Week11_Person3_DeBERTa_OfficialTest", "outputs", "week11_person3")
+OUT = os.path.join(ROOT, "outputs")
+CTX = os.path.join(ROOT, "week11_context_levels", "results")
+LOPO = os.path.join(ROOT, "week11_lopo_rerun", "outputs")
+
+LABELS = ["Ineffective", "Adequate", "Effective"]
+LABEL2ID = {l: i for i, l in enumerate(LABELS)}
+TYPES = ["Lead", "Position", "Claim", "Counterclaim", "Rebuttal", "Evidence", "Concluding Statement"]
+QEDGES = [-np.inf, 315, 422, 566, np.inf]
+QLABELS = ["Q1 (<=315)", "Q2 (316-422)", "Q3 (423-566)", "Q4 (>=567)"]
+
+SOURCE_BASED = {  # PERSUADE 2.0: seven source-based (text-dependent) prompts
+    "A Cowboy Who Rode the Waves", "Car-free cities", "Does the electoral college work?",
+    "Exploring Venus", "Facial action coding system", "The Face on Mars", "Driverless cars",
+}
+
+RAW_COLS = ["essay_id", "essay_id_comp", "competition_set", "discourse_id", "discourse_start",
+            "discourse_text", "discourse_type", "discourse_effectiveness", "holistic_essay_score",
+            "prompt_name", "task", "grade_level", "ell_status", "essay_word_count", "source_text"]
+
+
+def load_raw(path, cols=RAW_COLS):
+    """Read the raw CSV as strings (no numeric coercion of IDs)."""
+    df = pd.read_csv(path, usecols=cols, dtype=str, low_memory=False, keep_default_na=True)
+    df["raw_record"] = np.arange(len(df))  # 0-based record number in the raw file
+    return df
+
+
+def annotated_units(raw):
+    """Exactly the filtering rule of notebook 07 / all week-11 scripts:
+    dropna(effectiveness, text) -> strip -> drop empty -> reset_index.  The new index is row_idx."""
+    df = raw.dropna(subset=["discourse_effectiveness", "discourse_text"]).copy()
+    df["discourse_text"] = df["discourse_text"].astype(str).str.strip()
+    # the raw CSV stores one prompt as '"A Cowboy Who Rode the Waves"' (with quotes); prediction files drop them
+    df["prompt_name"] = df["prompt_name"].str.strip().str.strip('"')
+    df = df[df["discourse_text"].str.len() > 0].reset_index(drop=True)
+    df["row_idx"] = np.arange(len(df))
+    df["label"] = df["discourse_effectiveness"].map(LABEL2ID)
+    df["holistic_essay_score"] = pd.to_numeric(df["holistic_essay_score"], errors="coerce")
+    df["essay_word_count"] = pd.to_numeric(df["essay_word_count"], errors="coerce")
+    df["unit_words"] = df["discourse_text"].str.split().str.len()
+    df["length_q"] = pd.cut(df["essay_word_count"], QEDGES, labels=QLABELS)
+    return df
+
+
+# ---------------------------------------------------------------- metrics
+def confusion(y, p, k=3):
+    m = np.zeros((k, k), dtype=int)
+    np.add.at(m, (np.asarray(y, int), np.asarray(p, int)), 1)
+    return m
+
+
+def per_class(y, p):
+    m = confusion(y, p)
+    out = {}
+    for i, l in enumerate(LABELS):
+        tp = m[i, i]
+        prec = tp / m[:, i].sum() if m[:, i].sum() else 0.0
+        rec = tp / m[i, :].sum() if m[i, :].sum() else 0.0
+        f1 = 2 * prec * rec / (prec + rec) if prec + rec else 0.0
+        out[l] = (prec, rec, f1, int(m[i, :].sum()))
+    return out, m
+
+
+def kappa(y, p, weights=None, k=3):
+    m = confusion(y, p, k).astype(float)
+    n = m.sum()
+    i = np.arange(k)
+    if weights == "quadratic":
+        w = (i[:, None] - i[None, :]) ** 2 / (k - 1) ** 2
+    else:
+        w = (i[:, None] != i[None, :]).astype(float)
+    exp = np.outer(m.sum(1), m.sum(0)) / n
+    return 1 - (w * m).sum() / (w * exp).sum()
+
+
+def summary(y, p):
+    pc, m = per_class(y, p)
+    f1s = [pc[l][2] for l in LABELS]
+    recs = [pc[l][1] for l in LABELS]
+    return {
+        "n_units": int(len(y)),
+        "macro_f1": float(np.mean(f1s)),
+        "accuracy": float((np.asarray(y) == np.asarray(p)).mean()),
+        "balanced_accuracy": float(np.mean(recs)),
+        "kappa": float(kappa(y, p)),
+        "qwk": float(kappa(y, p, "quadratic")),
+        **{f"{c}_{l}": v for l in LABELS for c, v in zip(("precision", "recall", "f1", "support"), pc[l])},
+    }
+
+
+def macro_f1(y, p):
+    pc, _ = per_class(y, p)
+    return float(np.mean([pc[l][2] for l in LABELS]))
+
+
+def essay_bootstrap_delta(df, col_a, col_b, n=2000, seed=42):
+    """Paired essay-level bootstrap of Macro-F1(a) - Macro-F1(b); df needs essay_id_comp, label, col_a, col_b."""
+    rng = np.random.default_rng(seed)
+    groups = df.groupby("essay_id_comp").indices
+    keys = list(groups)
+    y = df["label"].to_numpy()
+    a = df[col_a].to_numpy()
+    b = df[col_b].to_numpy()
+    deltas = []
+    for _ in range(n):
+        pick = rng.integers(0, len(keys), len(keys))
+        idx = np.concatenate([groups[keys[j]] for j in pick])
+        deltas.append(macro_f1(y[idx], a[idx]) - macro_f1(y[idx], b[idx]))
+    d = np.array(deltas)
+    return float(macro_f1(y, a) - macro_f1(y, b)), float(np.percentile(d, 2.5)), float(np.percentile(d, 97.5))
+
+
+def save(df, name):
+    path = os.path.join(TABLES, name)
+    df.to_csv(path, index=False, encoding="utf-8")
+    return path
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "@'
+from pathlib import Path
+import pandas as pd
+for d in sorted(Path('VIDEO_CA_NHAN').glob('Nguoi_*')):
+ for name in ['01_SCRIPT_EN.md','02_SLIDE_SPEC.md','03_DEMO_RUNBOOK.md']:
+  print('\\nFILE',d/name);print((d/name).read_text(encoding='utf-8'))
+for pat in ['E1*','D4*','D7*','R2*','R5*','R8*']:
+ for p in Path('MLA_Final/Results/tables').glob(pat):
+  print('\\nTABLE',p);print(pd.read_csv(p).head(18).to_string(index=False))
+for p in [Path('MLA_Final/Results/predictions/context_levels_10_cases.csv'),Path('VAN_DAP_4_TIEU_CHI/trace_mau_that/outputs/tokens_per_level.csv'),Path('MLA_Final/Results/tables/D7_raw_to_clean_trace.csv')]:
+ if p.exists(): print('\\nDATA',p);print(pd.read_csv(p).head(10).to_string(index=False))
+print(Path('MLA_Final/Code/configs/OFFICIAL_TEST_LOCK.json').read_text())
+print('RAW',list(Path('data/persuade_raw').glob('*.csv')))
+print('AGENTS',list(Path('VIDEO_CA_NHAN').rglob('AGENTS.md')))
+'@ | python -" in C:\Users\Admin\Desktop\MLA
+ exited 1 in 2243ms:
+
+FILE VIDEO_CA_NHAN\Nguoi_1_Data_Classical_Length\01_SCRIPT_EN.md
+Traceback (most recent call last):
+  File "<stdin>", line 5, in <module>
+  File "C:\Users\Admin\scoop\apps\python\current\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u1ef1' in position 304: character maps to <undefined>
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$env:PYTHONIOENCODING='"'utf-8'; @'
+from pathlib import Path
+import pandas as pd
+for d in sorted(Path('VIDEO_CA_NHAN').glob('Nguoi_*')):
+ for name in ['01_SCRIPT_EN.md','02_SLIDE_SPEC.md','03_DEMO_RUNBOOK.md']:
+  print('\\nFILE',d/name);print((d/name).read_text(encoding='utf-8'))
+for pat in ['E1*','D4*','D7*','R2*','R5*','R8*']:
+ for p in Path('MLA_Final/Results/tables').glob(pat):
+  print('\\nFILE',p);print(pd.read_csv(p).head(20).to_string(index=False))
+for p in [Path('VAN_DAP_4_TIEU_CHI/trace_mau_that/outputs/tokens_per_level.csv'),Path('MLA_Final/Results/predictions/context_levels_10_cases.csv')]:
+ print('\\nFILE',p);print(pd.read_csv(p).head(10).to_string(index=False))
+print(Path('MLA_Final/Code/configs/OFFICIAL_TEST_LOCK.json').read_text())
+print('RAW',list(Path('data/persuade_raw').glob('*.csv')))
+'@ | python -" in C:\Users\Admin\Desktop\MLA
+ succeeded in 1409ms:
+
+FILE VIDEO_CA_NHAN\Nguoi_1_Data_Classical_Length\01_SCRIPT_EN.md
+# Script: Role 1 (data, classical models, essay length)
+
+Target length about 7:30, about 1,050 spoken words. Lines starting with `>` are stage directions; do not read them aloud.
+
+---
+
+## [SLIDE 1] 0:00–0:10 — Title
+
+> Slide 1. Look at the camera or the screen and smile briefly.
+
+Hello, I'm [tự điền: name], student ID [tự điền: ID], from Group 06, class CLC02. In this video I explain my part of our project on predicting the effectiveness of argumentative discourse units.
+
+## [SLIDE 2] 0:10–0:45 — The problem (shared with teammates)
+
+Teachers who mark argumentative essays want to know *which parts* of an essay do not work, not only an overall score. Our group used the PERSUADE 2.0 corpus: almost twenty-six thousand student essays, split by expert raters into about two hundred and thirty-eight thousand discourse units, such as claims, evidence and rebuttals. Each unit is labelled Ineffective, Adequate or Effective. Only four and a half percent are Ineffective, so a model that always says "Adequate" is eighty percent accurate and useless. That is why we report Macro-F1, which weights the three classes equally.
+
+## [SLIDE 3] 0:45–1:15 — My contribution
+
+My role was the data side and the classical models. In weeks ten and eleven I did three things. First, I ran the Random Forest on Feature Set B, our strongest classical model, on the official test: I re-built it, checked that it reproduced its validation score, 0.526, and only then scored the test once. Second, I ran leave-one-prompt-out for the Random Forest on all fifteen prompts. That chart on the right shows the result: from 0.35 on the hardest prompt to 0.50 on the easiest. Third, I built the tables that check whether essay length is confounded with student proficiency.
+
+## [SLIDE 4] 1:15–2:45 — One real unit, from raw data to a prediction
+
+> Point to each box on the slide from left to right as you speak.
+
+Here is one real unit from the official test file, so you can see how the data becomes a prediction.
+
+It is raw record 57,633 in the test CSV. After we drop the rows without an effectiveness label, it becomes row index 47,059. It is a Position from an essay on the prompt "Facial action coding system", and the text is: "That is all everything you need to know about Mona Lisa and her smile."
+
+The raw label string is "Ineffective". We encode the labels in a fixed order: Ineffective is zero, Adequate is one, Effective is two. So this unit is loaded as class zero.
+
+One detail matters here. We always join files by this row index, never by the discourse ID, because Excel had rounded the discourse IDs. In the training file, 144,289 units share only 728 distinct ID values.
+
+Next, Feature Set B turns the unit into numbers: word and bigram TF-IDF, at most fifteen thousand features; a one-hot code for the unit type; and five structural features. For this unit, the unit has 14 words, and the whole essay has only 225 words. Remember that number.
+
+The Random Forest, two hundred trees with maximum depth thirty-five, outputs probabilities: 0.54 Ineffective, 0.34 Adequate, 0.11 Effective. The highest is Ineffective, so the prediction is Ineffective, which is correct. For comparison, our locked DeBERTa model gives this unit 0.98 Ineffective.
+
+So the forest got this one right. But was it reading the sentence, or the length of the essay? The next two slides look at that.
+
+## [SLIDE 5] 2:45–3:30 — What the data shows: length goes with proficiency
+
+This chart shows every essay in the corpus: essay length against the holistic score the essay received. The correlation is strong, Spearman 0.76. The median score-2 essay has 229 words; the median score-6 essay has 824.
+
+And the label mix moves with length. In the shortest quarter of validation essays, nine percent of units are Ineffective. In the longest quarter, just over one percent are. So "essay length" is partly "student level". And essay length is one of the five features we give the Random Forest.
+
+## [SLIDE 6] 3:30–4:15 — Within the same score, errors still rise with length
+
+So when the error rate rises with essay length, is it only because long essays come from stronger students? To separate the two, I compared length quartiles *within the same holistic score*.
+
+This figure is for the locked DeBERTa model. For essays with score three, the error rate goes from 19.3 percent in the shortest quartile to 28.2 percent in the longest. A logistic regression that controls for the score gives an odds ratio of 1.19 per length quartile, with a confidence interval from 1.14 to 1.25. So proficiency does not explain all of it: length still matters within the same score.
+
+## [SLIDE 7] 4:15–4:20 — Demo transition
+
+> Show slide 7 for two seconds, then switch to the terminal.
+
+Let me show this from the saved outputs.
+
+## [DEMO] 4:20–6:15 — Reproduce and trace from saved outputs
+
+> Terminal in `MLA_Final/Code`, font 18–20pt. Command already typed.
+
+First, our reproduction script. It recomputes the main tables of the paper from the saved prediction files, in about five seconds.
+
+> Run `python reproduce_results.py`. [CUT] any wait. Highlight the two Random Forest rows of Table 1.
+
+Here is the Random Forest row: Macro-F1 0.523 on validation and 0.510 on the official test, with Ineffective recall of only 17.2 percent on the test. At the bottom, it confirms that every number matches the paper.
+
+> Switch to the repo root. Run `python VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/demo/demo_nguoi1.py`.
+
+Now my own demo script. Part one traces the unit from the slide. If the raw test CSV is present, it reads the raw text; the label string becomes class zero; it shows the essay length, 225 words, so quartile one; and it prints the saved Random Forest probabilities, 0.544 for Ineffective.
+
+> Highlight the "discourse_id" line.
+
+Part two is the identifier check: 144,289 units, but only 728 distinct discourse IDs. That is why every join uses row index.
+
+> Highlight the recall-by-quartile table.
+
+Part three is new to this video, and it answers my question from slide four. It groups the test units by essay-length quartile and computes Ineffective recall for the Random Forest and for DeBERTa, directly from the saved predictions.
+
+## [SLIDE 8] 6:15–7:10 — Interpreting one result: the forest leans on essay length
+
+> Back to slides.
+
+Here is the result as a chart. In the shortest essays, the Random Forest finds 23 percent of the Ineffective units. In the longest essays it finds almost none: 0.6 percent, two out of 309. DeBERTa also drops, but much less: from 45 to 35 percent.
+
+My interpretation: because essay length is one of its features, and length tracks proficiency, the forest mostly learned "short essay means weak unit". That got our example right, but for a weak unit inside a long essay it almost never raises a flag. This is consistent with the paper's finding that the length effect is strongest for the Random Forest, an odds ratio of 1.31 after controlling for score. It is one reason a model that reads the text, DeBERTa, does better on the minority class.
+
+The limitation is that this is a correlation on one split. I have not removed the essay-length feature and re-trained, so I cannot say how much of the forest's skill is only length. That would be my next controlled check.
+
+## [SLIDE 9] 7:10–7:35 — Summary and evidence
+
+To sum up my contribution: the Random Forest test run behind a validation gate, the fifteen-prompt LOPO baseline, and the length-by-score analysis. I should also say that two of my first outputs had errors, a join on the rounded IDs and a test script that was not exactly Feature Set B. They were caught in our group review on 31 October and re-run, and the numbers in this video are the corrected ones. My files are listed on this slide. Thank you.
+
+
+FILE VIDEO_CA_NHAN\Nguoi_1_Data_Classical_Length\02_SLIDE_SPEC.md
+# Slide spec: Người 1 (dữ liệu, mô hình cổ điển, độ dài)
+
+Role footer: `Group 06 · CLC02 · Role 1: Data, classical models, length`
+
+## Slide 1 | title
+title: Predicting the Effectiveness of Argumentative Units
+subtitle: Individual video · Role 1: data, classical models and essay length
+bullets:
+- [tự điền: Full name] · [tự điền: Student ID]
+- Group 06 · CLC02 · Machine Learning Applications · November 2026
+
+## Slide 2 | bullets_image
+title: The problem: which parts of an essay don't work?
+bullets:
+- PERSUADE 2.0: 25,996 essays, 237,966 discourse units
+- 7 types: Lead, Position, Claim, Counterclaim, Rebuttal, Evidence, Concluding
+- Label per unit: Ineffective / Adequate / Effective
+- Only 4.5% Ineffective, so we report Macro-F1
+- Split by essay; official test (93,677 units) scored once
+image: ../_chung/visuals/intro_label_mix.png
+caption: Label mix per split (essay-level split, seed 42)
+source: Final report §3.4–3.6; table E1_split_label_distribution.csv
+
+## Slide 3 | bullets_image
+title: My contribution (weeks 10–11)
+bullets:
+- Random Forest, Feature Set B: re-built, validation gate 0.526, then test once: 0.510
+- RF leave-one-prompt-out on all 15 prompts: 0.350 to 0.501
+- Length × holistic-score tables: is length confounded with proficiency?
+- Builds on the group's week-9 pipeline and essay-level split (seed 42)
+image: visuals/fig18_rf_lopo_15_prompts.png
+caption: RF Macro-F1 when each prompt is held out of training (mean 0.430)
+source: rf_run_metadata.json; Final report Fig. 6.6, Table 6.5
+
+## Slide 4 | image
+title: One real test unit: from raw CSV to a prediction
+image: visuals/v1_example_trace_rf.png
+caption: Test raw record 57,633 → row_idx 47,059 · Position · "Facial action coding system" · gold Ineffective
+source: test CSV; MLA_Final/Results/predictions/test_predictions_rf_feature_set_b.csv, test_predictions_L1.csv
+
+## Slide 5 | bullets_image
+title: What the data shows: length goes with proficiency
+bullets:
+- Essay length vs holistic score: Spearman 0.76 (25,996 essays)
+- Median essay: score 2 = 229 words; score 6 = 824 words
+- Ineffective share: 9.0% (shortest quartile) → 1.3% (longest)
+- Essay length is one of the RF's five structural features
+image: visuals/fig09_essay_length_vs_holistic_score.png
+caption: Essay length by holistic score (all essays)
+source: Final report §3.7.4, Fig. 3.6; R7_L1_errors_by_length_quartile.csv (validation gold %)
+
+## Slide 6 | image
+title: Within the same score, errors still rise with length
+image: visuals/fig20_error_within_score_by_length.png
+caption: Locked DeBERTa L1 error rate by length quartile within each holistic score: (a) validation, (b) test
+callout: Score 3: 19.3% → 28.2% · OR per quartile controlling for score = 1.19 [1.14, 1.25]
+source: Final report Table 7.2, Table 7.3
+
+## Slide 7 | demo
+title: Demo: saved outputs of the final project
+bullets:
+- python reproduce_results.py: RF row of Table 1
+- demo_nguoi1.py ①: trace row_idx 47,059 → RF probabilities
+- demo_nguoi1.py ②: discourse_id check (728 IDs for 144,289 units)
+- demo_nguoi1.py ③: Ineffective recall by essay-length quartile
+
+## Slide 8 | image
+title: Interpreting one result: the forest leans on essay length
+image: visuals/v2_rf_recall_by_length.png
+caption: Ineffective recall on the official test by essay-length quartile, from saved predictions
+callout: RF finds 23.3% of Ineffective units in the shortest essays but 0.6% (2 of 309) in the longest
+source: computed by demo_nguoi1.py from test_predictions_rf_feature_set_b.csv and test_predictions_L1.csv; RF OR 1.31: Final report §7.2
+
+## Slide 9 | bullets
+title: Summary and evidence
+bullets:
+- RF Feature Set B: validation gate 0.526 → official test 0.510 (one pass)
+- RF LOPO, 15 prompts: 0.350–0.501; four of the five hardest are source-based
+- Length ≈ proficiency (ρ 0.76), yet errors rise with length within a score (OR 1.19)
+- First-version errors (ID join, RF config) fixed in the 31 Oct review
+- Files: Person1/, week10_output_person1/, outputs/lopo_classical_results.csv
+callout: Limitation: no re-training without the length feature yet, so length reliance is inferred, not tested
+
+
+FILE VIDEO_CA_NHAN\Nguoi_1_Data_Classical_Length\03_DEMO_RUNBOOK.md
+# Demo runbook: Người 1 (khoảng 1 phút 55 giây sau khi cắt)
+
+## Chuẩn bị (trước khi bấm quay)
+
+- Python 3.10+ có `pandas`, `scikit-learn` (đã có nếu cài `MLA_Final/Code/requirements.txt`).
+- **Tuỳ chọn:** đặt CSV gốc tại `data/persuade_raw/persuade_corpus_2.0_test.csv` và `..._train.csv`.
+  - Có CSV thì demo in nguyên văn đơn vị và đếm `discourse_id` trực tiếp.
+  - Không có CSV thì script tự lấy từ bảng đã lưu (`D7_raw_examples_traced.csv`, `D4_identifier_integrity.csv`) và **in rõ là đang dùng bảng đã lưu**.
+- Mở 2 tab terminal, font 18–20pt:
+  - Tab A ở `MLA_Final/Code`;
+  - Tab B ở thư mục gốc repo.
+- Gõ sẵn lệnh, chưa nhấn Enter.
+
+## Các bước quay
+
+| # | Ở đâu | Lệnh / thao tác | Nói gì (script) | Trỏ vào |
+|---|---|---|---|---|
+| 1 | Tab A | `python reproduce_results.py` | "First, our reproduction script…" | Hai dòng `Random Forest (FS-B)` của TABLE 1; dòng `[SUCCESS]` cuối |
+| 2 | Tab B | `python VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/demo/demo_nguoi1.py` | "Now my own demo script…" | Khối ① TRACE |
+| 3 | Tab B | (cuộn lên nếu cần) | "Part two is the identifier check…" | Khối ② dòng `distinct discourse_id` |
+| 4 | Tab B | — | "Part three is new to this video…" | Khối ③ bảng recall theo quartile |
+
+`[CUT]`: cắt mọi đoạn chờ trên 1 giây. Nếu có CSV gốc, script mất khoảng 20–40 giây để đọc file 1 GB; **cắt đoạn đó**, hoặc chạy với `--no-raw` cho nhanh.
+
+## Output mong đợi (đã chạy thử, sẽ cập nhật sau khi build)
+
+```
+① TRACE  test row_idx 47059  (raw record 57633)
+   prompt: Facial action coding system | type: Position | essay words: 225 -> Q1 (<=315)
+   text  : "That is all everything you need to know about Mona Lisa and her smile."
+   label : "Ineffective" -> id 0   (Ineffective=0, Adequate=1, Effective=2)
+   RF FS-B  P(Ineff/Adeq/Eff) = 0.544 / 0.342 / 0.114 -> predicts Ineffective (correct)
+   DeBERTa L1 (locked) P(Ineff) = 0.978 -> predicts Ineffective
+
+② ID CHECK  train+val annotated units 144,289 | distinct discourse_id 728  -> join on row_idx
+
+③ INEFFECTIVE RECALL BY ESSAY-LENGTH QUARTILE (official test, saved predictions)
+   quartile        gold Ineff   RF recall   DeBERTa L1 recall
+   Q1 (<=315)          2,384      23.3%          45.1%
+   Q2 (316-422)          934      13.7%          38.4%
+   Q3 (423-566)          598       6.9%          35.6%
+   Q4 (>=567)            309       0.6%          35.0%
+```
+
+## Nếu thầy hỏi thêm (không quay, chỉ để biết)
+
+- File gốc của bảng điểm × độ dài: `Person1/output/holistic_score_x_length_quartile_error_rates.csv`.
+- Kết quả RF LOPO 15 đề: `outputs/lopo_classical_results.csv`, lọc các dòng `overall`.
+- Lý do sửa bảng và sửa RF: `RA_SOAT_TUAN11_SO_VOI_NHAN_XET_TUAN10.md` mục B1, B2.
+
+
+FILE VIDEO_CA_NHAN\Nguoi_2_DeBERTa_Context_Threshold\01_SCRIPT_EN.md
+# Script: Role 2 (DeBERTa, local context L0 vs L1, decision threshold)
+
+Target length about 7:30, about 1,050 spoken words. Lines starting with `>` are stage directions; do not read them aloud.
+
+---
+
+## [SLIDE 1] 0:00–0:10 — Title
+
+Hello, I'm [tự điền: name], student ID [tự điền: ID], from Group 06, class CLC02. In this video I explain my part of our project: the transformer model, the context experiment, and the decision threshold.
+
+## [SLIDE 2] 0:10–0:45 — The problem (shared with teammates)
+
+Teachers who mark argumentative essays want to know *which parts* of an essay do not work, not only an overall score. Our group used the PERSUADE 2.0 corpus: almost twenty-six thousand student essays, split by expert raters into about two hundred and thirty-eight thousand discourse units, such as claims, evidence and rebuttals. Each unit is labelled Ineffective, Adequate or Effective. Only four and a half percent are Ineffective, so a model that always says "Adequate" is eighty percent accurate and useless. That is why we report Macro-F1, which weights the three classes equally.
+
+## [SLIDE 3] 0:45–1:15 — My contribution
+
+My role was the DeBERTa side. In week nine I trained a single DeBERTa-v3 model and showed, on the same validation units, that it beats the Random Forest by 0.054 Macro-F1, so we dropped the older ensemble. In week ten I designed the controlled context experiment on the right: Level 0 gives the model only the unit; Level 1 adds the unit just before and just after it, and *nothing else changes*. In week eleven I scanned the decision threshold for the Ineffective class and ran the linear SVM baseline, on the test and on three held-out prompts.
+
+## [SLIDE 4] 1:15–2:45 — One real unit: what the model reads, and what it says
+
+> Point to the L0 box, then the L1 box, then the probability bars.
+
+Here is case 8 from our error analysis: validation row index 108,613, a Claim from an essay on "Cell phones at school". The expert label is Ineffective.
+
+At Level 0 the model reads only: the type, "Claim", a separator, and the sentence "Some kids will ask there parents to transfer school."
+
+At Level 1 the input is longer. Before the target, it reads the previous unit, the evidence saying students will hide their phones and skip school. After it, the next unit: "If you chose policy one you will make the student happy." The format is "Previous", "Target", "Next", separated by SEP tokens.
+
+DeBERTa's tokenizer cuts this text into sub-word tokens, at most 512, and the encoder turns it into one vector. A small classification layer turns that vector into three probabilities with a softmax.
+
+Here are the saved probabilities. Level 0 gives Ineffective 0.017. Level 1 raises it to 0.058, more than three times higher, but Adequate is still 0.94, so the prediction stays Adequate, and it is wrong.
+
+Why is the label Ineffective? Reading the essay, this claim is an unsupported prediction, and the neighbouring units do not give a reason for it either. So the local context did not supply what was missing.
+
+## [SLIDE 5] 2:45–3:30 — What the data shows: Level 1 versus Level 0, per class
+
+That is one unit. Across all units, this chart compares Level 1 minus Level 0, per class, with ninety-five percent bootstrap intervals by essay. The models scored on the test were trained by my teammate in week eleven, with the same recipe.
+
+On the official test, ninety-three thousand units, Level 1 is better on every class. Macro-F1 rises by 0.016, and the largest gain is on Ineffective F1, plus 0.029. On validation the direction is the same, but the intervals for Ineffective and Effective include zero.
+
+## [SLIDE 6] 3:30–4:15 — Where the gain comes from
+
+This table shows what context changes unit by unit, on the test. About fifteen percent of predictions change. 7,615 units become correct, but 6,401 become wrong, so it is not a free improvement. For gold Ineffective units, 519 are newly found and 335 are lost.
+
+By type, the gain is largest for Counterclaim, Rebuttal and Claim, the types whose quality is defined relative to a neighbouring unit. That is what we expected from local context.
+
+## [SLIDE 7] 4:15–4:20 — Demo transition
+
+Let me show this from the saved outputs.
+
+## [DEMO] 4:20–6:15 — Reproduce Table 2, then trace case 8 and move the threshold
+
+> Terminal in `MLA_Final/Code`, font 18–20pt.
+
+First, the group's reproduction script recomputes the paper's tables from the saved prediction files.
+
+> Run `python reproduce_results.py`. [CUT] the wait. Highlight TABLE 2.
+
+Table 2 is my comparison: Level 1 minus Level 0 on the same units, plus 0.0087 Macro-F1 on validation and plus 0.0159 on the test, both matching the paper.
+
+> Switch to the repo root. Run `python VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/demo/demo_nguoi2.py --theta 0.10`.
+
+Now my demo script. Part one rebuilds the exact Level 0 and Level 1 input strings for case 8 and prints the saved probabilities for both levels.
+
+> Highlight the threshold block.
+
+Part two asks a practical question. A teacher might say: "flag every unit whose probability of Ineffective is at least theta". With theta 0.10 on the locked Level 1 model, on validation, recall for Ineffective rises from 44.7 to 69.6 percent, but the number of flagged units goes from 1,761 to 4,633, and Macro-F1 falls from 0.581 to 0.535. The script also counts it: 330 extra correct flags, but 2,542 extra false alarms.
+
+> Highlight the case 8 line.
+
+And case 8, with probability 0.058, is still not flagged at 0.10.
+
+## [SLIDE 8] 6:15–7:10 — Interpreting one result: a threshold moves the operating point
+
+> Back to slides.
+
+This figure shows the whole trade-off. As theta goes down, recall goes up, precision goes down, and Macro-F1 falls steadily. Every extra Ineffective unit we catch costs about eight false alarms.
+
+So lowering the threshold does not make the classifier better. It only moves the operating point along the same curve. Whether a teacher wants to read about 4,600 flagged units to see seventy percent of the weak ones, or about 1,800 to see forty-five percent, is the user's decision. We did not choose it on the test.
+
+I should also correct my own first version here. In week eleven I first reported 76.5 percent recall at theta 0.10 and said case 8 would be caught. The correct value was 73.0 percent, and it only held for the first Level 1 run. For the locked model, case 8 is flagged only if theta is 0.058 or lower.
+
+## [SLIDE 9] 7:10–7:35 — Summary and evidence
+
+To sum up: Level 1 helps a little and consistently, about 0.016 Macro-F1 on the test, mostly on relational types. But my first run gave only plus 0.002 on validation, so the gain is about the same size as run-to-run variation, and I call it "small", not "proven". The threshold is a user choice, not a model improvement. My files are listed here. Thank you.
+
+
+FILE VIDEO_CA_NHAN\Nguoi_2_DeBERTa_Context_Threshold\02_SLIDE_SPEC.md
+# Slide spec: Người 2 (DeBERTa, ngữ cảnh L0/L1, ngưỡng, SVM)
+
+Role footer: `Group 06 · CLC02 · Role 2: DeBERTa, context, threshold`
+
+## Slide 1 | title
+title: Predicting the Effectiveness of Argumentative Units
+subtitle: Individual video · Role 2: DeBERTa, local context and the decision threshold
+bullets:
+- [tự điền: Full name] · [tự điền: Student ID]
+- Group 06 · CLC02 · Machine Learning Applications · November 2026
+
+## Slide 2 | bullets_image
+title: The problem: which parts of an essay don't work?
+bullets:
+- PERSUADE 2.0: 25,996 essays, 237,966 discourse units
+- 7 types: Lead, Position, Claim, Counterclaim, Rebuttal, Evidence, Concluding
+- Label per unit: Ineffective / Adequate / Effective
+- Only 4.5% Ineffective, so we report Macro-F1
+- Split by essay; official test (93,677 units) scored once
+image: ../_chung/visuals/intro_label_mix.png
+caption: Label mix per split (essay-level split, seed 42)
+source: Final report §3.4–3.6; table E1_split_label_distribution.csv
+
+## Slide 3 | bullets_image
+title: My contribution
+bullets:
+- Week 9: single DeBERTa-v3 vs Random Forest, same units: +0.054 [0.043, 0.065]
+- Week 10: controlled context test, L0 (unit) vs L1 (± 1 unit), all else fixed
+- Week 11: threshold scan for the Ineffective flag; case 8
+- Week 11: linear SVM on test (0.482) and on 3 held-out prompts
+image: visuals/fig04_context_levels.png
+caption: Context levels: L0 and L1 are the planned comparison
+source: Final report §4.3, §6.1, Table 6.5, Table 6.6
+
+## Slide 4 | image
+title: One real unit (case 8): what DeBERTa reads, what it says
+image: visuals/v1_case8_L0_vs_L1.png
+caption: Validation row_idx 108,613 · Claim · "Cell phones at school" · gold Ineffective
+source: val_predictions_L0.csv, val_predictions_L1.csv (locked week-11 models); Final report Table 7.4–7.5
+
+## Slide 5 | bullets_image
+title: What the data shows: L1 − L0 on the same units
+bullets:
+- Test (93,677 units): Macro-F1 +0.0159 [+0.0115, +0.0205]
+- Largest gain: Ineffective F1 +0.0292 [+0.0185, +0.0408]
+- Validation: +0.0087 [+0.0015, +0.0161]; Ineff & Eff CIs include 0
+- Same training data, recipe and seed; only the input differs
+image: visuals/fig14_L1_minus_L0_per_class.png
+caption: L1 minus L0 per class, 95% essay-bootstrap CI (2,000 resamples)
+source: Final report Table 6.2; R4a_L1_vs_L0_same_units_deltas.csv
+
+## Slide 6 | table
+title: Where the gain comes from (official test)
+table:
+| Paired outcome, L0 → L1 | Units |
+|---|---:|
+| Prediction changed | 14,224 (15.2%) |
+| Wrong → correct | 7,615 |
+| Correct → wrong | 6,401 |
+| Gold Ineffective newly found / lost | 519 / 335 |
+| Macro-F1 gain: Counterclaim / Rebuttal / Claim | +0.037 / +0.028 / +0.028 |
+callout: Gains concentrate on relational types, whose quality is defined by a neighbouring unit
+source: Final report Table 6.3 (R4b) and Table 6.4 (R4a)
+
+## Slide 7 | demo
+title: Demo: saved outputs of the final project
+bullets:
+- python reproduce_results.py: TABLE 2 (L1 − L0)
+- demo_nguoi2.py ①: rebuild the L0 / L1 input of case 8 + saved probabilities
+- demo_nguoi2.py ②: flag if P(Ineffective) ≥ θ, θ = 0.10
+- demo_nguoi2.py ③: is case 8 flagged?
+
+## Slide 8 | image
+title: Interpreting one result: a threshold moves the operating point
+image: visuals/fig22_threshold_tradeoff.png
+caption: Locked L1, validation: recall, precision and Macro-F1 as θ changes (dotted: argmax)
+callout: θ = 0.10: recall 44.7% → 69.6%, Macro-F1 0.581 → 0.535, about 8 false alarms per extra catch
+source: Final report Table 6.8, Fig. 6.8
+
+## Slide 9 | bullets
+title: Summary and evidence
+bullets:
+- L1 adds a small, consistent gain: +0.016 test Macro-F1, mostly relational types
+- First L1 run: only +0.002 on validation, so the gain is comparable to run-to-run variation
+- Lowering θ trades precision for recall; the choice belongs to the teacher
+- Corrected: recall at θ = 0.10 is 73.0% (first run), not 76.5%; case 8 not flagged by the locked model
+- Files: person2_output/, week10_full_person2/, Person2Khoa/
+callout: Limitation: one seed per configuration; differences below about 0.005–0.01 are not interpretable
+
+
+FILE VIDEO_CA_NHAN\Nguoi_2_DeBERTa_Context_Threshold\03_DEMO_RUNBOOK.md
+# Demo runbook: Người 2 (khoảng 1 phút 55 giây sau khi cắt)
+
+## Chuẩn bị
+
+- Python 3.10+ có `pandas` và `scikit-learn`.
+- **Tuỳ chọn:** CSV gốc `data/persuade_raw/persuade_corpus_2.0_train.csv`.
+  - Có CSV thì demo in nguyên văn đơn vị trước, đích và sau.
+  - Không có CSV thì script in câu đích lấy từ bảng `D7_raw_examples_traced.csv`, báo rõ là thiếu văn bản lân cận, rồi vẫn chạy phần ②③ bình thường.
+- 2 tab terminal, font 18–20pt:
+  - Tab A ở `MLA_Final/Code`;
+  - Tab B ở thư mục gốc repo.
+
+## Các bước quay
+
+| # | Ở đâu | Lệnh / thao tác | Nói gì | Trỏ vào |
+|---|---|---|---|---|
+| 1 | Tab A | `python reproduce_results.py` | "First, the group's reproduction script…" | TABLE 2, dòng Macro-F1 delta |
+| 2 | Tab B | `python VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/demo/demo_nguoi2.py --theta 0.10` | "Now my demo script…" | Khối ① (chuỗi L0, chuỗi L1, xác suất) |
+| 3 | Tab B | — | "Part two asks a practical question…" | Khối ②: argmax so với θ |
+| 4 | Tab B | — | "And case 8…" | Khối ③ |
+| (tuỳ chọn) | Tab B | chạy lại với `--theta 0.20` | "With 0.20 the trade-off is milder…" | Recall 60,0%, Macro-F1 0,558 |
+
+`[CUT]`: đọc CSV gốc mất 20–40 giây, cắt đoạn đó; hoặc thêm `--no-raw`.
+
+## Output mong đợi (cập nhật sau khi build)
+
+```
+① CASE 8  validation row_idx 108613 | Claim | Cell phones at school | gold Ineffective
+   L0 input: Claim [SEP] Some kids will ask there parents to transfer school
+   L1 input: Claim [SEP] Previous: They will hide them from the teachers ... [SEP] Target: Some kids will ask there parents to transfer school [SEP] Next: If you chose policy one you will make the student happy.
+   L0 (locked)  P(Ineff/Adeq/Eff) = 0.017 / 0.962 / 0.021 -> Adequate
+   L1 (locked)  P(Ineff/Adeq/Eff) = 0.058 / 0.937 / 0.005 -> Adequate
+
+② FLAG IF P(Ineffective) >= θ   (locked L1, validation, 29,102 units, 1,328 gold Ineffective)
+   rule      flagged   recall   precision   Macro-F1
+   argmax      1,761    44.7%      33.7%      0.581
+   θ=0.10      4,633    69.6%      19.9%      0.535
+   extra correct flags: 330 | extra false alarms: 2,542  (≈ 7.7 per catch)
+
+③ case 8: P(Ineffective) = 0.058 < θ = 0.10 -> not flagged
+```
+
+## Mở thêm nếu cần
+
+- `MLA_Final/Code/notebooks/05_threshold_tuning_and_case8.ipynb`: notebook gốc, đã có output.
+- `MLA_Final/Results/tables/R4a_L1_vs_L0_same_units_deltas.csv`.
+
+
+FILE VIDEO_CA_NHAN\Nguoi_3_TestGovernance_LOPO_Ladder\01_SCRIPT_EN.md
+# Script: Role 3 (official test governance, prompt transfer, context ladder)
+
+Target length about 7:30, about 1,050 spoken words. Lines starting with `>` are stage directions; do not read them aloud.
+
+---
+
+## [SLIDE 1] 0:00–0:10 — Title
+
+Hello, I'm [tự điền: name], student ID [tự điền: ID], from Group 06, class CLC02. In this video I explain my part of our project: how we scored the official test, how the model transfers to unseen prompts, and what wider context does.
+
+## [SLIDE 2] 0:10–0:45 — The problem (shared with teammates)
+
+Teachers who mark argumentative essays want to know *which parts* of an essay do not work, not only an overall score. Our group used the PERSUADE 2.0 corpus: almost twenty-six thousand student essays, split by expert raters into about two hundred and thirty-eight thousand discourse units, such as claims, evidence and rebuttals. Each unit is labelled Ineffective, Adequate or Effective. Only four and a half percent are Ineffective, so a model that always says "Adequate" is eighty percent accurate and useless. That is why we report Macro-F1, which weights the three classes equally.
+
+## [SLIDE 3] 0:45–1:15 — My contribution
+
+In week nine I built the data pipeline and the essay-level split. In weeks ten and eleven my role was the test and the generalisation checks. I trained the final DeBERTa models, Level 0, Level 1 and Prompt-Aware, and scored the official test exactly once, behind a lock file, as this diagram shows. Then I ran a 31-item review of our report and code, re-ran the leave-one-prompt-out experiment, and built a context ladder that goes beyond Level 1, up to the whole essay.
+
+## [SLIDE 4] 1:15–2:45 — One real unit, through the context ladder
+
+> Point to the input column first, then to the bars.
+
+This is case 2, one of the ten high-confidence failures our group selected before training any context model. Validation row index 10,303, an Evidence unit from a "Car-free cities" essay with holistic score 2. The expert label is Ineffective.
+
+The unit is 244 words long. It quotes paragraph 36 of the source text accurately, and then it drifts into reasoning about learner's permits and driving tests, which does not support the writer's point. So the weakness is inside the unit, but you only see it if you know what the paragraph is supposed to support.
+
+On the left is what the model reads at each level. Level 0 is the unit alone. Level 1 adds the previous unit, the Position "I don't buy it", and there is no next unit. Paragraph gives the whole paragraph. Level 2 adds a passage of the source text. Level 3 gives the whole essay, 388 words.
+
+Each input goes through the same DeBERTa-v3 recipe, and the bars show the saved probability of Ineffective. Level 0: 0.001. Level 1: 0.008, still predicted *Effective*. With the paragraph it jumps to 0.83. With the source passage, 0.54. With the whole essay, 0.73 after three epochs and 0.92 after seven. All four wider inputs predict Ineffective, which is correct.
+
+## [SLIDE 5] 2:45–3:30 — What the data shows: no free lunch from wider context
+
+One case is an illustration, not evidence. This chart is the whole validation set. With the normal argmax rule, no input beyond Level 1 is clearly better on Macro-F1. The wider inputs raise Ineffective recall to between 54 and 59 percent, but they flag more units and lose precision. Paragraph is worse than Level 1, minus 0.012.
+
+And there is a check for case 2: if I lower Level 1's threshold until it flags as many units as the wider models, it still flips none of the ten cases. So the wider inputs carry real information, but the aggregate gain is unclear. After the same calibration correction for every model, the whole-essay model is plus 0.025, but that is post-hoc, on validation, one run.
+
+## [SLIDE 6] 3:30–4:15 — Prompt transfer: leave-one-prompt-out
+
+The second question is generalisation. In leave-one-prompt-out, a prompt is removed from training and the model is scored on that prompt. I compared it with the in-domain model on the *same* validation essays.
+
+An unseen prompt costs Macro-F1: minus 0.092 on "A Cowboy Who Rode the Waves", minus 0.048 on "Distance learning", and minus 0.025 on "Summer projects", where the interval includes zero.
+
+## [SLIDE 7] 4:15–4:20 — Demo transition
+
+Let me check all of this from the saved outputs.
+
+## [DEMO] 4:20–6:15 — Lock, recompute, trace
+
+> Terminal in `MLA_Final/Code`, font 18–20pt.
+
+First, the group's reproduction script.
+
+> Run `python reproduce_results.py`. [CUT] the wait. Highlight the Test rows of TABLE 1, then TABLE 3.
+
+These are the official test rows, Level 1 locked at 0.577, and here is Table 3, the leave-one-prompt-out gaps. All match the paper.
+
+> Switch to the repo root. Run `python VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py`. [CUT] the hashing wait.
+
+My demo script checks the test governance. Part one hashes the official test file and compares it with the hash in the lock file, written on 28 October before scoring. They match, so the file has not changed. It does this without reading any labels. Part two recomputes test Macro-F1 for Level 0, Level 1 and Prompt-Aware from the saved per-unit predictions, and they equal the paper's table.
+
+> Highlight part three.
+
+Part three prints case 2 across the ladder, the numbers from my slide.
+
+> Switch to the browser: `VAN_DAP_4_TIEU_CHI/trace_mau_that/TRACE_MAU_THAT_PIPELINE.html`, zoom 150%, scroll to the case 2 section.
+
+And this is my trace notebook. It follows the same unit from the raw CSV row through the input text at each level, the token count, and the saved probabilities. The probabilities are saved outputs, because we no longer have the checkpoints.
+
+## [SLIDE 8] 6:15–7:10 — Interpreting one error: the first LOPO run leaked
+
+> Back to slides.
+
+I want to interpret one error, because it was mine to find and fix. Our week-ten LOPO run picked the best epoch *using the held-out prompt itself*. That is test information leaking into model selection, and it also ran on a library version that we later found broke DeBERTa training.
+
+I re-ran it with a fixed three epochs and the working version. The numbers went down, which is the direction you expect when a leak is removed: on "Distance learning", the old run showed no loss at all, plus 0.004, and the corrected run shows minus 0.048.
+
+The remaining limitation: three prompts and one run per fold. So the link between source-based prompts and larger losses is an interpretation, not a tested cause.
+
+## [SLIDE 9] 7:10–7:35 — Summary and evidence
+
+To sum up: the official test was scored once, under a lock, and every number can be recomputed from saved predictions. Unseen prompts cost DeBERTa between 0.025 and 0.092 Macro-F1. Wider context helps some single cases, but it is not yet a proven aggregate gain, and the next step would be a pre-registered test. My files are listed here. Thank you.
+
+
+FILE VIDEO_CA_NHAN\Nguoi_3_TestGovernance_LOPO_Ladder\02_SLIDE_SPEC.md
+# Slide spec: Người 3 (quản lý test, LOPO, thang ngữ cảnh)
+
+Role footer: `Group 06 · CLC02 · Role 3: Test governance, LOPO, context ladder`
+
+## Slide 1 | title
+title: Predicting the Effectiveness of Argumentative Units
+subtitle: Individual video · Role 3: official test, unseen prompts and wider context
+bullets:
+- [tự điền: Full name] · [tự điền: Student ID]
+- Group 06 · CLC02 · Machine Learning Applications · November 2026
+
+## Slide 2 | bullets_image
+title: The problem: which parts of an essay don't work?
+bullets:
+- PERSUADE 2.0: 25,996 essays, 237,966 discourse units
+- 7 types: Lead, Position, Claim, Counterclaim, Rebuttal, Evidence, Concluding
+- Label per unit: Ineffective / Adequate / Effective
+- Only 4.5% Ineffective, so we report Macro-F1
+- Split by essay; official test (93,677 units) scored once
+image: ../_chung/visuals/intro_label_mix.png
+caption: Label mix per split (essay-level split, seed 42)
+source: Final report §3.4–3.6; table E1_split_label_distribution.csv
+
+## Slide 3 | bullets_image
+title: My contribution (weeks 10–11)
+bullets:
+- Trained DeBERTa L0 / L1 / Prompt-Aware; scored the official test once (lock: 28 Oct)
+- Test: L0 0.561 · L1 (locked) 0.577 · PA 0.581 Macro-F1
+- 31-item review of report and code; re-ran LOPO with a fixed 3 epochs
+- Context ladder beyond L1: ±2 units, paragraph, source passage, whole essay
+- Week 9 (one line): data pipeline and essay-level split
+image: visuals/fig26_test_governance.png
+caption: Test governance: every choice on validation; test hashed, locked and scored once
+source: OFFICIAL_TEST_LOCK.json; Final report Table 6.5, Fig. 5.1
+
+## Slide 4 | image
+title: One real unit (case 2) through the context ladder
+image: visuals/v1_case2_ladder.png
+caption: Validation row_idx 10,303 · Evidence · "Car-free cities" · score 2 · gold Ineffective
+source: MLA_Final/Results/predictions/context_levels_10_cases.csv; trace notebook tokens_per_level.csv; Final report Table 7.5
+
+## Slide 5 | bullets_image
+title: What the data shows: wider context is not a free gain
+bullets:
+- Argmax: no input beyond L1 is clearly better (validation, 29,102 units)
+- Paragraph: −0.012 [−0.020, −0.005] vs L1
+- Wider inputs: Ineffective recall 54–59%, but lower precision
+- L1 flagging as many units still flips 0 of 10 cases
+- After equal calibration: whole essay +0.025 [0.016, 0.035], post-hoc, 1 run
+image: visuals/fig19_context_ladder_validation.png
+caption: Macro-F1 difference from L1: (a) argmax, (b) same class-offset correction for all
+source: Final report Table 6.10, Fig. 6.9, §7.3
+
+## Slide 6 | table
+title: Prompt transfer: leave-one-prompt-out vs in-domain (same essays)
+table:
+| Held-out prompt | Units / essays | In-domain | LOPO | Gap [95% CI] |
+|---|---|---:|---:|---|
+| A Cowboy Who Rode the Waves | 1,030 / 134 | 0.476 | 0.384 | −0.092 [−0.132, −0.049] |
+| Summer projects | 2,074 / 177 | 0.508 | 0.483 | −0.025 [−0.052, +0.011] |
+| Distance learning | 3,533 / 283 | 0.576 | 0.528 | −0.048 [−0.078, −0.019] |
+callout: DeBERTa L0, fixed 3 epochs; gap uses 2,000 essay-bootstrap resamples
+source: Final report Table 6.7; R5_lopo_vs_indomain_per_class.csv
+
+## Slide 7 | demo
+title: Demo: saved outputs of the final project
+bullets:
+- python reproduce_results.py: TABLE 1 (test) and TABLE 3 (LOPO)
+- demo_nguoi3.py ①: SHA-256 of test file = lock file?
+- demo_nguoi3.py ②: recompute test Macro-F1 from saved predictions
+- demo_nguoi3.py ③: case 2 across the ladder
+- Trace notebook (HTML): raw row → input → tokens → probability
+
+## Slide 8 | table
+title: Interpreting one error: the first LOPO run leaked
+table:
+| Held-out prompt (all units) | Week 10 run | Re-run (31 Oct) |
+|---|---:|---:|
+| A Cowboy Who Rode the Waves | 0.408 | 0.402 |
+| Summer projects | 0.464 | 0.438 |
+| Distance learning | 0.574 | 0.538 |
+| Distance: gap vs in-domain | +0.004 | −0.048 |
+callout: Week 10 chose the epoch on the held-out prompt (leak) and used a broken library version; re-run: fixed 3 epochs
+source: RA_SOAT_TUAN11_SO_VOI_NHAN_XET_TUAN10.md B16, B27; week11_lopo_rerun/; R5
+
+## Slide 9 | bullets
+title: Summary and evidence
+bullets:
+- Official test scored once, hash-locked; all numbers recomputable from saved predictions
+- Unseen prompts cost DeBERTa 0.025–0.092 Macro-F1 (3 prompts, 1 run each)
+- Wider context helps single cases; aggregate gain is post-hoc and unconfirmed
+- Files: Week11_Person3_DeBERTa_OfficialTest/, week11_lopo_rerun/, week11_context_levels/
+callout: Limitation: one seed per configuration; runs differ by up to ~0.004, so PA − L1 cannot be separated
+
+
+FILE VIDEO_CA_NHAN\Nguoi_3_TestGovernance_LOPO_Ladder\03_DEMO_RUNBOOK.md
+# Demo runbook: Người 3 (khoảng 1 phút 55 giây sau khi cắt)
+
+## Chuẩn bị
+
+- Python 3.10+ có `pandas` và `scikit-learn`.
+- **Nên có** `data/persuade_raw/persuade_corpus_2.0_test.csv` (382 MB) để bước ① băm file. Không có thì script bỏ qua bước ① và in rõ lý do.
+- 2 tab terminal, font 18–20pt:
+  - Tab A ở `MLA_Final/Code`;
+  - Tab B ở thư mục gốc repo.
+- Trình duyệt mở sẵn `VAN_DAP_4_TIEU_CHI/trace_mau_that/TRACE_MAU_THAT_PIPELINE.html`, zoom 150%, cuộn tới phần "Ca 2". File này chỉ có trên máy bạn, vì thư mục đó nằm trong `.gitignore`.
+
+## Các bước quay
+
+| # | Ở đâu | Lệnh / thao tác | Nói gì | Trỏ vào |
+|---|---|---|---|---|
+| 1 | Tab A | `python reproduce_results.py` | "First, the group's reproduction script." | Các dòng `Test` của TABLE 1 (L1 0.577); TABLE 3 |
+| 2 | Tab B | `python VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py` | "My demo script checks the test governance…" | Khối ①: `sha256 matches lock: True` |
+| 3 | Tab B | — | "Part two recomputes…" | Khối ②: 3 dòng L0/L1/PA, cột `paper` |
+| 4 | Tab B | — | "Part three prints case 2…" | Khối ③ |
+| 5 | Trình duyệt | Cuộn phần Ca 2: đầu vào từng mức → bảng token → bảng xác suất | "And this is my trace notebook…" | Bảng token (cả đoạn 747 token, bị cắt ở 512) và bảng P(Ineffective) |
+
+`[CUT]`: băm 382 MB mất vài giây, cắt đoạn chờ.
+
+## Output mong đợi (cập nhật sau khi build)
+
+```
+① TEST LOCK   locked_at 2026-10-28T21:15:35 UTC | n_test 93,677
+   sha256 (lock) 8b4cbbda471b313e…
+   sha256 (now)  8b4cbbda471b313e…  -> matches lock: True   (labels not read)
+
+② TEST MACRO-F1 RECOMPUTED FROM SAVED PREDICTIONS (93,677 units)
+   model                 recomputed   paper (R2)
+   DeBERTa L0               0.5613      0.5613
+   DeBERTa L1 (locked)      0.5772      0.5772
+   DeBERTa Prompt-Aware     0.5808      0.5808
+
+③ CASE 2  validation row_idx 10303 | Evidence | Car-free cities | gold Ineffective
+   level          P(Ineffective)   prediction
+   L0                  0.001       Effective
+   L1 (locked)         0.008       Effective
+   Prompt-Aware        0.002       Effective
+   L1 ±2               0.028       Effective
+   Paragraph           0.832       Ineffective
+   L2 source           0.540       Ineffective
+   L3 whole, 3 ep      0.733       Ineffective
+   L3 whole, 7 ep      0.924       Ineffective
+
+④ LOPO GAP (same validation essays): Cowboy −0.092 | Summer −0.025 | Distance −0.048
+```
+
+## Nếu thầy hỏi thêm
+
+- `Week11_Person3_DeBERTa_OfficialTest/outputs/week11_person3/run_log.txt` và `OFFICIAL_TEST_LOCK.json`.
+- `outputs/lopo_deberta_rerun_gap_same_units.csv`, `outputs/context_levels_validation_summary.csv`.
+- `RA_SOAT_TUAN11_SO_VOI_NHAN_XET_TUAN10.md` mục B16, B27.
+
+
+FILE MLA_Final\Results\tables\E1_split_label_distribution.csv
+        split    units  essays  % Ineffective  % Adequate  % Effective
+        train 115187.0 12475.0           4.46       78.44        17.11
+   validation  29102.0  3119.0           4.56       78.68        16.76
+         test  93677.0 10402.0           4.51       80.45        15.04
+all annotated 237966.0 25996.0           4.49       79.26        16.25
+
+FILE MLA_Final\Results\tables\D4_identifier_integrity.csv
+               file  units  distinct_discourse_id  max_units_sharing_one_discourse_id  example_discourse_id_value  essays_sharing_that_value  distinct_essay_id  distinct_essay_id_comp
+train+val annotated 144289                    728                                 932                1.621440e+12                         93              15593                   15594
+     test annotated  93677                    714                                 628                1.620240e+12                         81              10402                   10402
+
+FILE MLA_Final\Results\tables\D7_raw_examples_traced.csv
+ row_idx  raw_record_in_csv essay_id_comp          essay_id_as_stored  discourse_id_as_stored                           prompt       discourse_type                                          text_first_60_chars raw_label_string  label_id_loaded  true_label_in_prediction_file  match     L1_pred L1_P_ineff/adeq/eff
+   93085             111932  A1B2F28757E3                     5085319            1.615130e+12 Does the electoral college work?                Claim One of the best parts of this is that every state get attenc         Adequate                1                              1   True Ineffective   0.918/0.082/0.001
+   53101              64465  6D1D5D542E08        AAATRP14318000708844            1.619560e+12      Facial action coding system                Claim Another way the software can help is better grades when a st         Adequate                1                              1   True    Adequate   0.036/0.928/0.036
+   25444              31612  7D378AEFD0C3        AAAOPP13416000087851            1.620050e+12      A Cowboy Who Rode the Waves                Claim                         it's a once in a lifetime expirience         Adequate                1                              1   True    Adequate   0.003/0.608/0.389
+  123137             146304  8AE119913109 AAAXMP138200001202352125_OR            1.621970e+12                Distance learning Concluding Statement While many students may think that working from home is righ        Effective                2                              2   True   Effective   0.000/0.114/0.886
+    3642               4088  E0ACC902891D                 5.53979E+12            1.622520e+12               Phones and driving                Claim Using your cell phone when driving could be potentially fata         Adequate                1                              1   True    Adequate   0.006/0.963/0.032
+  108613             130257  FE3141FA4163                  2021007793            1.620150e+12            Cell phones at school                Claim          Some kids will ask there parents to transfer school      Ineffective                0                              0   True    Adequate   0.058/0.937/0.005
+
+FILE MLA_Final\Results\tables\R2_test_per_class.csv
+                                       split                                system  n_units  macro_f1  accuracy  balanced_accuracy  kappa    qwk  precision_Ineffective  recall_Ineffective  f1_Ineffective  support_Ineffective  precision_Adequate  recall_Adequate  f1_Adequate  support_Adequate  precision_Effective  recall_Effective  f1_Effective  support_Effective
+official test (93,677 units / 10,402 essays)      Majority class (always Adequate)    93677    0.2972    0.8045             0.3333 0.0000 0.0000                 0.0000              0.0000          0.0000                 4225              0.8045           1.0000       0.8917             75363               0.0000            0.0000        0.0000              14089
+official test (93,677 units / 10,402 essays)          Random Forest, Feature Set B    93677    0.5098    0.7851             0.4978 0.3050 0.3500                 0.2463              0.1718          0.2024                 4225              0.8561           0.8846       0.8701             75363               0.4786            0.4368        0.4567              14089
+official test (93,677 units / 10,402 essays)              DeBERTa-v3 L0, unit only    93677    0.5613    0.7438             0.6092 0.3563 0.4224                 0.3110              0.3718          0.3387                 4225              0.8938           0.7768       0.8312             75363               0.4137            0.6790        0.5141              14089
+official test (93,677 units / 10,402 essays)      DeBERTa-v3 L1, +-1 unit (locked)    93677    0.5772    0.7568             0.6223 0.3723 0.4416                 0.3301              0.4154          0.3679                 4225              0.8932           0.7946       0.8410             75363               0.4342            0.6570        0.5228              14089
+official test (93,677 units / 10,402 essays) DeBERTa-v3 Prompt-Aware (exploratory)    93677    0.5808    0.7539             0.6335 0.3757 0.4463                 0.3314              0.4417          0.3787                 4225              0.8967           0.7866       0.8381             75363               0.4318            0.6721        0.5258              14089
+
+FILE MLA_Final\Results\tables\R5_lopo_vs_indomain_per_class.csv
+            held_out_prompt                                              setting              units/essays  gold %Ineff  macro_f1  accuracy  f1_Ineffective  recall_Ineffective  f1_Adequate  f1_Effective
+A Cowboy Who Rode the Waves        LOPO DeBERTa L0, all units of held-out prompt   5158 units / 688 essays         4.25    0.4019    0.6470          0.1520              0.4612       0.7768        0.2770
+A Cowboy Who Rode the Waves    LOPO DeBERTa L0, validation essays of that prompt                1030 / 134         4.27    0.3840    0.6437          0.1348              0.4318       0.7773        0.2400
+A Cowboy Who Rode the Waves In-domain DeBERTa L0 (wk 11), same validation essays                1030 / 134         4.27    0.4755    0.7942          0.2353              0.3182       0.8818        0.3094
+            Summer projects        LOPO DeBERTa L0, all units of held-out prompt   9855 units / 875 essays         0.89    0.4378    0.6024          0.1074              0.0909       0.6365        0.5694
+            Summer projects    LOPO DeBERTa L0, validation essays of that prompt                2074 / 177         0.63    0.4827    0.6013          0.2500              0.2308       0.6386        0.5597
+            Summer projects In-domain DeBERTa L0 (wk 11), same validation essays                2074 / 177         0.63    0.5076    0.6572          0.2308              0.2308       0.7143        0.5779
+          Distance learning        LOPO DeBERTa L0, all units of held-out prompt 18526 units / 1498 essays         1.50    0.5381    0.6952          0.2437              0.3466       0.7566        0.6142
+          Distance learning    LOPO DeBERTa L0, validation essays of that prompt                3533 / 283         1.42    0.5279    0.6946          0.2098              0.3000       0.7541        0.6199
+          Distance learning In-domain DeBERTa L0 (wk 11), same validation essays                3533 / 283         1.42    0.5757    0.7404          0.2754              0.3800       0.8001        0.6516
+
+FILE MLA_Final\Results\tables\R8_ten_cases.csv
+ case  row_idx essay_id_comp                      prompt         type        gold  holistic_score  essay_words  unit_words                                                                                                      text_excerpt wk9-10 L0 pred / P(Ineff) wk10 L1 pred / P(Ineff)  wk11 L1 P(Ineff)    PA  L1+-2  paragraph  L2 source  L3 3ep  L3 7ep levels_predicting_Ineffective information_needed (group reading)                                                                                                                  observation (group reading)
+    1     2467  6BF54A9F8383          Phones and driving Counterclaim Ineffective               5          869          12                                                 There are many reason on why texting while driving is very useful              Adeq / 0.022            Adeq / 0.029             0.027 0.065  0.084      0.031      0.027   0.713   0.161                        L3 3ep                        Whole essay                                           Counterclaim that is never answered later in the essay; the unit alone reads as a fluent sentence.
+    2    10303  BFDD411D610F             Car-free cities     Evidence Ineffective               2          388         244 To provide reasonings to my strong point, brings me back to paragraph 36. It clearly states in bolded writing:...              Effe / 0.000            Effe / 0.001             0.008 0.002  0.028      0.832      0.540   0.733   0.924 paragraph, L2, L3 3ep, L3 7ep                        Unit itself Accurate quotation of source paragraph 36, followed by off-topic reasoning (learner's permit, driving test) that does not support the point.
+    3    25520  1CE967B8E5C9 A Cowboy Who Rode the Waves     Position Ineffective               2          277           8                                                                   I think you shouldn't join the Seagoing Cowboys              Adeq / 0.022            Adeq / 0.010             0.006 0.019  0.029      0.023      0.026   0.007   0.000                          none                        Unit itself                                                                                                     Bare stance with no reason; eight words.
+    4   105080  326DEFF8D486       Cell phones at school Counterclaim Ineffective               4          366           9                                                                  Not allowing students to use there phones at all              Adeq / 0.038            Adeq / 0.090             0.170 0.075  0.056      0.041      0.165   0.010   0.000                          none                        Unit itself                                                                                  Sentence fragment; no opposing argument is actually stated.
+    5    86267  8C10A8ABF46D             Driverless cars     Position Ineffective               1          313           6                                                                         The Driverless people can cause problems.              Adeq / 0.028            Adeq / 0.151             0.103 0.163  0.078      0.346      0.085   0.549   0.153                        L3 3ep                      Source / task                                               Vague position that may conflict with the source article; cannot be judged without the source.
+    6   114270  C75B9C4FFEAD           Distance learning Counterclaim Ineffective               4          327          13                                             But Sometimes it could be a distraction from you doing all your work.              Adeq / 0.031            Adeq / 0.040             0.035 0.046  0.073      0.015      0.040   0.033   0.001                          none                        Whole essay                                                                                         Counterclaim with no rebuttal anywhere in the essay.
+    7   110025  53858BE44997       Cell phones at school     Position Ineffective               2          188          28 I reconsider that are principal should let us eight graders bring are cell phones to school and allow us to us...              Adeq / 0.035            Adeq / 0.097             0.052 0.139  0.101      0.239      0.252   0.123   0.013                          none                      Task / prompt                                                                                        Thesis whose scope is unclear relative to the prompt.
+    8   108613  FE3141FA4163       Cell phones at school        Claim Ineffective               2          169           9                                                               Some kids will ask there parents to transfer school              Adeq / 0.021            Adeq / 0.124             0.058 0.217  0.117      0.143      0.165   0.295   0.006                          none                      Local context                                                                           Unsupported prediction; neighbouring units do not supply a reason.
+    9    83105  81B0FFE6659F             Driverless cars         Lead Ineffective               3          349          13                                                  The future is near and the talk about driverless cars is upon us              Adeq / 0.045            Adeq / 0.080             0.143 0.188  0.100      0.342      0.077   0.127   0.006                          none                      Task / prompt                                                                                                Generic hook that does not engage the prompt.
+   10     9735  7D59699BB70F             Car-free cities        Claim Ineffective               3          374          11                                                                 Another cars is a bad idea is because of its gas.              Adeq / 0.039            Adeq / 0.032             0.039 0.083  0.132      0.167      0.196   0.011   0.000                          none                        Unit itself                                                                                                  Claim with no support and a garbled reason.
+
+FILE VAN_DAP_4_TIEU_CHI\trace_mau_that\outputs\tokens_per_level.csv
+  Ca           Mức  Ký tự  Token  % của 512 Bị cắt?
+Ca 8 L0 chỉ đơn vị     63     13        2.5   không
+Ca 8  L1 ±1 đơn vị    425     95       18.6   không
+Ca 8   L1 + tên đề    461    102       19.9   không
+Ca 8         L1 ±2    806    175       34.2   không
+Ca 8       Cả đoạn    262     58       11.3   không
+Ca 8      L2 nguồn    425     95       18.6   không
+Ca 2 L0 chỉ đơn vị   1403    294       57.4   không
+Ca 2  L1 ±1 đơn vị   1556    329       64.3   không
+Ca 2   L1 + tên đề   1586    336       65.6   không
+Ca 2         L1 ±2   1851    388       75.8   không
+
+FILE MLA_Final\Results\predictions\context_levels_10_cases.csv
+ case         type  P_ineff_L0 pred_L0  P_ineff_L1 pred_L1  P_ineff_PA pred_PA  P_ineff_L1para pred_L1para  P_ineff_L1w2 pred_L1w2  P_ineff_L2 pred_L2  P_ineff_L3 pred_L3  P_ineff_L3_7ep pred_L3_7ep
+    1 Counterclaim       0.014    Adeq       0.027    Adeq       0.065    Adeq           0.031        Adeq         0.084      Adeq       0.027    Adeq       0.713   Ineff           0.161        Adeq
+    2     Evidence       0.001     Eff       0.008     Eff       0.002     Eff           0.832       Ineff         0.028       Eff       0.540   Ineff       0.733   Ineff           0.924       Ineff
+    3     Position       0.010    Adeq       0.006    Adeq       0.019    Adeq           0.023        Adeq         0.029      Adeq       0.026    Adeq       0.007    Adeq           0.000        Adeq
+    4 Counterclaim       0.016    Adeq       0.170    Adeq       0.075    Adeq           0.041        Adeq         0.056      Adeq       0.165    Adeq       0.010    Adeq           0.000        Adeq
+    5     Position       0.013    Adeq       0.103    Adeq       0.163    Adeq           0.346        Adeq         0.078      Adeq       0.085    Adeq       0.549   Ineff           0.153        Adeq
+    6 Counterclaim       0.040    Adeq       0.035    Adeq       0.046    Adeq           0.015        Adeq         0.073      Adeq       0.040    Adeq       0.033    Adeq           0.001        Adeq
+    7     Position       0.046    Adeq       0.052    Adeq       0.139    Adeq           0.239        Adeq         0.101      Adeq       0.252    Adeq       0.123    Adeq           0.013        Adeq
+    8        Claim       0.017    Adeq       0.058    Adeq       0.217    Adeq           0.143        Adeq         0.117      Adeq       0.165    Adeq       0.295    Adeq           0.006        Adeq
+    9         Lead       0.043    Adeq       0.143    Adeq       0.188    Adeq           0.342        Adeq         0.100      Adeq       0.077    Adeq       0.127    Adeq           0.006        Adeq
+   10        Claim       0.011    Adeq       0.039    Adeq       0.083    Adeq           0.167        Adeq         0.132      Adeq       0.196    Adeq       0.011    Adeq           0.000        Adeq
+{
+  "locked_at": "2026-10-28T21:15:35.952813+00:00",
+  "test_csv": "/content/data/persuade_corpus_2.0_test.csv",
+  "test_sha256": "8b4cbbda471b313e5d11da10d4fc2659defa1a8f710639e98d011e1c7141d3a6",
+  "n_test": 93677,
+  "models": {
+    "L0": "/content/outputs/week11_person3/l0_best_model",
+    "L1": "/content/outputs/week11_person3/l1_best_model",
+    "PA": "/content/outputs/week11_person3/pa_best_model"
+  },
+  "cfg": {
+    "model_name": "microsoft/deberta-v3-base",
+    "max_length": 512,
+    "batch_size": 8,
+    "grad_accum": 4,
+    "lr": 2e-05,
+    "epochs": 3,
+    "warmup_ratio": 0.1,
+    "seed": 42,
+    "eval_batch_size": 64,
+    "n_bootstrap": 2000
+  },
+  "gpu": "NVIDIA A100-SXM4-40GB",
+  "quick": false
+}
+RAW [WindowsPath('data/persuade_raw/persuade_corpus_2.0_test.csv'), WindowsPath('data/persuade_raw/persuade_corpus_2.0_train.csv')]
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$env:PYTHONIOENCODING='"'utf-8'; @'
+from pathlib import Path
+import pandas as pd
+for d in sorted(Path('VIDEO_CA_NHAN').glob('Nguoi_[23]*')):
+ for n in ['01_SCRIPT_EN.md','02_SLIDE_SPEC.md','03_DEMO_RUNBOOK.md']:
+  print((d/n).read_text(encoding='utf-8'))
+for p in [Path('MLA_Final/Data/samples/_units_slim.csv.gz'),Path('MLA_Final/Results/predictions/test_predictions_rf_feature_set_b.csv'),Path('data/persuade_raw/persuade_corpus_2.0_test.csv')]:
+ print(p,pd.read_csv(p,nrows=1).columns.tolist())
+print(pd.read_csv('VAN_DAP_4_TIEU_CHI/trace_mau_that/outputs/tokens_per_level.csv').to_string(index=False))
+print('tables', [p.name for p in Path('MLA_Final/Results/tables').glob('*.csv')])
+'@ | python -" in C:\Users\Admin\Desktop\MLA
+ succeeded in 1463ms:
+# Script: Role 2 (DeBERTa, local context L0 vs L1, decision threshold)
+
+Target length about 7:30, about 1,050 spoken words. Lines starting with `>` are stage directions; do not read them aloud.
+
+---
+
+## [SLIDE 1] 0:00–0:10 — Title
+
+Hello, I'm [tự điền: name], student ID [tự điền: ID], from Group 06, class CLC02. In this video I explain my part of our project: the transformer model, the context experiment, and the decision threshold.
+
+## [SLIDE 2] 0:10–0:45 — The problem (shared with teammates)
+
+Teachers who mark argumentative essays want to know *which parts* of an essay do not work, not only an overall score. Our group used the PERSUADE 2.0 corpus: almost twenty-six thousand student essays, split by expert raters into about two hundred and thirty-eight thousand discourse units, such as claims, evidence and rebuttals. Each unit is labelled Ineffective, Adequate or Effective. Only four and a half percent are Ineffective, so a model that always says "Adequate" is eighty percent accurate and useless. That is why we report Macro-F1, which weights the three classes equally.
+
+## [SLIDE 3] 0:45–1:15 — My contribution
+
+My role was the DeBERTa side. In week nine I trained a single DeBERTa-v3 model and showed, on the same validation units, that it beats the Random Forest by 0.054 Macro-F1, so we dropped the older ensemble. In week ten I designed the controlled context experiment on the right: Level 0 gives the model only the unit; Level 1 adds the unit just before and just after it, and *nothing else changes*. In week eleven I scanned the decision threshold for the Ineffective class and ran the linear SVM baseline, on the test and on three held-out prompts.
+
+## [SLIDE 4] 1:15–2:45 — One real unit: what the model reads, and what it says
+
+> Point to the L0 box, then the L1 box, then the probability bars.
+
+Here is case 8 from our error analysis: validation row index 108,613, a Claim from an essay on "Cell phones at school". The expert label is Ineffective.
+
+At Level 0 the model reads only: the type, "Claim", a separator, and the sentence "Some kids will ask there parents to transfer school."
+
+At Level 1 the input is longer. Before the target, it reads the previous unit, the evidence saying students will hide their phones and skip school. After it, the next unit: "If you chose policy one you will make the student happy." The format is "Previous", "Target", "Next", separated by SEP tokens.
+
+DeBERTa's tokenizer cuts this text into sub-word tokens, at most 512, and the encoder turns it into one vector. A small classification layer turns that vector into three probabilities with a softmax.
+
+Here are the saved probabilities. Level 0 gives Ineffective 0.017. Level 1 raises it to 0.058, more than three times higher, but Adequate is still 0.94, so the prediction stays Adequate, and it is wrong.
+
+Why is the label Ineffective? Reading the essay, this claim is an unsupported prediction, and the neighbouring units do not give a reason for it either. So the local context did not supply what was missing.
+
+## [SLIDE 5] 2:45–3:30 — What the data shows: Level 1 versus Level 0, per class
+
+That is one unit. Across all units, this chart compares Level 1 minus Level 0, per class, with ninety-five percent bootstrap intervals by essay. The models scored on the test were trained by my teammate in week eleven, with the same recipe.
+
+On the official test, ninety-three thousand units, Level 1 is better on every class. Macro-F1 rises by 0.016, and the largest gain is on Ineffective F1, plus 0.029. On validation the direction is the same, but the intervals for Ineffective and Effective include zero.
+
+## [SLIDE 6] 3:30–4:15 — Where the gain comes from
+
+This table shows what context changes unit by unit, on the test. About fifteen percent of predictions change. 7,615 units become correct, but 6,401 become wrong, so it is not a free improvement. For gold Ineffective units, 519 are newly found and 335 are lost.
+
+By type, the gain is largest for Counterclaim, Rebuttal and Claim, the types whose quality is defined relative to a neighbouring unit. That is what we expected from local context.
+
+## [SLIDE 7] 4:15–4:20 — Demo transition
+
+Let me show this from the saved outputs.
+
+## [DEMO] 4:20–6:15 — Reproduce Table 2, then trace case 8 and move the threshold
+
+> Terminal in `MLA_Final/Code`, font 18–20pt.
+
+First, the group's reproduction script recomputes the paper's tables from the saved prediction files.
+
+> Run `python reproduce_results.py`. [CUT] the wait. Highlight TABLE 2.
+
+Table 2 is my comparison: Level 1 minus Level 0 on the same units, plus 0.0087 Macro-F1 on validation and plus 0.0159 on the test, both matching the paper.
+
+> Switch to the repo root. Run `python VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/demo/demo_nguoi2.py --theta 0.10`.
+
+Now my demo script. Part one rebuilds the exact Level 0 and Level 1 input strings for case 8 and prints the saved probabilities for both levels.
+
+> Highlight the threshold block.
+
+Part two asks a practical question. A teacher might say: "flag every unit whose probability of Ineffective is at least theta". With theta 0.10 on the locked Level 1 model, on validation, recall for Ineffective rises from 44.7 to 69.6 percent, but the number of flagged units goes from 1,761 to 4,633, and Macro-F1 falls from 0.581 to 0.535. The script also counts it: 330 extra correct flags, but 2,542 extra false alarms.
+
+> Highlight the case 8 line.
+
+And case 8, with probability 0.058, is still not flagged at 0.10.
+
+## [SLIDE 8] 6:15–7:10 — Interpreting one result: a threshold moves the operating point
+
+> Back to slides.
+
+This figure shows the whole trade-off. As theta goes down, recall goes up, precision goes down, and Macro-F1 falls steadily. Every extra Ineffective unit we catch costs about eight false alarms.
+
+So lowering the threshold does not make the classifier better. It only moves the operating point along the same curve. Whether a teacher wants to read about 4,600 flagged units to see seventy percent of the weak ones, or about 1,800 to see forty-five percent, is the user's decision. We did not choose it on the test.
+
+I should also correct my own first version here. In week eleven I first reported 76.5 percent recall at theta 0.10 and said case 8 would be caught. The correct value was 73.0 percent, and it only held for the first Level 1 run. For the locked model, case 8 is flagged only if theta is 0.058 or lower.
+
+## [SLIDE 9] 7:10–7:35 — Summary and evidence
+
+To sum up: Level 1 helps a little and consistently, about 0.016 Macro-F1 on the test, mostly on relational types. But my first run gave only plus 0.002 on validation, so the gain is about the same size as run-to-run variation, and I call it "small", not "proven". The threshold is a user choice, not a model improvement. My files are listed here. Thank you.
+
+# Slide spec: Người 2 (DeBERTa, ngữ cảnh L0/L1, ngưỡng, SVM)
+
+Role footer: `Group 06 · CLC02 · Role 2: DeBERTa, context, threshold`
+
+## Slide 1 | title
+title: Predicting the Effectiveness of Argumentative Units
+subtitle: Individual video · Role 2: DeBERTa, local context and the decision threshold
+bullets:
+- [tự điền: Full name] · [tự điền: Student ID]
+- Group 06 · CLC02 · Machine Learning Applications · November 2026
+
+## Slide 2 | bullets_image
+title: The problem: which parts of an essay don't work?
+bullets:
+- PERSUADE 2.0: 25,996 essays, 237,966 discourse units
+- 7 types: Lead, Position, Claim, Counterclaim, Rebuttal, Evidence, Concluding
+- Label per unit: Ineffective / Adequate / Effective
+- Only 4.5% Ineffective, so we report Macro-F1
+- Split by essay; official test (93,677 units) scored once
+image: ../_chung/visuals/intro_label_mix.png
+caption: Label mix per split (essay-level split, seed 42)
+source: Final report §3.4–3.6; table E1_split_label_distribution.csv
+
+## Slide 3 | bullets_image
+title: My contribution
+bullets:
+- Week 9: single DeBERTa-v3 vs Random Forest, same units: +0.054 [0.043, 0.065]
+- Week 10: controlled context test, L0 (unit) vs L1 (± 1 unit), all else fixed
+- Week 11: threshold scan for the Ineffective flag; case 8
+- Week 11: linear SVM on test (0.482) and on 3 held-out prompts
+image: visuals/fig04_context_levels.png
+caption: Context levels: L0 and L1 are the planned comparison
+source: Final report §4.3, §6.1, Table 6.5, Table 6.6
+
+## Slide 4 | image
+title: One real unit (case 8): what DeBERTa reads, what it says
+image: visuals/v1_case8_L0_vs_L1.png
+caption: Validation row_idx 108,613 · Claim · "Cell phones at school" · gold Ineffective
+source: val_predictions_L0.csv, val_predictions_L1.csv (locked week-11 models); Final report Table 7.4–7.5
+
+## Slide 5 | bullets_image
+title: What the data shows: L1 − L0 on the same units
+bullets:
+- Test (93,677 units): Macro-F1 +0.0159 [+0.0115, +0.0205]
+- Largest gain: Ineffective F1 +0.0292 [+0.0185, +0.0408]
+- Validation: +0.0087 [+0.0015, +0.0161]; Ineff & Eff CIs include 0
+- Same training data, recipe and seed; only the input differs
+image: visuals/fig14_L1_minus_L0_per_class.png
+caption: L1 minus L0 per class, 95% essay-bootstrap CI (2,000 resamples)
+source: Final report Table 6.2; R4a_L1_vs_L0_same_units_deltas.csv
+
+## Slide 6 | table
+title: Where the gain comes from (official test)
+table:
+| Paired outcome, L0 → L1 | Units |
+|---|---:|
+| Prediction changed | 14,224 (15.2%) |
+| Wrong → correct | 7,615 |
+| Correct → wrong | 6,401 |
+| Gold Ineffective newly found / lost | 519 / 335 |
+| Macro-F1 gain: Counterclaim / Rebuttal / Claim | +0.037 / +0.028 / +0.028 |
+callout: Gains concentrate on relational types, whose quality is defined by a neighbouring unit
+source: Final report Table 6.3 (R4b) and Table 6.4 (R4a)
+
+## Slide 7 | demo
+title: Demo: saved outputs of the final project
+bullets:
+- python reproduce_results.py: TABLE 2 (L1 − L0)
+- demo_nguoi2.py ①: rebuild the L0 / L1 input of case 8 + saved probabilities
+- demo_nguoi2.py ②: flag if P(Ineffective) ≥ θ, θ = 0.10
+- demo_nguoi2.py ③: is case 8 flagged?
+
+## Slide 8 | image
+title: Interpreting one result: a threshold moves the operating point
+image: visuals/fig22_threshold_tradeoff.png
+caption: Locked L1, validation: recall, precision and Macro-F1 as θ changes (dotted: argmax)
+callout: θ = 0.10: recall 44.7% → 69.6%, Macro-F1 0.581 → 0.535, about 8 false alarms per extra catch
+source: Final report Table 6.8, Fig. 6.8
+
+## Slide 9 | bullets
+title: Summary and evidence
+bullets:
+- L1 adds a small, consistent gain: +0.016 test Macro-F1, mostly relational types
+- First L1 run: only +0.002 on validation, so the gain is comparable to run-to-run variation
+- Lowering θ trades precision for recall; the choice belongs to the teacher
+- Corrected: recall at θ = 0.10 is 73.0% (first run), not 76.5%; case 8 not flagged by the locked model
+- Files: person2_output/, week10_full_person2/, Person2Khoa/
+callout: Limitation: one seed per configuration; differences below about 0.005–0.01 are not interpretable
+
+# Demo runbook: Người 2 (khoảng 1 phút 55 giây sau khi cắt)
+
+## Chuẩn bị
+
+- Python 3.10+ có `pandas` và `scikit-learn`.
+- **Tuỳ chọn:** CSV gốc `data/persuade_raw/persuade_corpus_2.0_train.csv`.
+  - Có CSV thì demo in nguyên văn đơn vị trước, đích và sau.
+  - Không có CSV thì script in câu đích lấy từ bảng `D7_raw_examples_traced.csv`, báo rõ là thiếu văn bản lân cận, rồi vẫn chạy phần ②③ bình thường.
+- 2 tab terminal, font 18–20pt:
+  - Tab A ở `MLA_Final/Code`;
+  - Tab B ở thư mục gốc repo.
+
+## Các bước quay
+
+| # | Ở đâu | Lệnh / thao tác | Nói gì | Trỏ vào |
+|---|---|---|---|---|
+| 1 | Tab A | `python reproduce_results.py` | "First, the group's reproduction script…" | TABLE 2, dòng Macro-F1 delta |
+| 2 | Tab B | `python VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/demo/demo_nguoi2.py --theta 0.10` | "Now my demo script…" | Khối ① (chuỗi L0, chuỗi L1, xác suất) |
+| 3 | Tab B | — | "Part two asks a practical question…" | Khối ②: argmax so với θ |
+| 4 | Tab B | — | "And case 8…" | Khối ③ |
+| (tuỳ chọn) | Tab B | chạy lại với `--theta 0.20` | "With 0.20 the trade-off is milder…" | Recall 60,0%, Macro-F1 0,558 |
+
+`[CUT]`: đọc CSV gốc mất 20–40 giây, cắt đoạn đó; hoặc thêm `--no-raw`.
+
+## Output mong đợi (cập nhật sau khi build)
+
+```
+① CASE 8  validation row_idx 108613 | Claim | Cell phones at school | gold Ineffective
+   L0 input: Claim [SEP] Some kids will ask there parents to transfer school
+   L1 input: Claim [SEP] Previous: They will hide them from the teachers ... [SEP] Target: Some kids will ask there parents to transfer school [SEP] Next: If you chose policy one you will make the student happy.
+   L0 (locked)  P(Ineff/Adeq/Eff) = 0.017 / 0.962 / 0.021 -> Adequate
+   L1 (locked)  P(Ineff/Adeq/Eff) = 0.058 / 0.937 / 0.005 -> Adequate
+
+② FLAG IF P(Ineffective) >= θ   (locked L1, validation, 29,102 units, 1,328 gold Ineffective)
+   rule      flagged   recall   precision   Macro-F1
+   argmax      1,761    44.7%      33.7%      0.581
+   θ=0.10      4,633    69.6%      19.9%      0.535
+   extra correct flags: 330 | extra false alarms: 2,542  (≈ 7.7 per catch)
+
+③ case 8: P(Ineffective) = 0.058 < θ = 0.10 -> not flagged
+```
+
+## Mở thêm nếu cần
+
+- `MLA_Final/Code/notebooks/05_threshold_tuning_and_case8.ipynb`: notebook gốc, đã có output.
+- `MLA_Final/Results/tables/R4a_L1_vs_L0_same_units_deltas.csv`.
+
+# Script: Role 3 (official test governance, prompt transfer, context ladder)
+
+Target length about 7:30, about 1,050 spoken words. Lines starting with `>` are stage directions; do not read them aloud.
+
+---
+
+## [SLIDE 1] 0:00–0:10 — Title
+
+Hello, I'm [tự điền: name], student ID [tự điền: ID], from Group 06, class CLC02. In this video I explain my part of our project: how we scored the official test, how the model transfers to unseen prompts, and what wider context does.
+
+## [SLIDE 2] 0:10–0:45 — The problem (shared with teammates)
+
+Teachers who mark argumentative essays want to know *which parts* of an essay do not work, not only an overall score. Our group used the PERSUADE 2.0 corpus: almost twenty-six thousand student essays, split by expert raters into about two hundred and thirty-eight thousand discourse units, such as claims, evidence and rebuttals. Each unit is labelled Ineffective, Adequate or Effective. Only four and a half percent are Ineffective, so a model that always says "Adequate" is eighty percent accurate and useless. That is why we report Macro-F1, which weights the three classes equally.
+
+## [SLIDE 3] 0:45–1:15 — My contribution
+
+In week nine I built the data pipeline and the essay-level split. In weeks ten and eleven my role was the test and the generalisation checks. I trained the final DeBERTa models, Level 0, Level 1 and Prompt-Aware, and scored the official test exactly once, behind a lock file, as this diagram shows. Then I ran a 31-item review of our report and code, re-ran the leave-one-prompt-out experiment, and built a context ladder that goes beyond Level 1, up to the whole essay.
+
+## [SLIDE 4] 1:15–2:45 — One real unit, through the context ladder
+
+> Point to the input column first, then to the bars.
+
+This is case 2, one of the ten high-confidence failures our group selected before training any context model. Validation row index 10,303, an Evidence unit from a "Car-free cities" essay with holistic score 2. The expert label is Ineffective.
+
+The unit is 244 words long. It quotes paragraph 36 of the source text accurately, and then it drifts into reasoning about learner's permits and driving tests, which does not support the writer's point. So the weakness is inside the unit, but you only see it if you know what the paragraph is supposed to support.
+
+On the left is what the model reads at each level. Level 0 is the unit alone. Level 1 adds the previous unit, the Position "I don't buy it", and there is no next unit. Paragraph gives the whole paragraph. Level 2 adds a passage of the source text. Level 3 gives the whole essay, 388 words.
+
+Each input goes through the same DeBERTa-v3 recipe, and the bars show the saved probability of Ineffective. Level 0: 0.001. Level 1: 0.008, still predicted *Effective*. With the paragraph it jumps to 0.83. With the source passage, 0.54. With the whole essay, 0.73 after three epochs and 0.92 after seven. All four wider inputs predict Ineffective, which is correct.
+
+## [SLIDE 5] 2:45–3:30 — What the data shows: no free lunch from wider context
+
+One case is an illustration, not evidence. This chart is the whole validation set. With the normal argmax rule, no input beyond Level 1 is clearly better on Macro-F1. The wider inputs raise Ineffective recall to between 54 and 59 percent, but they flag more units and lose precision. Paragraph is worse than Level 1, minus 0.012.
+
+And there is a check for case 2: if I lower Level 1's threshold until it flags as many units as the wider models, it still flips none of the ten cases. So the wider inputs carry real information, but the aggregate gain is unclear. After the same calibration correction for every model, the whole-essay model is plus 0.025, but that is post-hoc, on validation, one run.
+
+## [SLIDE 6] 3:30–4:15 — Prompt transfer: leave-one-prompt-out
+
+The second question is generalisation. In leave-one-prompt-out, a prompt is removed from training and the model is scored on that prompt. I compared it with the in-domain model on the *same* validation essays.
+
+An unseen prompt costs Macro-F1: minus 0.092 on "A Cowboy Who Rode the Waves", minus 0.048 on "Distance learning", and minus 0.025 on "Summer projects", where the interval includes zero.
+
+## [SLIDE 7] 4:15–4:20 — Demo transition
+
+Let me check all of this from the saved outputs.
+
+## [DEMO] 4:20–6:15 — Lock, recompute, trace
+
+> Terminal in `MLA_Final/Code`, font 18–20pt.
+
+First, the group's reproduction script.
+
+> Run `python reproduce_results.py`. [CUT] the wait. Highlight the Test rows of TABLE 1, then TABLE 3.
+
+These are the official test rows, Level 1 locked at 0.577, and here is Table 3, the leave-one-prompt-out gaps. All match the paper.
+
+> Switch to the repo root. Run `python VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py`. [CUT] the hashing wait.
+
+My demo script checks the test governance. Part one hashes the official test file and compares it with the hash in the lock file, written on 28 October before scoring. They match, so the file has not changed. It does this without reading any labels. Part two recomputes test Macro-F1 for Level 0, Level 1 and Prompt-Aware from the saved per-unit predictions, and they equal the paper's table.
+
+> Highlight part three.
+
+Part three prints case 2 across the ladder, the numbers from my slide.
+
+> Switch to the browser: `VAN_DAP_4_TIEU_CHI/trace_mau_that/TRACE_MAU_THAT_PIPELINE.html`, zoom 150%, scroll to the case 2 section.
+
+And this is my trace notebook. It follows the same unit from the raw CSV row through the input text at each level, the token count, and the saved probabilities. The probabilities are saved outputs, because we no longer have the checkpoints.
+
+## [SLIDE 8] 6:15–7:10 — Interpreting one error: the first LOPO run leaked
+
+> Back to slides.
+
+I want to interpret one error, because it was mine to find and fix. Our week-ten LOPO run picked the best epoch *using the held-out prompt itself*. That is test information leaking into model selection, and it also ran on a library version that we later found broke DeBERTa training.
+
+I re-ran it with a fixed three epochs and the working version. The numbers went down, which is the direction you expect when a leak is removed: on "Distance learning", the old run showed no loss at all, plus 0.004, and the corrected run shows minus 0.048.
+
+The remaining limitation: three prompts and one run per fold. So the link between source-based prompts and larger losses is an interpretation, not a tested cause.
+
+## [SLIDE 9] 7:10–7:35 — Summary and evidence
+
+To sum up: the official test was scored once, under a lock, and every number can be recomputed from saved predictions. Unseen prompts cost DeBERTa between 0.025 and 0.092 Macro-F1. Wider context helps some single cases, but it is not yet a proven aggregate gain, and the next step would be a pre-registered test. My files are listed here. Thank you.
+
+# Slide spec: Người 3 (quản lý test, LOPO, thang ngữ cảnh)
+
+Role footer: `Group 06 · CLC02 · Role 3: Test governance, LOPO, context ladder`
+
+## Slide 1 | title
+title: Predicting the Effectiveness of Argumentative Units
+subtitle: Individual video · Role 3: official test, unseen prompts and wider context
+bullets:
+- [tự điền: Full name] · [tự điền: Student ID]
+- Group 06 · CLC02 · Machine Learning Applications · November 2026
+
+## Slide 2 | bullets_image
+title: The problem: which parts of an essay don't work?
+bullets:
+- PERSUADE 2.0: 25,996 essays, 237,966 discourse units
+- 7 types: Lead, Position, Claim, Counterclaim, Rebuttal, Evidence, Concluding
+- Label per unit: Ineffective / Adequate / Effective
+- Only 4.5% Ineffective, so we report Macro-F1
+- Split by essay; official test (93,677 units) scored once
+image: ../_chung/visuals/intro_label_mix.png
+caption: Label mix per split (essay-level split, seed 42)
+source: Final report §3.4–3.6; table E1_split_label_distribution.csv
+
+## Slide 3 | bullets_image
+title: My contribution (weeks 10–11)
+bullets:
+- Trained DeBERTa L0 / L1 / Prompt-Aware; scored the official test once (lock: 28 Oct)
+- Test: L0 0.561 · L1 (locked) 0.577 · PA 0.581 Macro-F1
+- 31-item review of report and code; re-ran LOPO with a fixed 3 epochs
+- Context ladder beyond L1: ±2 units, paragraph, source passage, whole essay
+- Week 9 (one line): data pipeline and essay-level split
+image: visuals/fig26_test_governance.png
+caption: Test governance: every choice on validation; test hashed, locked and scored once
+source: OFFICIAL_TEST_LOCK.json; Final report Table 6.5, Fig. 5.1
+
+## Slide 4 | image
+title: One real unit (case 2) through the context ladder
+image: visuals/v1_case2_ladder.png
+caption: Validation row_idx 10,303 · Evidence · "Car-free cities" · score 2 · gold Ineffective
+source: MLA_Final/Results/predictions/context_levels_10_cases.csv; trace notebook tokens_per_level.csv; Final report Table 7.5
+
+## Slide 5 | bullets_image
+title: What the data shows: wider context is not a free gain
+bullets:
+- Argmax: no input beyond L1 is clearly better (validation, 29,102 units)
+- Paragraph: −0.012 [−0.020, −0.005] vs L1
+- Wider inputs: Ineffective recall 54–59%, but lower precision
+- L1 flagging as many units still flips 0 of 10 cases
+- After equal calibration: whole essay +0.025 [0.016, 0.035], post-hoc, 1 run
+image: visuals/fig19_context_ladder_validation.png
+caption: Macro-F1 difference from L1: (a) argmax, (b) same class-offset correction for all
+source: Final report Table 6.10, Fig. 6.9, §7.3
+
+## Slide 6 | table
+title: Prompt transfer: leave-one-prompt-out vs in-domain (same essays)
+table:
+| Held-out prompt | Units / essays | In-domain | LOPO | Gap [95% CI] |
+|---|---|---:|---:|---|
+| A Cowboy Who Rode the Waves | 1,030 / 134 | 0.476 | 0.384 | −0.092 [−0.132, −0.049] |
+| Summer projects | 2,074 / 177 | 0.508 | 0.483 | −0.025 [−0.052, +0.011] |
+| Distance learning | 3,533 / 283 | 0.576 | 0.528 | −0.048 [−0.078, −0.019] |
+callout: DeBERTa L0, fixed 3 epochs; gap uses 2,000 essay-bootstrap resamples
+source: Final report Table 6.7; R5_lopo_vs_indomain_per_class.csv
+
+## Slide 7 | demo
+title: Demo: saved outputs of the final project
+bullets:
+- python reproduce_results.py: TABLE 1 (test) and TABLE 3 (LOPO)
+- demo_nguoi3.py ①: SHA-256 of test file = lock file?
+- demo_nguoi3.py ②: recompute test Macro-F1 from saved predictions
+- demo_nguoi3.py ③: case 2 across the ladder
+- Trace notebook (HTML): raw row → input → tokens → probability
+
+## Slide 8 | table
+title: Interpreting one error: the first LOPO run leaked
+table:
+| Held-out prompt (all units) | Week 10 run | Re-run (31 Oct) |
+|---|---:|---:|
+| A Cowboy Who Rode the Waves | 0.408 | 0.402 |
+| Summer projects | 0.464 | 0.438 |
+| Distance learning | 0.574 | 0.538 |
+| Distance: gap vs in-domain | +0.004 | −0.048 |
+callout: Week 10 chose the epoch on the held-out prompt (leak) and used a broken library version; re-run: fixed 3 epochs
+source: RA_SOAT_TUAN11_SO_VOI_NHAN_XET_TUAN10.md B16, B27; week11_lopo_rerun/; R5
+
+## Slide 9 | bullets
+title: Summary and evidence
+bullets:
+- Official test scored once, hash-locked; all numbers recomputable from saved predictions
+- Unseen prompts cost DeBERTa 0.025–0.092 Macro-F1 (3 prompts, 1 run each)
+- Wider context helps single cases; aggregate gain is post-hoc and unconfirmed
+- Files: Week11_Person3_DeBERTa_OfficialTest/, week11_lopo_rerun/, week11_context_levels/
+callout: Limitation: one seed per configuration; runs differ by up to ~0.004, so PA − L1 cannot be separated
+
+# Demo runbook: Người 3 (khoảng 1 phút 55 giây sau khi cắt)
+
+## Chuẩn bị
+
+- Python 3.10+ có `pandas` và `scikit-learn`.
+- **Nên có** `data/persuade_raw/persuade_corpus_2.0_test.csv` (382 MB) để bước ① băm file. Không có thì script bỏ qua bước ① và in rõ lý do.
+- 2 tab terminal, font 18–20pt:
+  - Tab A ở `MLA_Final/Code`;
+  - Tab B ở thư mục gốc repo.
+- Trình duyệt mở sẵn `VAN_DAP_4_TIEU_CHI/trace_mau_that/TRACE_MAU_THAT_PIPELINE.html`, zoom 150%, cuộn tới phần "Ca 2". File này chỉ có trên máy bạn, vì thư mục đó nằm trong `.gitignore`.
+
+## Các bước quay
+
+| # | Ở đâu | Lệnh / thao tác | Nói gì | Trỏ vào |
+|---|---|---|---|---|
+| 1 | Tab A | `python reproduce_results.py` | "First, the group's reproduction script." | Các dòng `Test` của TABLE 1 (L1 0.577); TABLE 3 |
+| 2 | Tab B | `python VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py` | "My demo script checks the test governance…" | Khối ①: `sha256 matches lock: True` |
+| 3 | Tab B | — | "Part two recomputes…" | Khối ②: 3 dòng L0/L1/PA, cột `paper` |
+| 4 | Tab B | — | "Part three prints case 2…" | Khối ③ |
+| 5 | Trình duyệt | Cuộn phần Ca 2: đầu vào từng mức → bảng token → bảng xác suất | "And this is my trace notebook…" | Bảng token (cả đoạn 747 token, bị cắt ở 512) và bảng P(Ineffective) |
+
+`[CUT]`: băm 382 MB mất vài giây, cắt đoạn chờ.
+
+## Output mong đợi (cập nhật sau khi build)
+
+```
+① TEST LOCK   locked_at 2026-10-28T21:15:35 UTC | n_test 93,677
+   sha256 (lock) 8b4cbbda471b313e…
+   sha256 (now)  8b4cbbda471b313e…  -> matches lock: True   (labels not read)
+
+② TEST MACRO-F1 RECOMPUTED FROM SAVED PREDICTIONS (93,677 units)
+   model                 recomputed   paper (R2)
+   DeBERTa L0               0.5613      0.5613
+   DeBERTa L1 (locked)      0.5772      0.5772
+   DeBERTa Prompt-Aware     0.5808      0.5808
+
+③ CASE 2  validation row_idx 10303 | Evidence | Car-free cities | gold Ineffective
+   level          P(Ineffective)   prediction
+   L0                  0.001       Effective
+   L1 (locked)         0.008       Effective
+   Prompt-Aware        0.002       Effective
+   L1 ±2               0.028       Effective
+   Paragraph           0.832       Ineffective
+   L2 source           0.540       Ineffective
+   L3 whole, 3 ep      0.733       Ineffective
+   L3 whole, 7 ep      0.924       Ineffective
+
+④ LOPO GAP (same validation essays): Cowboy −0.092 | Summer −0.025 | Distance −0.048
+```
+
+## Nếu thầy hỏi thêm
+
+- `Week11_Person3_DeBERTa_OfficialTest/outputs/week11_person3/run_log.txt` và `OFFICIAL_TEST_LOCK.json`.
+- `outputs/lopo_deberta_rerun_gap_same_units.csv`, `outputs/context_levels_validation_summary.csv`.
+- `RA_SOAT_TUAN11_SO_VOI_NHAN_XET_TUAN10.md` mục B16, B27.
+
+MLA_Final\Data\samples\_units_slim.csv.gz ['split', 'row_idx', 'essay_id_comp', 'prompt_name', 'task', 'discourse_type', 'label', 'unit_words', 'essay_word_count', 'holistic_essay_score', 'length_q', 'ell_status']
+MLA_Final\Results\predictions\test_predictions_rf_feature_set_b.csv ['row_idx', 'essay_id_comp', 'discourse_type', 'true_label', 'pred_label', 'pred_proba_0', 'pred_proba_1', 'pred_proba_2']
+data\persuade_raw\persuade_corpus_2.0_test.csv ['essay_id', 'essay_id_comp', 'competition_set', 'full_text', 'holistic_essay_score', 'discourse_id', 'discourse_start', 'discourse_end', 'discourse_text', 'discourse_type', 'discourse_type_num', 'discourse_effectiveness', 'hierarchical_id', 'hierarchical_text', 'hierarchical_label', 'provider', 'task', 'source_text', 'prompt_name', 'assignment', 'gender', 'grade_level', 'ell_status', 'race_ethnicity', 'economically_disadvantaged', 'student_disability_status', 'essay_word_count']
+  Ca                       Mức  Ký tự  Token  % của 512      Bị cắt?
+Ca 8             L0 chỉ đơn vị     63     13        2.5        không
+Ca 8              L1 ±1 đơn vị    425     95       18.6        không
+Ca 8               L1 + tên đề    461    102       19.9        không
+Ca 8                     L1 ±2    806    175       34.2        không
+Ca 8                   Cả đoạn    262     58       11.3        không
+Ca 8                  L2 nguồn    425     95       18.6        không
+Ca 2             L0 chỉ đơn vị   1403    294       57.4        không
+Ca 2              L1 ±1 đơn vị   1556    329       64.3        không
+Ca 2               L1 + tên đề   1586    336       65.6        không
+Ca 2                     L1 ±2   1851    388       75.8        không
+Ca 2                   Cả đoạn   3630    747      145.9           CÓ
+Ca 2                  L2 nguồn   1704    360       70.3        không
+Ca 8 L3 cả bài (3 ep) (cả bài)   1083    225       43.9 cửa sổ 1.536
+Ca 2 L3 cả bài (3 ep) (cả bài)   2297    456       89.1 cửa sổ 1.536
+tables ['context_ablation_case_study_recheck.csv', 'context_levels_10_cases.csv', 'D2_record_filtering.csv', 'D4_identifier_integrity.csv', 'D5_prediction_file_alignment.csv', 'D7_raw_examples_traced.csv', 'D8_duplicates.csv', 'D9_missingness.csv', 'E1_split_label_distribution.csv', 'E2_type_label_mix_trainval.csv', 'E3_prompt_label_mix_trainval.csv', 'E4_unit_length_by_label.csv', 'E5_holistic_score_vs_essay_length.csv', 'E6a_label_mix_by_holistic_score.csv', 'E6b_label_mix_by_length_quartile.csv', 'E6c_label_mix_score_x_length.csv', 'E6d_association_with_label.csv', 'E7_ell_status_by_split_essays.csv', 'E8_units_per_essay.csv', 'E9_holistic_score_units_by_split.csv', 'L1_lr_validation.csv', 'L2_lr_top_features.csv', 'L3_lr_case8_contributions.csv', 'R1_validation_per_class.csv', 'R2_test_per_class.csv', 'R3_confusion_matrices.csv', 'R4a_L1_vs_L0_same_units_deltas.csv', 'R4b_L1_vs_L0_paired_outcomes.csv', 'R4c_L0_to_L1_prediction_transition_test.csv', 'R4c_L0_to_L1_prediction_transition_validation.csv', 'R5_lopo_vs_indomain_per_class.csv', 'R6_test_by_discourse_type.csv', 'R7_L1_errors_by_length_quartile.csv', 'R8_ten_cases.csv', 'R9_ell_subgroups.csv', 'split_essays.csv']
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+Các bảng nguồn đã có đủ dự đoán và token counts. Tôi sẽ dùng chung phần đọc dữ liệu cho hình và demo, kiểm tra join theo `row_idx`, và giữ fallback khi thiếu CSV gốc. Các số cấu hình mô hình sẽ giữ theo đặc tả; số kết quả đều đọc hoặc tính từ file.
+
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$env:PYTHONIOENCODING='"'utf-8'; @'
+import pandas as pd
+u=pd.read_csv('MLA_Final/Data/samples/_units_slim.csv.gz');print(u.length_q.unique());print(u[(u.split=='test')&(u.row_idx==47059)].to_string(index=False))
+'@ | python -" in C:\Users\Admin\Desktop\MLA
+ succeeded in 2559ms:
+<StringArray>
+['Q2 (316-422)', 'Q1 (<=315)', 'Q4 (>=567)', 'Q3 (423-566)']
+Length: 4, dtype: str
+split  row_idx essay_id_comp                 prompt_name           task discourse_type  label  unit_words  essay_word_count  holistic_essay_score   length_q ell_status
+ test    47059  A0D4D5DD8D7F Facial action coding system Text dependent       Position      0          14               225                     1 Q1 (<=315)        Yes
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "git status --short; rg --files -g AGENTS.md -g '"'!node_modules'"' -g '"'!data'"' ." in C:\Users\Admin\Desktop\MLA
+ exited 1 in 1333ms:
+warning: unable to access 'C:\Users\Admin/.config/git/ignore': Permission denied
+warning: unable to access 'C:\Users\Admin/.config/git/ignore': Permission denied
+?? VIDEO_CA_NHAN/
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "@'
+from pathlib import Path
+p=Path('VIDEO_CA_NHAN/build/make_visuals.py')
+p.write_text('''\"\"\"Saved-output visuals and shared readers for the three print-only demos.\"\"\"
+from pathlib import Path
+from functools import lru_cache
+import json
+import shutil
+import sys
+import textwrap
+
+import numpy as np
+import pandas as pd
+
+sys.stdout.reconfigure(encoding=\"utf-8\")
+ROOT = Path(__file__).resolve().parents[2]
+VIDEO = ROOT / \"VIDEO_CA_NHAN\"
+RESULTS = ROOT / \"MLA_Final/Results\"
+LABELS = [\"Ineffective\", \"Adequate\", \"Effective\"]
+COLORS = [\"#DC2626\", \"#94A3B8\", \"#2563EB\"]
+PEOPLE = [\"Nguoi_1_Data_Classical_Length\", \"Nguoi_2_DeBERTa_Context_Threshold\",
+          \"Nguoi_3_TestGovernance_LOPO_Ladder\"]
+LEVELS = [(\"L0\", \"L0\"), (\"L1\", \"L1 (locked)\"), (\"PA\", \"Prompt-Aware\"),
+          (\"L1w2\", \"L1 ±2\"), (\"L1para\", \"Paragraph\"), (\"L2\", \"L2 source\"),
+          (\"L3\", \"L3 whole, 3 ep\"), (\"L3_7ep\", \"L3 whole, 7 ep\")]
+
+@lru_cache
+def table(name):
+    return pd.read_csv(RESULTS / \"tables\" / name)
+
+@lru_cache
+def predictions(split, model):
+    df = pd.read_csv(RESULTS / \"predictions\" / f\"{split}_predictions_{model}.csv\")
+    assert df.row_idx.is_unique, \"Prediction join key is not unique\"
+    probs = df[[f\"pred_proba_{i}\" for i in range(3)]].to_numpy()
+    assert np.isfinite(probs).all() and np.allclose(probs.sum(axis=1), 1, atol=.002)
+    return df
+
+@lru_cache
+def units():
+    return pd.read_csv(ROOT / \"MLA_Final/Data/samples/_units_slim.csv.gz\")
+
+def lock():
+    return json.loads((ROOT / \"MLA_Final/Code/configs/OFFICIAL_TEST_LOCK.json\").read_text())
+
+def raw_path(split):
+    return ROOT / f\"data/persuade_raw/persuade_corpus_2.0_{split}.csv\"
+
+@lru_cache
+def raw_units(split, full=False):
+    # Same string loading, filtering, stripping and reset-index rule as common.py.
+    cols = [\"discourse_id\", \"discourse_start\", \"discourse_text\", \"discourse_type\",
+            \"discourse_effectiveness\", \"prompt_name\", \"essay_id_comp\", \"essay_word_count\"]
+    if full:
+        cols.append(\"full_text\")
+    df = pd.read_csv(raw_path(split), usecols=cols, dtype=str, low_memory=False,
+                     keep_default_na=True)
+    df[\"raw_record\"] = np.arange(len(df))
+    df = df.dropna(subset=[\"discourse_effectiveness\", \"discourse_text\"]).copy()
+    df[\"discourse_text\"] = df.discourse_text.str.strip()
+    df[\"prompt_name\"] = df.prompt_name.str.strip().str.strip('\"')
+    df = df[df.discourse_text.str.len() > 0].reset_index(drop=True)
+    df[\"row_idx\"] = np.arange(len(df))
+    return df
+
+def raw_optional(split, no_raw=False, full=False):
+    if no_raw or not raw_path(split).exists():
+        return None
+    try:
+        return raw_units(split, full)
+    except (OSError, ValueError) as exc:
+        print(f\"Note: optional raw {split} CSV unavailable ({type(exc).__name__}); saved tables used.\")
+        return None
+
+def example(split, row_idx, raw=None):
+    saved = units().query(\"split == @split and row_idx == @row_idx\").iloc[0].to_dict()
+    saved[\"text\"] = None
+    saved[\"raw_record\"] = None
+    if raw is not None:
+        r = raw.loc[row_idx]
+        saved.update(text=r.discourse_text, raw_record=int(r.raw_record))
+        if \"full_text\" in r:
+            saved[\"unit_chars\"] = len(r.discourse_text)
+            saved[\"relative_start\"] = float(r.discourse_start) / len(r.full_text)
+    else:
+        d7 = table(\"D7_raw_examples_traced.csv\")
+        match = d7[d7.row_idx == row_idx]
+        if not match.empty:
+            saved[\"text\"] = match.iloc[0].text_first_60_chars
+    return saved
+
+def inputs_case8(raw=None):
+    r8 = table(\"R8_ten_cases.csv\").query(\"case == 8\").iloc[0]
+    e = example(\"validation\", int(r8.row_idx), raw)
+    base = f\"{e['discourse_type']} [SEP] \"
+    if raw is None:
+        return e, base + e[\"text\"], base + \"Target: \" + e[\"text\"] + \" (neighbour text needs raw CSV)\"
+    essay = raw[raw.essay_id_comp == e[\"essay_id_comp\"]].sort_values(\"discourse_start\", key=lambda s: pd.to_numeric(s))
+    pos = essay.row_idx.tolist().index(int(r8.row_idx))
+    prev = essay.iloc[pos-1].discourse_text if pos else \"\"
+    nxt = essay.iloc[pos+1].discourse_text if pos+1 < len(essay) else \"\"
+    return e, base + e[\"text\"], base + f\"Previous: {prev} [SEP] Target: {e['text']} [SEP] Next: {nxt}\"
+
+def probability_row(split, model, row_idx):
+    return predictions(split, model).set_index(\"row_idx\").loc[row_idx]
+
+def probability_text(row):
+    return \" / \".join(f\"{row[f'pred_proba_{i}']:.3f}\" for i in range(3))
+
+def recalls():
+    meta = units().query(\"split == 'test'\")[[\"row_idx\", \"label\", \"length_q\"]]
+    joined = []
+    for model in [\"rf_feature_set_b\", \"L1\"]:
+        m = meta.merge(predictions(\"test\", model), on=\"row_idx\", validate=\"one_to_one\")
+        assert len(m) == len(meta) and (m.label == m.true_label).all()
+        joined.append(m)
+    out = []
+    for q in sorted(meta.length_q.unique()):
+        groups = [m[(m.length_q == q) & (m.label == 0)] for m in joined]
+        n = len(groups[0])
+        catches = [int((g.pred_label == 0).sum()) for g in groups]
+        out.append((q, n, *[c/n for c in catches], catches[0]))
+    return out
+
+def ladder():
+    return pd.read_csv(RESULTS / \"predictions/context_levels_10_cases.csv\").query(\"case == 2\").iloc[0]
+
+def tokens(case):
+    p = ROOT / \"VAN_DAP_4_TIEU_CHI/trace_mau_that/outputs/tokens_per_level.csv\"
+    if not p.exists():
+        return []
+    try:
+        df = pd.read_csv(p)
+        return df[df.Ca == f\"Ca {case}\"][\"Token\"].astype(int).tolist()
+    except (OSError, ValueError, KeyError):
+        print(\"Note: optional token table unavailable; token annotations omitted.\")
+        return []
+
+def print_wrapped(s):
+    print(textwrap.fill(s, width=98, subsequent_indent=\"   \", replace_whitespace=False))
+
+def main():
+    import matplotlib
+    matplotlib.use(\"Agg\")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import FancyBboxPatch
+    from PIL import Image
+    plt.rcParams.update({\"font.family\": \"sans-serif\", \"font.sans-serif\": [\"Calibri\", \"Arial\", \"DejaVu Sans\"],
+                         \"font.size\": 14, \"text.color\": \"#0F172A\", \"axes.labelcolor\": \"#0F172A\",
+                         \"xtick.color\": \"#0F172A\", \"ytick.color\": \"#0F172A\",
+                         \"figure.facecolor\": \"#F8FAFC\", \"axes.facecolor\": \"#F8FAFC\"})
+    outputs = []
+    def save(fig, who, name):
+        p = VIDEO / who / \"visuals\" / name
+        p.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(p, dpi=150)
+        plt.close(fig)
+        outputs.append(p)
+    copies = [
+        [\"fig18_rf_lopo_15_prompts.png\", \"fig09_essay_length_vs_holistic_score.png\", \"fig20_error_within_score_by_length.png\"],
+        [\"fig04_context_levels.png\", \"fig14_L1_minus_L0_per_class.png\", \"fig22_threshold_tradeoff.png\"],
+        [\"fig26_test_governance.png\", \"fig19_context_ladder_validation.png\", \"fig17_lopo_vs_indomain_same_units.png\", \"fig23_ten_cases_by_context_level.png\"]]
+    for who, names in zip(PEOPLE, copies):
+        dest = VIDEO / who / \"visuals\"
+        dest.mkdir(parents=True, exist_ok=True)
+        for name in names:
+            p = dest / name
+            shutil.copy(ROOT / \"final_report/figures\" / name, p)
+            outputs.append(p)
+
+    df = table(\"E1_split_label_distribution.csv\").set_index(\"split\").loc[[\"train\", \"validation\", \"test\"]]
+    fig, ax = plt.subplots(figsize=(7.2, 5.4))
+    y = np.arange(len(df)); left = np.zeros(len(df))
+    for label, color in zip(LABELS, COLORS):
+        values = df[f\"% {label}\"].to_numpy()
+        ax.barh(y, values, left=left, color=color, height=.48, label=label)
+        for j, value in enumerate(values):
+            if label == LABELS[0]:
+                ax.text(0, j-.32, f\"{value:.2f}%\", color=color, va=\"center\", fontsize=14)
+            else:
+                ax.text(left[j]+value/2, j, f\"{value:.2f}%\", ha=\"center\", va=\"center\", color=\"white\" if label == LABELS[2] else \"#0F172A\")
+        left += values
+    for j, n in enumerate(df.units):
+        ax.text(103, j, f\"{int(n):,}\", va=\"center\")
+    ax.set(yticks=y, yticklabels=df.index, xlim=(0, 125), ylim=(2.55, -.8))
+    ax.set_xticks([]); ax.spines[:].set_visible(False)
+    ax.legend(loc=\"lower center\", bbox_to_anchor=(.45, -.2), ncol=2, frameon=False)
+    fig.subplots_adjust(left=.23, right=.97, bottom=.25, top=.94)
+    save(fig, \"_chung\", \"intro_label_mix.png\")
+
+    test_raw = raw_optional(\"test\", full=True)
+    e = example(\"test\", 47059, test_raw)
+    rf = probability_row(\"test\", \"rf_feature_set_b\", e[\"row_idx\"])
+    l1 = probability_row(\"test\", \"L1\", e[\"row_idx\"])
+    fig, ax = plt.subplots(figsize=(12.8, 7.2)); ax.set_axis_off()
+    titles = [\"Raw CSV record\", \"Clean & encode\", \"Feature Set B\", \"Random Forest\"]
+    raw_note = f\"Record {e['raw_record']:,}\" if e['raw_record'] is not None else \"Raw CSV unavailable\"
+    text = e['text'] or \"Text unavailable in slim sample\"
+    bodies = [f\"{raw_note}\\\\n\\\\n{e['prompt_name']}\\\\n{e['discourse_type']}\\\\n\\\\n“{text}”\\\\n\\\\nRaw label: {LABELS[int(e['label'])]}\",
+              f\"Drop unlabelled / empty rows\\\\n\\\\nrow_idx {int(e['row_idx']):,}\\\\n\\\\n{LABELS[int(e['label'])]} → id {int(e['label'])}\\\\n\\\\nJoin key: row_idx\\\\n(never discourse_id)\",
+              f\"TF-IDF word 1–2-grams\\\\n(≤15,000)\\\\nOne-hot: {e['discourse_type']}\\\\n\\\\nUnit words: {int(e['unit_words']):,}\\\\nEssay words: {int(e['essay_word_count']):,}\\\\n{e['length_q']}\\\\nUnit/essay: {e['unit_words']/e['essay_word_count']:.3f}\",
+              \"200 trees\\\\nmax depth 35\"]
+    if 'unit_chars' in e:
+        bodies[2] += f\"\\\\nUnit chars: {e['unit_chars']:,}\\\\nRelative start: {e['relative_start']:.3f}\"
+    for i, (title, body) in enumerate(zip(titles, bodies)):
+        x = .012 + i*.251
+        ax.add_patch(FancyBboxPatch((x,.16), .226,.77, boxstyle=\"round,pad=0.008\", fc=\"white\", ec=\"#CBD5E1\"))
+        ax.text(x+.012,.89,title,fontsize=20,weight=\"bold\",va=\"top\")
+        wrapped = \"\\\\n\".join(textwrap.fill(line, 23) for line in body.splitlines())
+        ax.text(x+.012,.79,wrapped,fontsize=14,va=\"top\",linespacing=1.35)
+        if i < 3:
+            ax.annotate(\"\", xy=(x+.247,.53), xytext=(x+.229,.53), arrowprops={\"arrowstyle\":\"->\", \"color\":\"#64748B\", \"lw\":2})
+    bars = ax.inset_axes([.79,.34,.16,.27])
+    bars.barh(np.arange(3), [rf[f\"pred_proba_{i}\"] for i in range(3)], color=COLORS)
+    bars.set(yticks=np.arange(3), yticklabels=[\"Ineff\", \"Adeq\", \"Eff\"], xlim=(0, .76))
+    bars.invert_yaxis(); bars.set_xticks([]); bars.spines[:].set_visible(False)
+    for i in range(3):
+        v = rf[f\"pred_proba_{i}\"]; bars.text(v+.02,i,f\"{v:.3f}\",va=\"center\")
+    ax.text(.78,.27,f\"→ {LABELS[int(rf.pred_label)]} ✓\\\\n(gold {LABELS[int(e['label'])]})\",fontsize=14,color=\"#16A34A\")
+    ax.text(.5,.06,f\"Locked DeBERTa L1: P(Ineffective) = {l1.pred_proba_0:.3f}\",ha=\"center\",color=\"#64748B\",fontsize=16)
+    fig.subplots_adjust(left=.01,right=.99,bottom=.02,top=.98)
+    save(fig, PEOPLE[0], \"v1_example_trace_rf.png\")
+
+    rows = recalls(); fig, ax = plt.subplots(figsize=(12.8,7.2))
+    x = np.arange(len(rows))
+    for offset, col, label, color in [(-.19,2,\"Random Forest FS-B\",COLORS[1]),(.19,3,\"DeBERTa L1 (locked)\",COLORS[2])]:
+        vals = [r[col]*100 for r in rows]
+        bars = ax.bar(x+offset, vals, width=.36, label=label, color=color)
+        ax.bar_label(bars, labels=[f\"{v:.1f}%\" for v in vals], padding=5,fontsize=16)
+    ax.set(xticks=x, xticklabels=[r[0].replace(' (','\\\\n(')+f\"\\\\nn = {r[1]:,}\" for r in rows], ylim=(0,60),ylabel=\"Ineffective recall (%)\")
+    ax.spines[[\"top\",\"right\"]].set_visible(False); ax.legend(frameon=False,fontsize=16)
+    fig.subplots_adjust(left=.1,right=.97,bottom=.23,top=.95)
+    save(fig, PEOPLE[0], \"v2_rf_recall_by_length.png\")
+
+    train_raw = raw_optional(\"train\")
+    e, l0input, l1input = inputs_case8(train_raw)
+    fig = plt.figure(figsize=(12.8,7.2))
+    for bounds, heading, content in [([.035,.65,.54,.28],\"Level 0 input\",l0input),([.035,.12,.54,.48],\"Level 1 input\",l1input)]:
+        ax = fig.add_axes(bounds); ax.set_axis_off()
+        ax.add_patch(FancyBboxPatch((.005,.005),.98,.98,boxstyle=\"round,pad=0.005\",fc=\"white\",ec=\"#CBD5E1\"))
+        ax.text(.025,.94,heading,weight=\"bold\",fontsize=20,va=\"top\")
+        ax.text(.025,.73,textwrap.fill(content,60),fontsize=14,va=\"top\",linespacing=1.3)
+    for idx, model in enumerate([\"L0\",\"L1\"]):
+        ax = fig.add_axes([.69,.62-idx*.34,.26,.22])
+        row = probability_row(\"val\",model,e[\"row_idx\"])
+        vals = [row[f\"pred_proba_{i}\"] for i in range(3)]
+        ax.barh(np.arange(3), vals, color=COLORS); ax.invert_yaxis()
+        ax.set(yticks=np.arange(3),yticklabels=[\"Ineff\",\"Adeq\",\"Eff\"],xlim=(0,1.17))
+        ax.set_xticks([]); ax.spines[:].set_visible(False)
+        count = tokens(8)
+        ax.set_title(model + (f\" · {count[idx]:,} tokens\" if count else \"\"),fontsize=20,loc=\"left\")
+        for j,v in enumerate(vals): ax.text(v+.025,j,f\"{v:.3f}\",va=\"center\")
+    fig.text(.64,.12,f\"gold: {LABELS[int(e['label'])]}\\\\nboth predict {LABELS[int(row.pred_label)]} ✗\",color=COLORS[0],fontsize=16)
+    save(fig,PEOPLE[1],\"v1_case8_L0_vs_L1.png\")
+
+    r8 = table(\"R8_ten_cases.csv\").query(\"case == 2\").iloc[0]
+    e = example(\"validation\",int(r8.row_idx),train_raw)
+    caption = (e['text'] or r8.text_excerpt)[:110] + \"…\"
+    row = ladder(); counts = tokens(2); cfg = lock()['cfg']
+    desc = [\"unit only\", \"±1 unit; prev: Position; next: none\", \"adds prompt name\", \"±2 units\", \"whole paragraph\", \"adds source passage\", \"whole essay\", \"whole essay\"]
+    if train_raw is not None:
+        essay = train_raw[train_raw.essay_id_comp == e['essay_id_comp']]
+        prev = essay[essay.row_idx < e['row_idx']].iloc[-1]
+        desc[1] = f\"prev: {prev.discourse_type} “{prev.discourse_text[:16]}…”; next: none\"
+    token_indices = [0,1,2,3,4,5,6,6]
+    fig, ax = plt.subplots(figsize=(12.8,7.2))
+    y = np.arange(len(LEVELS)); vals = [row[f\"P_ineff_{k}\"] for k,_ in LEVELS]
+    ax.barh(y, vals, height=.52,color=[COLORS[0] if row[f\"pred_{k}\"]=='Ineff' else COLORS[1] for k,_ in LEVELS])
+    ax.set(yticks=y,yticklabels=[name for _,name in LEVELS],xlim=(0,1.04),xlabel=\"P(Ineffective)\")
+    ax.invert_yaxis(); ax.axvline(.5,ls=\"--\",color=\"#64748B\")
+    ax.text(.5,1.025,\"≈ decision region\",transform=ax.get_xaxis_transform(),ha=\"center\",fontsize=14)
+    for j,(v,d) in enumerate(zip(vals,desc)):
+        ax.text(v+.015,j,f\"{v:.3f}\",va=\"center\",fontsize=14)
+        if counts:
+            n = counts[token_indices[j]]; d += f\" · {n:,} tokens\"
+            if LEVELS[j][0] == 'L1para': d += f\" → cut at {cfg['max_length']:,}\"
+        fig.text(.035,.805-j*.079,d,fontsize=14,va=\"center\")
+    ax.spines[[\"top\",\"right\"]].set_visible(False)
+    fig.text(.035,.95,textwrap.fill(caption,110),fontsize=16,va=\"top\")
+    fig.subplots_adjust(left=.63,right=.96,bottom=.15,top=.85)
+    save(fig,PEOPLE[2],\"v1_case2_ladder.png\")
+    for p in outputs:
+        with Image.open(p) as im:
+            print(f\"{p.relative_to(ROOT).as_posix()}  {im.width}×{im.height}\")
+
+if __name__ == \"__main__\":
+    main()
+''',encoding='utf-8')
+'@ | python -" in C:\Users\Admin\Desktop\MLA
+ succeeded in 259ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+Tôi đã xác nhận các file dự đoán có đủ dữ liệu để tính lại recall, ngưỡng và Macro-F1; hai CSV gốc cũng có sẵn. Phần đọc CSV sẽ giữ đúng quy tắc lọc và reset index của `common.py`, để truy vết và phép nối dùng cùng `row_idx`.
+
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$env:PYTHONIOENCODING='"'utf-8'; @'
+from pathlib import Path
+s=Path('VIDEO_CA_NHAN/build/make_visuals.py').read_text(encoding='utf-8');print(s[s.index('LEVELS ='):s.index('@lru_cache')]);print('unicode',s.count('→'))
+'@ | python -" in C:\Users\Admin\Desktop\MLA
+ succeeded in 270ms:
+LEVELS = [("L0", "L0"), ("L1", "L1 (locked)"), ("PA", "Prompt-Aware"),
+          ("L1w2", "L1 ?2"), ("L1para", "Paragraph"), ("L2", "L2 source"),
+          ("L3", "L3 whole, 3 ep"), ("L3_7ep", "L3 whole, 7 ep")]
+
+
+unicode 20
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$OutputEncoding = [System.Text.UTF8Encoding]::new(); @'"'
+from pathlib import Path
+p=Path('VIDEO_CA_NHAN/build/make_visuals.py');s=p.read_text(encoding='utf-8')
+for a,b in [('L1 ?2','L1 ±2'),('1?2-grams','1–2-grams'),('(?15,000)','(≤15,000)'),(' ? id ',' → id '),('f\"? {LABELS','f\"→ {LABELS'),(']} ?\\\\n',']} ✓\\\\n'),(\"?{text}?\",\"“{text}”\"),('} ?\",color','} ✗\",color'),(' ? {n:,}',' · {n:,}'),(' ? cut at',' → cut at'),(' ? {count',' · {count'),(' ?1 unit',' ±1 unit'),('\"?2 units\"','\"±2 units\"'),('Type?','Type'),(' ? decision region',' ≈ decision region'),('\"? decision region','\"≈ decision region'),(' + \"?\"',' + \"…\"'),(\"s[:16]}??\",\"s[:16]}… ”\"),('} ?{prev.discourse_text[:16]}??','} “{prev.discourse_text[:16]}…”'),('{im.width}?{im.height}','{im.width}×{im.height}')]:
+ s=s.replace(a,b)
+p.write_text(s,encoding='utf-8')
+common='''from pathlib import Path
+import argparse
+import sys
+sys.dont_write_bytecode = True
+sys.stdout.reconfigure(encoding=\"utf-8\")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / \"build\"))
+import make_visuals as data
+'''
+bodies=[ '''
+def main():
+    parser = argparse.ArgumentParser(description=\"Trace RF outputs and length recall; no training.\")
+    parser.add_argument(\"--no-raw\", action=\"store_true\")
+    args = parser.parse_args()
+    raw = data.raw_optional(\"test\", args.no_raw)
+    e = data.example(\"test\", 47059, raw)
+    record = f\" (raw record {e['raw_record']:,})\" if e['raw_record'] is not None else \"\"
+    print(f\"① TRACE  test row_idx {int(e['row_idx']):,}\" + record)
+    data.print_wrapped(f\"   prompt: {e['prompt_name']} | type: {e['discourse_type']}\")
+    print(f\"   essay words: {int(e['essay_word_count']):,} -> {e['length_q']}\")
+    if e['text']:
+        data.print_wrapped(f'   text: \"{e[\"text\"]}\"')
+    else:
+        print(\"   Note: raw CSV unavailable/skipped; slim sample has no unit text.\")
+    print(f'   label: \"{data.LABELS[int(e[\"label\"])]}\" -> id {int(e[\"label\"])}')
+    print(\"   (Ineffective=0, Adequate=1, Effective=2)\")
+    rf = data.probability_row(\"test\", \"rf_feature_set_b\", e['row_idx'])
+    l1 = data.probability_row(\"test\", \"L1\", e['row_idx'])
+    correct = \"correct\" if rf.pred_label == e['label'] else \"incorrect\"
+    data.print_wrapped(f\"   RF FS-B P(Ineff/Adeq/Eff) = {data.probability_text(rf)}\"
+                      f\" -> predicts {data.LABELS[int(rf.pred_label)]} ({correct})\")
+    print(f\"   DeBERTa L1 (locked) P(Ineff) = {l1.pred_proba_0:.3f}\"
+          f\" -> predicts {data.LABELS[int(l1.pred_label)]}\")
+    raw = data.raw_optional(\"train\", args.no_raw)
+    if raw is None:
+        r = data.table(\"D4_identifier_integrity.csv\").query(\"file == 'train+val annotated'\").iloc[0]
+        n, distinct = int(r.units), int(r.distinct_discourse_id)
+        note = \" (from saved table D4)\"
+    else:
+        n, distinct, note = len(raw), raw.discourse_id.nunique(), \"\"
+    print(f\"\\\\n② ID CHECK  train+val annotated units {n:,} | distinct discourse_id {distinct:,}\")
+    print(\"   -> join on row_idx\" + note)
+    print(\"\\\\n③ INEFFECTIVE RECALL BY ESSAY-LENGTH QUARTILE (official test, saved predictions)\")
+    print(\"   quartile          gold Ineff   RF recall   DeBERTa L1 recall\")
+    rows = data.recalls()
+    for q,n,rfrec,l1rec,caught in rows:
+        print(f\"   {q:<19} {n:>9,}   {rfrec:>7.1%}          {l1rec:>7.1%}\")
+    q,n,rfrec,l1rec,caught = rows[-1]
+    print(f\"   RF catches {caught:,} of {n:,} gold Ineffective units in the longest essays\")
+''', '''
+import numpy as np
+from sklearn.metrics import f1_score
+
+def main():
+    parser = argparse.ArgumentParser(description=\"Saved L0/L1 inputs and validation flag threshold.\")
+    parser.add_argument(\"--no-raw\", action=\"store_true\")
+    parser.add_argument(\"--theta\", type=float, default=.10)
+    args = parser.parse_args()
+    if not 0 <= args.theta <= 1:
+        parser.error(\"theta must lie between 0 and 1\")
+    raw = data.raw_optional(\"train\", args.no_raw)
+    e, l0, l1 = data.inputs_case8(raw)
+    print(f\"① CASE 8  validation row_idx {int(e['row_idx']):,} | {e['discourse_type']}\")
+    print(f\"   {e['prompt_name']} | gold {data.LABELS[int(e['label'])]}\")
+    if raw is None:
+        print(\"   Note: target excerpt from saved table D7 (neighbour text needs raw CSV).\")
+    for model, text in [(\"L0\",l0),(\"L1\",l1)]:
+        data.print_wrapped(f\"   {model} input: {text}\")
+        r = data.probability_row(\"val\",model,e['row_idx'])
+        print(f\"   {model} (locked) P(Ineff/Adeq/Eff) = {data.probability_text(r)}\"
+              f\" -> {data.LABELS[int(r.pred_label)]}\")
+    df = data.predictions(\"val\",\"L1\")
+    p = df[[f\"pred_proba_{i}\" for i in range(3)]].to_numpy()
+    y = df.true_label.to_numpy()
+    base = p.argmax(axis=1)
+    selected = np.where(p[:,0] >= args.theta, 0, p[:,1:].argmax(axis=1)+1)
+    print(\"\\\\n② FLAG IF P(Ineffective) >= θ   (locked L1, validation)\")
+    print(f\"   {len(df):,} units, {int((y == 0).sum()):,} gold Ineffective\")
+    print(\"   rule          flagged   recall   precision   Macro-F1\")
+    stats = []
+    for name,pred in [(\"argmax\",base),(f\"θ={args.theta:.2f}\",selected)]:
+        flagged = int((pred == 0).sum()); tp = int(((pred == 0)&(y == 0)).sum())
+        recall = tp / (y == 0).sum(); precision = tp/flagged if flagged else 0
+        print(f\"   {name:<12} {flagged:>7,}   {recall:>6.1%}      {precision:>6.1%}      \"
+              f\"{f1_score(y,pred,labels=[0,1,2],average='macro',zero_division=0):.3f}\")
+        stats.append((tp,flagged-tp))
+    extra = stats[1][0]-stats[0][0]; false = stats[1][1]-stats[0][1]
+    print(f\"   extra correct flags: {extra:,} | extra false alarms: {false:,}\")
+    print(f\"   false alarms per extra catch: {false/extra:.1f}\" if extra > 0
+          else \"   false alarms per extra catch: n/a (no net extra catches)\")
+    r = data.probability_row(\"val\",\"L1\",e['row_idx'])
+    flagged = r.pred_proba_0 >= args.theta
+    print(f\"\\\\n③ case 8: P(Ineffective) = {r.pred_proba_0:.3f} \"
+          f\"{'≥' if flagged else '<'} θ = {args.theta:.2f} -> {'flagged' if flagged else 'not flagged'}\")
+''', '''
+import hashlib
+from sklearn.metrics import f1_score
+
+def main():
+    parser = argparse.ArgumentParser(description=\"Check test lock and saved prediction metrics.\")
+    parser.add_argument(\"--no-raw\",action=\"store_true\")
+    args = parser.parse_args()
+    lock = data.lock()
+    print(f\"① TEST LOCK   locked_at {lock['locked_at']}\")
+    print(f\"   n_test {lock['n_test']:,}\")
+    print(f\"   sha256 (lock) {lock['test_sha256'][:16]}…\")
+    path = data.raw_path(\"test\")
+    if args.no_raw or not path.exists():
+        print(\"   Note: optional raw test CSV unavailable/skipped; hash check not performed.\")
+    else:
+        try:
+            sha = hashlib.sha256()
+            with path.open('rb') as f:
+                for chunk in iter(lambda: f.read(8*1024*1024),b''):
+                    sha.update(chunk)
+            actual = sha.hexdigest()
+            print(f\"   sha256 (now)  {actual[:16]}… -> matches lock: {actual == lock['test_sha256']}\")
+            print(\"   (labels not read)\")
+        except OSError as exc:
+            print(f\"   Note: optional hash check unavailable ({type(exc).__name__}).\")
+    print(\"\\\\n② TEST MACRO-F1 RECOMPUTED FROM SAVED PREDICTIONS\")
+    print(\"   model                       units   recomputed   paper (R2)\")
+    for key,name in [(\"L0\",\"DeBERTa L0\"),(\"L1\",\"DeBERTa L1 (locked)\"),(\"PA\",\"DeBERTa Prompt-Aware\")]:
+        df = data.predictions(\"test\",key)
+        assert len(df) == lock['n_test']
+        value = f1_score(df.true_label,df.pred_label,labels=[0,1,2],average='macro')
+        r2 = data.table(\"R2_test_per_class.csv\")
+        paper = r2[r2.system.str.contains(\"Prompt-Aware\" if key == 'PA' else key)].iloc[0].macro_f1
+        print(f\"   {name:<25} {len(df):>7,}      {value:.4f}      {paper:.4f}\")
+    r8 = data.table(\"R8_ten_cases.csv\").query('case == 2').iloc[0]
+    print(f\"\\\\n③ CASE {r8['case']}  validation row_idx {r8.row_idx:,} | {r8['type']}\")
+    print(f\"   {r8.prompt} | gold {r8.gold}\")
+    print(\"   level                  P(Ineffective)   prediction\")
+    row = data.ladder()
+    names = {'Ineff':'Ineffective','Adeq':'Adequate','Eff':'Effective'}
+    for key,name in data.LEVELS:
+        print(f\"   {name:<24} {row[f'P_ineff_{key}']:.3f}          {names[row[f'pred_{key}']]}\")
+    print(\"\\\\n④ LOPO GAP (same validation essays; LOPO minus in-domain Macro-F1)\")
+    r5 = data.table('R5_lopo_vs_indomain_per_class.csv')
+    for prompt, group in r5.groupby('held_out_prompt',sort=False):
+        lopo = group[group.setting.str.startswith('LOPO') & group.setting.str.contains('validation essays')].iloc[0]
+        domain = group[group.setting.str.startswith('In-domain')].iloc[0]
+        print(f\"   {prompt}: {lopo.macro_f1 - domain.macro_f1:+.3f}\")
+''']
+for i,(who,body) in enumerate(zip(['Nguoi_1_Data_Classical_Length','Nguoi_2_DeBERTa_Context_Threshold','Nguoi_3_TestGovernance_LOPO_Ladder'],bodies),1):
+ p=Path('VIDEO_CA_NHAN')/who/'demo'/f'demo_nguoi{i}.py';p.parent.mkdir(exist_ok=True)
+ p.write_text(common+body+'\\nif __name__ == \"__main__\":\\n    main()\\n',encoding='utf-8')
+'@ | python -
+python VIDEO_CA_NHAN/build/make_visuals.py" in C:\Users\Admin\Desktop\MLA
+ succeeded in 15069ms:
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\build\make_visuals.py:153: UserWarning: Glyph 10003 (\N{CHECK MARK}) missing from font(s) Calibri.
+  fig.savefig(p, dpi=150)
+C:\Users\Admin\Desktop\MLA\VIDEO_CA_NHAN\build\make_visuals.py:153: UserWarning: Glyph 10007 (\N{BALLOT X}) missing from font(s) Calibri.
+  fig.savefig(p, dpi=150)
+VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/visuals/fig18_rf_lopo_15_prompts.png  2292×1248
+VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/visuals/fig09_essay_length_vs_holistic_score.png  2009×1124
+VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/visuals/fig20_error_within_score_by_length.png  2745×1112
+VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/visuals/fig04_context_levels.png  3591×2160
+VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/visuals/fig14_L1_minus_L0_per_class.png  1861×924
+VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/visuals/fig22_threshold_tradeoff.png  1781×1017
+VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/visuals/fig26_test_governance.png  3543×816
+VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/visuals/fig19_context_ladder_validation.png  2814×1129
+VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/visuals/fig17_lopo_vs_indomain_same_units.png  2237×1000
+VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/visuals/fig23_ten_cases_by_context_level.png  2503×1150
+VIDEO_CA_NHAN/_chung/visuals/intro_label_mix.png  1080×810
+VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/visuals/v1_example_trace_rf.png  1920×1080
+VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/visuals/v2_rf_recall_by_length.png  1920×1080
+VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/visuals/v1_case8_L0_vs_L1.png  1920×1080
+VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/visuals/v1_case2_ladder.png  1920×1080
+
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'python VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/demo/demo_nguoi1.py --no-raw; python VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/demo/demo_nguoi2.py --no-raw --theta 0.10; python VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py --no-raw' in C:\Users\Admin\Desktop\MLA
+hook: PostToolUse
+hook: PostToolUse Completed
+ succeeded in 12777ms:
+① TRACE  test row_idx 47,059
+   prompt: Facial action coding system | type: Position
+   essay words: 225 -> Q1 (<=315)
+   Note: raw CSV unavailable/skipped; slim sample has no unit text.
+   label: "Ineffective" -> id 0
+   (Ineffective=0, Adequate=1, Effective=2)
+   RF FS-B P(Ineff/Adeq/Eff) = 0.544 / 0.342 / 0.114 -> predicts Ineffective (correct)
+   DeBERTa L1 (locked) P(Ineff) = 0.978 -> predicts Ineffective
+
+② ID CHECK  train+val annotated units 144,289 | distinct discourse_id 728
+   -> join on row_idx (from saved table D4)
+
+③ INEFFECTIVE RECALL BY ESSAY-LENGTH QUARTILE (official test, saved predictions)
+   quartile          gold Ineff   RF recall   DeBERTa L1 recall
+   Q1 (<=315)              2,384     23.3%            45.1%
+   Q2 (316-422)              934     13.7%            38.4%
+   Q3 (423-566)              598      6.9%            35.6%
+   Q4 (>=567)                309      0.6%            35.0%
+   RF catches 2 of 309 gold Ineffective units in the longest essays
+① CASE 8  validation row_idx 108,613 | Claim
+   Cell phones at school | gold Ineffective
+   Note: target excerpt from saved table D7 (neighbour text needs raw CSV).
+   L0 input: Claim [SEP] Some kids will ask there parents to transfer school
+   L0 (locked) P(Ineff/Adeq/Eff) = 0.017 / 0.962 / 0.021 -> Adequate
+   L1 input: Claim [SEP] Target: Some kids will ask there parents to transfer school (neighbour
+   text needs raw CSV)
+   L1 (locked) P(Ineff/Adeq/Eff) = 0.058 / 0.937 / 0.005 -> Adequate
+
+② FLAG IF P(Ineffective) >= θ   (locked L1, validation)
+   29,102 units, 1,328 gold Ineffective
+   rule          flagged   recall   precision   Macro-F1
+   argmax         1,761    44.7%       33.7%      0.581
+   θ=0.10         4,633    69.6%       19.9%      0.535
+   extra correct flags: 330 | extra false alarms: 2,542
+   false alarms per extra catch: 7.7
+
+③ case 8: P(Ineffective) = 0.058 < θ = 0.10 -> not flagged
+① TEST LOCK   locked_at 2026-10-28T21:15:35.952813+00:00
+   n_test 93,677
+   sha256 (lock) 8b4cbbda471b313e…
+   Note: optional raw test CSV unavailable/skipped; hash check not performed.
+
+② TEST MACRO-F1 RECOMPUTED FROM SAVED PREDICTIONS
+   model                       units   recomputed   paper (R2)
+   DeBERTa L0                 93,677      0.5613      0.5613
+   DeBERTa L1 (locked)        93,677      0.5772      0.5772
+   DeBERTa Prompt-Aware       93,677      0.5808      0.5808
+
+③ CASE 2  validation row_idx 10,303 | Evidence
+   Car-free cities | gold Ineffective
+   level                  P(Ineffective)   prediction
+   L0                       0.001          Effective
+   L1 (locked)              0.008          Effective
+   Prompt-Aware             0.002          Effective
+   L1 ±2                    0.028          Effective
+   Paragraph                0.832          Ineffective
+   L2 source                0.540          Ineffective
+   L3 whole, 3 ep           0.733          Ineffective
+   L3 whole, 7 ep           0.924          Ineffective
+
+④ LOPO GAP (same validation essays; LOPO minus in-domain Macro-F1)
+   A Cowboy Who Rode the Waves: -0.091
+   Summer projects: -0.025
+   Distance learning: -0.048
+
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$OutputEncoding = [System.Text.UTF8Encoding]::new(); @'"'
+from pathlib import Path
+p=Path('VIDEO_CA_NHAN/build/make_visuals.py');s=p.read_text(encoding='utf-8').replace('\"font.family\": \"sans-serif\"','\"font.family\": [\"Calibri\", \"DejaVu Sans\"]')
+s=s.replace('fig.text(.035,.805-j*.079,d,fontsize=14,va=\"center\")','ax.text(-1.80,j,d,transform=ax.get_yaxis_transform(),fontsize=14,va=\"center\")')
+p.write_text(s,encoding='utf-8')
+print('\\n'.join(line for line in s.splitlines() if '?' in line))
+'@ | python -" in C:\Users\Admin\Desktop\MLA
+ succeeded in 342ms:
+    desc = ["unit only", "?1 unit; prev: Position; next: none", "adds prompt name", "�2 units", "whole paragraph", "adds source passage", "whole essay", "whole essay"]
+
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'python VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/demo/demo_nguoi1.py; python VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/demo/demo_nguoi2.py --theta 0.10; python VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py' in C:\Users\Admin\Desktop\MLA
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$OutputEncoding = [System.Text.UTF8Encoding]::new(); @'"'
+from pathlib import Path
+s=Path('VIDEO_CA_NHAN/build/make_visuals.py').read_text(encoding='utf-8')
+for line in s.splitlines():
+ if any(ord(c)>127 for c in line) or '?' in line:
+  print(ascii(line))
+'@ | python -" in C:\Users\Admin\Desktop\MLA
+ succeeded in 323ms:
+'          ("L1w2", "L1 \xb12"), ("L1para", "Paragraph"), ("L2", "L2 source"),'
+'    bodies = [f"{raw_note}\\n\\n{e[\'prompt_name\']}\\n{e[\'discourse_type\']}\\n\\n\u201c{text}\u201d\\n\\nRaw label: {LABELS[int(e[\'label\'])]}",'
+'              f"Drop unlabelled / empty rows\\n\\nrow_idx {int(e[\'row_idx\']):,}\\n\\n{LABELS[int(e[\'label\'])]} \u2192 id {int(e[\'label\'])}\\n\\nJoin key: row_idx\\n(never discourse_id)",'
+'              f"TF-IDF word 1\u20132-grams\\n(\u226415,000)\\nOne-hot: {e[\'discourse_type\']}\\n\\nUnit words: {int(e[\'unit_words\']):,}\\nEssay words: {int(e[\'essay_word_count\']):,}\\n{e[\'length_q\']}\\nUnit/essay: {e[\'unit_words\']/e[\'essay_word_count\']:.3f}",'
+'    ax.text(.78,.27,f"\u2192 {LABELS[int(rf.pred_label)]} \u2713\\n(gold {LABELS[int(e[\'label\'])]})",fontsize=14,color="#16A34A")'
+'        ax.set_title(model + (f" \xb7 {count[idx]:,} tokens" if count else ""),fontsize=20,loc="left")'
+'    fig.text(.64,.12,f"gold: {LABELS[int(e[\'label\'])]}\\nboth predict {LABELS[int(row.pred_label)]} \u2717",color=COLORS[0],fontsize=16)'
+'    caption = (e[\'text\'] or r8.text_excerpt)[:110] + "\u2026"'
+'    desc = ["unit only", "?1 unit; prev: Position; next: none", "adds prompt name", "\xb12 units", "whole paragraph", "adds source passage", "whole essay", "whole essay"]'
+'        desc[1] = f"prev: {prev.discourse_type} \u201c{prev.discourse_text[:16]}\u2026\u201d; next: none"'
+'    ax.text(.5,1.025,"\u2248 decision region",transform=ax.get_xaxis_transform(),ha="center",fontsize=14)'
+'            n = counts[token_indices[j]]; d += f" \xb7 {n:,} tokens"'
+'            if LEVELS[j][0] == \'L1para\': d += f" \u2192 cut at {cfg[\'max_length\']:,}"'
+'            print(f"{p.relative_to(ROOT).as_posix()}  {im.width}\xd7{im.height}")'
+
+hook: PostToolUse
+hook: PostToolUse Completed
+ succeeded in 25123ms:
+① TRACE  test row_idx 47,059 (raw record 57,633)
+   prompt: Facial action coding system | type: Position
+   essay words: 225 -> Q1 (<=315)
+   text: "That is all everything you need to know about Mona Lisa and her smile."
+   label: "Ineffective" -> id 0
+   (Ineffective=0, Adequate=1, Effective=2)
+   RF FS-B P(Ineff/Adeq/Eff) = 0.544 / 0.342 / 0.114 -> predicts Ineffective (correct)
+   DeBERTa L1 (locked) P(Ineff) = 0.978 -> predicts Ineffective
+
+② ID CHECK  train+val annotated units 144,289 | distinct discourse_id 728
+   -> join on row_idx
+
+③ INEFFECTIVE RECALL BY ESSAY-LENGTH QUARTILE (official test, saved predictions)
+   quartile          gold Ineff   RF recall   DeBERTa L1 recall
+   Q1 (<=315)              2,384     23.3%            45.1%
+   Q2 (316-422)              934     13.7%            38.4%
+   Q3 (423-566)              598      6.9%            35.6%
+   Q4 (>=567)                309      0.6%            35.0%
+   RF catches 2 of 309 gold Ineffective units in the longest essays
+① CASE 8  validation row_idx 108,613 | Claim
+   Cell phones at school | gold Ineffective
+   L0 input: Claim [SEP] Some kids will ask there parents to transfer school
+   L0 (locked) P(Ineff/Adeq/Eff) = 0.017 / 0.962 / 0.021 -> Adequate
+   L1 input: Claim [SEP] Previous: They will hide them from the teachers .Teachers can't go threw
+   the students stuff any way . Just make the kids put them in there locker during class.
+
+If you
+   do a lot of the students will dich school any way, to be on there phones. You will just make
+   all the kids mad. [SEP] Target: Some kids will ask there parents to transfer school [SEP] Next:
+   If you chose policy one you will make the student happy.
+   L1 (locked) P(Ineff/Adeq/Eff) = 0.058 / 0.937 / 0.005 -> Adequate
+
+② FLAG IF P(Ineffective) >= θ   (locked L1, validation)
+   29,102 units, 1,328 gold Ineffective
+   rule          flagged   recall   precision   Macro-F1
+   argmax         1,761    44.7%       33.7%      0.581
+   θ=0.10         4,633    69.6%       19.9%      0.535
+   extra correct flags: 330 | extra false alarms: 2,542
+   false alarms per extra catch: 7.7
+
+③ case 8: P(Ineffective) = 0.058 < θ = 0.10 -> not flagged
+① TEST LOCK   locked_at 2026-10-28T21:15:35.952813+00:00
+   n_test 93,677
+   sha256 (lock) 8b4cbbda471b313e…
+   sha256 (now)  8b4cbbda471b313e… -> matches lock: True
+   (labels not read)
+
+② TEST MACRO-F1 RECOMPUTED FROM SAVED PREDICTIONS
+   model                       units   recomputed   paper (R2)
+   DeBERTa L0                 93,677      0.5613      0.5613
+   DeBERTa L1 (locked)        93,677      0.5772      0.5772
+   DeBERTa Prompt-Aware       93,677      0.5808      0.5808
+
+③ CASE 2  validation row_idx 10,303 | Evidence
+   Car-free cities | gold Ineffective
+   level                  P(Ineffective)   prediction
+   L0                       0.001          Effective
+   L1 (locked)              0.008          Effective
+   Prompt-Aware             0.002          Effective
+   L1 ±2                    0.028          Effective
+   Paragraph                0.832          Ineffective
+   L2 source                0.540          Ineffective
+   L3 whole, 3 ep           0.733          Ineffective
+   L3 whole, 7 ep           0.924          Ineffective
+
+④ LOPO GAP (same validation essays; LOPO minus in-domain Macro-F1)
+   A Cowboy Who Rode the Waves: -0.091
+   Summer projects: -0.025
+   Distance learning: -0.048
+
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py -Encoding utf8; git status --short' in C:\Users\Admin\Desktop\MLA
+ succeeded in 1038ms:
+from pathlib import Path
+import argparse
+import sys
+sys.dont_write_bytecode = True
+sys.stdout.reconfigure(encoding="utf-8")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "build"))
+import make_visuals as data
+
+import hashlib
+from sklearn.metrics import f1_score
+
+def main():
+    parser = argparse.ArgumentParser(description="Check test lock and saved prediction metrics.")
+    parser.add_argument("--no-raw",action="store_true")
+    args = parser.parse_args()
+    lock = data.lock()
+    print(f"① TEST LOCK   locked_at {lock['locked_at']}")
+    print(f"   n_test {lock['n_test']:,}")
+    print(f"   sha256 (lock) {lock['test_sha256'][:16]}…")
+    path = data.raw_path("test")
+    if args.no_raw or not path.exists():
+        print("   Note: optional raw test CSV unavailable/skipped; hash check not performed.")
+    else:
+        try:
+            sha = hashlib.sha256()
+            with path.open('rb') as f:
+                for chunk in iter(lambda: f.read(8*1024*1024),b''):
+                    sha.update(chunk)
+            actual = sha.hexdigest()
+            print(f"   sha256 (now)  {actual[:16]}… -> matches lock: {actual == lock['test_sha256']}")
+            print("   (labels not read)")
+        except OSError as exc:
+            print(f"   Note: optional hash check unavailable ({type(exc).__name__}).")
+    print("\n② TEST MACRO-F1 RECOMPUTED FROM SAVED PREDICTIONS")
+    print("   model                       units   recomputed   paper (R2)")
+    for key,name in [("L0","DeBERTa L0"),("L1","DeBERTa L1 (locked)"),("PA","DeBERTa Prompt-Aware")]:
+        df = data.predictions("test",key)
+        assert len(df) == lock['n_test']
+        value = f1_score(df.true_label,df.pred_label,labels=[0,1,2],average='macro')
+        r2 = data.table("R2_test_per_class.csv")
+        paper = r2[r2.system.str.contains("Prompt-Aware" if key == 'PA' else key)].iloc[0].macro_f1
+        print(f"   {name:<25} {len(df):>7,}      {value:.4f}      {paper:.4f}")
+    r8 = data.table("R8_ten_cases.csv").query('case == 2').iloc[0]
+    print(f"\n③ CASE {r8['case']}  validation row_idx {r8.row_idx:,} | {r8['type']}")
+    print(f"   {r8.prompt} | gold {r8.gold}")
+    print("   level                  P(Ineffective)   prediction")
+    row = data.ladder()
+    names = {'Ineff':'Ineffective','Adeq':'Adequate','Eff':'Effective'}
+    for key,name in data.LEVELS:
+        print(f"   {name:<24} {row[f'P_ineff_{key}']:.3f}          {names[row[f'pred_{key}']]}")
+    print("\n④ LOPO GAP (same validation essays; LOPO minus in-domain Macro-F1)")
+    r5 = data.table('R5_lopo_vs_indomain_per_class.csv')
+    for prompt, group in r5.groupby('held_out_prompt',sort=False):
+        lopo = group[group.setting.str.startswith('LOPO') & group.setting.str.contains('validation essays')].iloc[0]
+        domain = group[group.setting.str.startswith('In-domain')].iloc[0]
+        print(f"   {prompt}: {lopo.macro_f1 - domain.macro_f1:+.3f}")
+
+if __name__ == "__main__":
+    main()
+warning: unable to access 'C:\Users\Admin/.config/git/ignore': Permission denied
+warning: unable to access 'C:\Users\Admin/.config/git/ignore': Permission denied
+?? VIDEO_CA_NHAN/
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+Các giá trị RF, L0/L1 và ngưỡng 0.10 đều khớp số mong đợi. Riêng Cowboy, bảng R5 cho phép trừ `0.3840 − 0.4755 = −0.0915`; tôi sẽ dùng số thập phân khi định dạng để làm tròn đúng thành `−0.092`. Tôi cũng đang kiểm tra bố cục PNG và ký hiệu ✓/✗.
+
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$OutputEncoding = [System.Text.UTF8Encoding]::new(); @'"'
+from pathlib import Path
+p=Path('VIDEO_CA_NHAN/build/make_visuals.py');s=p.read_text(encoding='utf-8').replace('\"?1 unit;', '\"±1 unit;').replace('replace_whitespace=False','replace_whitespace=True')
+p.write_text(s,encoding='utf-8')
+p=Path('VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py');s=p.read_text(encoding='utf-8').replace('import hashlib','import hashlib\\nfrom decimal import Decimal').replace(\"{lopo.macro_f1 - domain.macro_f1:+.3f}\",\"{Decimal(str(lopo.macro_f1)) - Decimal(str(domain.macro_f1)):+.3f}\")
+p.write_text(s,encoding='utf-8')
+'@ | python -
+python VIDEO_CA_NHAN/build/make_visuals.py" in C:\Users\Admin\Desktop\MLA
+hook: PostToolUse
+hook: PostToolUse Completed
+ succeeded in 13230ms:
+VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/visuals/fig18_rf_lopo_15_prompts.png  2292×1248
+VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/visuals/fig09_essay_length_vs_holistic_score.png  2009×1124
+VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/visuals/fig20_error_within_score_by_length.png  2745×1112
+VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/visuals/fig04_context_levels.png  3591×2160
+VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/visuals/fig14_L1_minus_L0_per_class.png  1861×924
+VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/visuals/fig22_threshold_tradeoff.png  1781×1017
+VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/visuals/fig26_test_governance.png  3543×816
+VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/visuals/fig19_context_ladder_validation.png  2814×1129
+VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/visuals/fig17_lopo_vs_indomain_same_units.png  2237×1000
+VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/visuals/fig23_ten_cases_by_context_level.png  2503×1150
+VIDEO_CA_NHAN/_chung/visuals/intro_label_mix.png  1080×810
+VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/visuals/v1_example_trace_rf.png  1920×1080
+VIDEO_CA_NHAN/Nguoi_1_Data_Classical_Length/visuals/v2_rf_recall_by_length.png  1920×1080
+VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/visuals/v1_case8_L0_vs_L1.png  1920×1080
+VIDEO_CA_NHAN/Nguoi_3_TestGovernance_LOPO_Ladder/visuals/v1_case2_ladder.png  1920×1080
+
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$OutputEncoding = [System.Text.UTF8Encoding]::new(); @'"'
+from pathlib import Path
+p=Path('VIDEO_CA_NHAN/Nguoi_2_DeBERTa_Context_Threshold/demo/demo_nguoi2.py');s=p.read_text(encoding='utf-8').replace('    print(\"\\\\n② FLAG', '    assert np.array_equal(base, df.pred_label.to_numpy())\\n    assert np.array_equal(selected == 0, p[:,0] >= args.theta)\\n    print(\"\\\\n② FLAG')
+p.write_text(s,encoding='utf-8')
+'@ | python -
+"'$env:PYTHONIOENCODING='"'utf-8'; @'
+from pathlib import Path
+import subprocess,time,sys
+for p in sorted(Path('VIDEO_CA_NHAN').glob('Nguoi_*/demo/demo_nguoi*.py')):
+ for extra in [[],['--no-raw']]:
+  start=time.perf_counter()
+  r=subprocess.run([sys.executable,str(p),*extra],capture_output=True,encoding='utf-8')
+  elapsed=time.perf_counter()-start
+  print(f'RUN {p} {extra}: exit={r.returncode}, seconds={elapsed:.2f}, max_width={max(map(len,r.stdout.splitlines()))}')
+  assert r.returncode==0,r.stderr
+  assert max(map(len,r.stdout.splitlines()))<=100
+  if extra: assert elapsed<10,elapsed
+  if not extra:print(r.stdout)
+  if r.stderr: print(r.stderr)
+'@ | python -" in C:\Users\Admin\Desktop\MLA
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+hook: PostToolUse
+hook: PostToolUse Completed
+hook: PreToolUse
+hook: PreToolUse Completed
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-ChildItem VIDEO_CA_NHAN -Recurse -Filter *.pyc; Get-ChildItem VIDEO_CA_NHAN -Recurse -Filter AGENTS.md' in C:\Users\Admin\Desktop\MLA
+ succeeded in 258ms:
+hook: PostToolUse
+hook: PostToolUse Completed
+ succeeded in 34684ms:
+RUN VIDEO_CA_NHAN\Nguoi_1_Data_Classical_Length\demo\demo_nguoi1.py []: exit=0, seconds=8.35, max_width=86
+① TRACE  test row_idx 47,059 (raw record 57,633)
+   prompt: Facial action coding system | type: Position
+   essay words: 225 -> Q1 (<=315)
+   text: "That is all everything you need to know about Mona Lisa and her smile."
+   label: "Ineffective" -> id 0
+   (Ineffective=0, Adequate=1, Effective=2)
+   RF FS-B P(Ineff/Adeq/Eff) = 0.544 / 0.342 / 0.114 -> predicts Ineffective (correct)
+   DeBERTa L1 (locked) P(Ineff) = 0.978 -> predicts Ineffective
+
+② ID CHECK  train+val annotated units 144,289 | distinct discourse_id 728
+   -> join on row_idx
+
+③ INEFFECTIVE RECALL BY ESSAY-LENGTH QUARTILE (official test, saved predictions)
+   quartile          gold Ineff   RF recall   DeBERTa L1 recall
+   Q1 (<=315)              2,384     23.3%            45.1%
+   Q2 (316-422)              934     13.7%            38.4%
+   Q3 (423-566)              598      6.9%            35.6%
+   Q4 (>=567)                309      0.6%            35.0%
+   RF catches 2 of 309 gold Ineffective units in the longest essays
+
+RUN VIDEO_CA_NHAN\Nguoi_1_Data_Classical_Length\demo\demo_nguoi1.py ['--no-raw']: exit=0, seconds=2.11, max_width=86
+RUN VIDEO_CA_NHAN\Nguoi_2_DeBERTa_Context_Threshold\demo\demo_nguoi2.py []: exit=0, seconds=9.23, max_width=98
+① CASE 8  validation row_idx 108,613 | Claim
+   Cell phones at school | gold Ineffective
+   L0 input: Claim [SEP] Some kids will ask there parents to transfer school
+   L0 (locked) P(Ineff/Adeq/Eff) = 0.017 / 0.962 / 0.021 -> Adequate
+   L1 input: Claim [SEP] Previous: They will hide them from the teachers .Teachers can't go threw
+   the students stuff any way . Just make the kids put them in there locker during class.  If you
+   do a lot of the students will dich school any way, to be on there phones. You will just make
+   all the kids mad. [SEP] Target: Some kids will ask there parents to transfer school [SEP] Next:
+   If you chose policy one you will make the student happy.
+   L1 (locked) P(Ineff/Adeq/Eff) = 0.058 / 0.937 / 0.005 -> Adequate
+
+② FLAG IF P(Ineffective) >= θ   (locked L1, validation)
+   29,102 units, 1,328 gold Ineffective
+   rule          flagged   recall   precision   Macro-F1
+   argmax         1,761    44.7%       33.7%      0.581
+   θ=0.10         4,633    69.6%       19.9%      0.535
+   extra correct flags: 330 | extra false alarms: 2,542
+   false alarms per extra catch: 7.7
+
+③ case 8: P(Ineffective) = 0.058 < θ = 0.10 -> not flagged
+
+RUN VIDEO_CA_NHAN\Nguoi_2_DeBERTa_Context_Threshold\demo\demo_nguoi2.py ['--no-raw']: exit=0, seconds=4.24, max_width=95
+RUN VIDEO_CA_NHAN\Nguoi_3_TestGovernance_LOPO_Ladder\demo\demo_nguoi3.py []: exit=0, seconds=5.37, max_width=66
+① TEST LOCK   locked_at 2026-10-28T21:15:35.952813+00:00
+   n_test 93,677
+   sha256 (lock) 8b4cbbda471b313e…
+   sha256 (now)  8b4cbbda471b313e… -> matches lock: True
+   (labels not read)
+
+② TEST MACRO-F1 RECOMPUTED FROM SAVED PREDICTIONS
+   model                       units   recomputed   paper (R2)
+   DeBERTa L0                 93,677      0.5613      0.5613
+   DeBERTa L1 (locked)        93,677      0.5772      0.5772
+   DeBERTa Prompt-Aware       93,677      0.5808      0.5808
+
+③ CASE 2  validation row_idx 10,303 | Evidence
+   Car-free cities | gold Ineffective
+   level                  P(Ineffective)   prediction
+   L0                       0.001          Effective
+   L1 (locked)              0.008          Effective
+   Prompt-Aware             0.002          Effective
+   L1 ±2                    0.028          Effective
+   Paragraph                0.832          Ineffective
+   L2 source                0.540          Ineffective
+   L3 whole, 3 ep           0.733          Ineffective
+   L3 whole, 7 ep           0.924          Ineffective
+
+④ LOPO GAP (same validation essays; LOPO minus in-domain Macro-F1)
+   A Cowboy Who Rode the Waves: -0.092
+   Summer projects: -0.025
+   Distance learning: -0.048
+
+RUN VIDEO_CA_NHAN\Nguoi_3_TestGovernance_LOPO_Ladder\demo\demo_nguoi3.py ['--no-raw']: exit=0, seconds=4.86, max_width=77
+
+hook: PostToolUse
+hook: PostToolUse Completed
+codex
+Created 4 Python scripts and all 15 PNGs. Build succeeded; all six demo runs passed. `--no-raw` runtimes: **2.11s / 4.24s / 4.86s**. All expected results match; test SHA-256 matches the lock.
+
+Files written under `VIDEO_CA_NHAN/`:
+
+- `build/make_visuals.py`
+- `Nguoi_1_Data_Classical_Length/demo/demo_nguoi1.py`
+- `Nguoi_2_DeBERTa_Context_Threshold/demo/demo_nguoi2.py`
+- `Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py`
+- `_chung/visuals/intro_label_mix.png`
+- Person 1 `visuals/`: `fig18_rf_lopo_15_prompts.png`, `fig09_essay_length_vs_holistic_score.png`, `fig20_error_within_score_by_length.png`, `v1_example_trace_rf.png`, `v2_rf_recall_by_length.png`
+- Person 2 `visuals/`: `fig04_context_levels.png`, `fig14_L1_minus_L0_per_class.png`, `fig22_threshold_tradeoff.png`, `v1_case8_L0_vs_L1.png`
+- Person 3 `visuals/`: `fig26_test_governance.png`, `fig19_context_ladder_validation.png`, `fig17_lopo_vs_indomain_same_units.png`, `fig23_ten_cases_by_context_level.png`, `v1_case2_ladder.png`
+
+The four new person-specific visuals are **1920×1080**; the shared label mix is **1080×810**. Copied figures retain their source dimensions.
+
+Full stdout with raw CSVs, Person 1:
+
+```text
+① TRACE  test row_idx 47,059 (raw record 57,633)
+   prompt: Facial action coding system | type: Position
+   essay words: 225 -> Q1 (<=315)
+   text: "That is all everything you need to know about Mona Lisa and her smile."
+   label: "Ineffective" -> id 0
+   (Ineffective=0, Adequate=1, Effective=2)
+   RF FS-B P(Ineff/Adeq/Eff) = 0.544 / 0.342 / 0.114 -> predicts Ineffective (correct)
+   DeBERTa L1 (locked) P(Ineff) = 0.978 -> predicts Ineffective
+
+② ID CHECK  train+val annotated units 144,289 | distinct discourse_id 728
+   -> join on row_idx
+
+③ INEFFECTIVE RECALL BY ESSAY-LENGTH QUARTILE (official test, saved predictions)
+   quartile          gold Ineff   RF recall   DeBERTa L1 recall
+   Q1 (<=315)              2,384     23.3%            45.1%
+   Q2 (316-422)              934     13.7%            38.4%
+   Q3 (423-566)              598      6.9%            35.6%
+   Q4 (>=567)                309      0.6%            35.0%
+   RF catches 2 of 309 gold Ineffective units in the longest essays
+```
+
+Person 2 (`--theta 0.10`):
+
+```text
+① CASE 8  validation row_idx 108,613 | Claim
+   Cell phones at school | gold Ineffective
+   L0 input: Claim [SEP] Some kids will ask there parents to transfer school
+   L0 (locked) P(Ineff/Adeq/Eff) = 0.017 / 0.962 / 0.021 -> Adequate
+   L1 input: Claim [SEP] Previous: They will hide them from the teachers .Teachers can't go threw
+   the students stuff any way . Just make the kids put them in there locker during class.  If you
+   do a lot of the students will dich school any way, to be on there phones. You will just make
+   all the kids mad. [SEP] Target: Some kids will ask there parents to transfer school [SEP] Next:
+   If you chose policy one you will make the student happy.
+   L1 (locked) P(Ineff/Adeq/Eff) = 0.058 / 0.937 / 0.005 -> Adequate
+
+② FLAG IF P(Ineffective) >= θ   (locked L1, validation)
+   29,102 units, 1,328 gold Ineffective
+   rule          flagged   recall   precision   Macro-F1
+   argmax         1,761    44.7%       33.7%      0.581
+   θ=0.10         4,633    69.6%       19.9%      0.535
+   extra correct flags: 330 | extra false alarms: 2,542
+   false alarms per extra catch: 7.7
+
+③ case 8: P(Ineffective) = 0.058 < θ = 0.10 -> not flagged
+```
+
+Person 3:
+
+```text
+① TEST LOCK   locked_at 2026-10-28T21:15:35.952813+00:00
+   n_test 93,677
+   sha256 (lock) 8b4cbbda471b313e…
+   sha256 (now)  8b4cbbda471b313e… -> matches lock: True
+   (labels not read)
+
+② TEST MACRO-F1 RECOMPUTED FROM SAVED PREDICTIONS
+   model                       units   recomputed   paper (R2)
+   DeBERTa L0                 93,677      0.5613      0.5613
+   DeBERTa L1 (locked)        93,677      0.5772      0.5772
+   DeBERTa Prompt-Aware       93,677      0.5808      0.5808
+
+③ CASE 2  validation row_idx 10,303 | Evidence
+   Car-free cities | gold Ineffective
+   level                  P(Ineffective)   prediction
+   L0                       0.001          Effective
+   L1 (locked)              0.008          Effective
+   Prompt-Aware             0.002          Effective
+   L1 ±2                    0.028          Effective
+   Paragraph                0.832          Ineffective
+   L2 source                0.540          Ineffective
+   L3 whole, 3 ep           0.733          Ineffective
+   L3 whole, 7 ep           0.924          Ineffective
+
+④ LOPO GAP (same validation essays; LOPO minus in-domain Macro-F1)
+   A Cowboy Who Rode the Waves: -0.092
+   Summer projects: -0.025
+   Distance learning: -0.048
+```
+
+No discrepancies. No models were retrained or videos rendered; verification used saved predictions and local raw CSVs. No git commit was made.
+hook: Stop
+hook: Stop Completed
+tokens used
+82,431
+Created 4 Python scripts and all 15 PNGs. Build succeeded; all six demo runs passed. `--no-raw` runtimes: **2.11s / 4.24s / 4.86s**. All expected results match; test SHA-256 matches the lock.
+
+Files written under `VIDEO_CA_NHAN/`:
+
+- `build/make_visuals.py`
+- `Nguoi_1_Data_Classical_Length/demo/demo_nguoi1.py`
+- `Nguoi_2_DeBERTa_Context_Threshold/demo/demo_nguoi2.py`
+- `Nguoi_3_TestGovernance_LOPO_Ladder/demo/demo_nguoi3.py`
+- `_chung/visuals/intro_label_mix.png`
+- Person 1 `visuals/`: `fig18_rf_lopo_15_prompts.png`, `fig09_essay_length_vs_holistic_score.png`, `fig20_error_within_score_by_length.png`, `v1_example_trace_rf.png`, `v2_rf_recall_by_length.png`
+- Person 2 `visuals/`: `fig04_context_levels.png`, `fig14_L1_minus_L0_per_class.png`, `fig22_threshold_tradeoff.png`, `v1_case8_L0_vs_L1.png`
+- Person 3 `visuals/`: `fig26_test_governance.png`, `fig19_context_ladder_validation.png`, `fig17_lopo_vs_indomain_same_units.png`, `fig23_ten_cases_by_context_level.png`, `v1_case2_ladder.png`
+
+The four new person-specific visuals are **1920×1080**; the shared label mix is **1080×810**. Copied figures retain their source dimensions.
+
+Full stdout with raw CSVs, Person 1:
+
+```text
+① TRACE  test row_idx 47,059 (raw record 57,633)
+   prompt: Facial action coding system | type: Position
+   essay words: 225 -> Q1 (<=315)
+   text: "That is all everything you need to know about Mona Lisa and her smile."
+   label: "Ineffective" -> id 0
+   (Ineffective=0, Adequate=1, Effective=2)
+   RF FS-B P(Ineff/Adeq/Eff) = 0.544 / 0.342 / 0.114 -> predicts Ineffective (correct)
+   DeBERTa L1 (locked) P(Ineff) = 0.978 -> predicts Ineffective
+
+② ID CHECK  train+val annotated units 144,289 | distinct discourse_id 728
+   -> join on row_idx
+
+③ INEFFECTIVE RECALL BY ESSAY-LENGTH QUARTILE (official test, saved predictions)
+   quartile          gold Ineff   RF recall   DeBERTa L1 recall
+   Q1 (<=315)              2,384     23.3%            45.1%
+   Q2 (316-422)              934     13.7%            38.4%
+   Q3 (423-566)              598      6.9%            35.6%
+   Q4 (>=567)                309      0.6%            35.0%
+   RF catches 2 of 309 gold Ineffective units in the longest essays
+```
+
+Person 2 (`--theta 0.10`):
+
+```text
+① CASE 8  validation row_idx 108,613 | Claim
+   Cell phones at school | gold Ineffective
+   L0 input: Claim [SEP] Some kids will ask there parents to transfer school
+   L0 (locked) P(Ineff/Adeq/Eff) = 0.017 / 0.962 / 0.021 -> Adequate
+   L1 input: Claim [SEP] Previous: They will hide them from the teachers .Teachers can't go threw
+   the students stuff any way . Just make the kids put them in there locker during class.  If you
+   do a lot of the students will dich school any way, to be on there phones. You will just make
+   all the kids mad. [SEP] Target: Some kids will ask there parents to transfer school [SEP] Next:
+   If you chose policy one you will make the student happy.
+   L1 (locked) P(Ineff/Adeq/Eff) = 0.058 / 0.937 / 0.005 -> Adequate
+
+② FLAG IF P(Ineffective) >= θ   (locked L1, validation)
+   29,102 units, 1,328 gold Ineffective
+   rule          flagged   recall   precision   Macro-F1
+   argmax         1,761    44.7%       33.7%      0.581
+   θ=0.10         4,633    69.6%       19.9%      0.535
+   extra correct flags: 330 | extra false alarms: 2,542
+   false alarms per extra catch: 7.7
+
+③ case 8: P(Ineffective) = 0.058 < θ = 0.10 -> not flagged
+```
+
+Person 3:
+
+```text
+① TEST LOCK   locked_at 2026-10-28T21:15:35.952813+00:00
+   n_test 93,677
+   sha256 (lock) 8b4cbbda471b313e…
+   sha256 (now)  8b4cbbda471b313e… -> matches lock: True
+   (labels not read)
+
+② TEST MACRO-F1 RECOMPUTED FROM SAVED PREDICTIONS
+   model                       units   recomputed   paper (R2)
+   DeBERTa L0                 93,677      0.5613      0.5613
+   DeBERTa L1 (locked)        93,677      0.5772      0.5772
+   DeBERTa Prompt-Aware       93,677      0.5808      0.5808
+
+③ CASE 2  validation row_idx 10,303 | Evidence
+   Car-free cities | gold Ineffective
+   level                  P(Ineffective)   prediction
+   L0                       0.001          Effective
+   L1 (locked)              0.008          Effective
+   Prompt-Aware             0.002          Effective
+   L1 ±2                    0.028          Effective
+   Paragraph                0.832          Ineffective
+   L2 source                0.540          Ineffective
+   L3 whole, 3 ep           0.733          Ineffective
+   L3 whole, 7 ep           0.924          Ineffective
+
+④ LOPO GAP (same validation essays; LOPO minus in-domain Macro-F1)
+   A Cowboy Who Rode the Waves: -0.092
+   Summer projects: -0.025
+   Distance learning: -0.048
+```
+
+No discrepancies. No models were retrained or videos rendered; verification used saved predictions and local raw CSVs. No git commit was made.

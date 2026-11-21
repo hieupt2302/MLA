@@ -1,0 +1,25 @@
+Nguoi_1_Data_Classical_Length: 190 tokens; 172 verified; 18 unverified occurrences.
+
+UNVERIFIED — absent from approved evidence
+File:line | Number | Context
+01_SCRIPT_EN.md:3 | 1,050 | Target length about 7:30, about 1,050 spoken words. Lines starting with `>` are stage directions; do not read them aloud.
+
+UNVERIFIED — also present in runbook expected output (demo-derived candidates)
+File:line | Number | Context
+01_SCRIPT_EN.md:27 | 57,633 | It is raw record 57,633 in the test CSV. After we drop the rows without an effectiveness label, it becomes row index 47,059. It is a Position from an essay on the prompt "Facial action coding system", and the text is: "That is all everything you need to know about Mona Lisa and her smile."
+01_SCRIPT_EN.md:27 | 47,059 | It is raw record 57,633 in the test CSV. After we drop the rows without an effectiveness label, it becomes row index 47,059. It is a Position from an essay on the prompt "Facial action coding system", and the text is: "That is all everything you need to know about Mona Lisa and her smile."
+01_SCRIPT_EN.md:83 | 309 | Here is the result as a chart. In the shortest essays, the Random Forest finds 23 percent of the Ineffective units. In the longest essays it finds almost none: 0.6 percent, two out of 309. DeBERTa also drops, but much less: from 45 to 35 percent.
+02_SLIDE_SPEC.md:38 | 57,633 | caption: Test raw record 57,633 → row_idx 47,059 · Position · "Facial action coding system" · gold Ineffective
+02_SLIDE_SPEC.md:38 | 47,059 | caption: Test raw record 57,633 → row_idx 47,059 · Position · "Facial action coding system" · gold Ineffective
+02_SLIDE_SPEC.md:63 | 47,059 | - demo_nguoi1.py ①: trace row_idx 47,059 → RF probabilities
+02_SLIDE_SPEC.md:71 | 23.3% | callout: RF finds 23.3% of Ineffective units in the shortest essays but 0.6% (2 of 309) in the longest
+02_SLIDE_SPEC.md:71 | 309 | callout: RF finds 23.3% of Ineffective units in the shortest essays but 0.6% (2 of 309) in the longest
+01_SCRIPT_EN_5MIN.md:23 | 47,059 | Here is a real unit from the test file: row index 47,059, a Position on "Facial action coding system": "That is all everything you need to know about Mona Lisa and her smile." The label string "Ineffective" is loaded as class zero. We join files by row index, never by discourse ID, because Excel had rounded those IDs. Feature Set B turns the unit into TF-IDF features, the unit type, and five structural features. This unit has 14 words, and its essay only 225. The forest outputs 0.54 for Ineffective, so it predicts Ineffective, which is correct.
+01_SCRIPT_EN_5MIN.md:47 | 309 | Here is what my demo computed. The forest finds 23 percent of Ineffective units in the shortest essays, but only 0.6 percent, two out of 309, in the longest. DeBERTa drops much less, from 45 to 35 percent. The shortest quartile holds 2,384 gold Ineffective units; the longest only 309.
+01_SCRIPT_EN_5MIN.md:47 | 2,384 | Here is what my demo computed. The forest finds 23 percent of Ineffective units in the shortest essays, but only 0.6 percent, two out of 309, in the longest. DeBERTa drops much less, from 45 to 35 percent. The shortest quartile holds 2,384 gold Ineffective units; the longest only 309.
+01_SCRIPT_EN_5MIN.md:47 | 309 | Here is what my demo computed. The forest finds 23 percent of Ineffective units in the shortest essays, but only 0.6 percent, two out of 309, in the longest. DeBERTa drops much less, from 45 to 35 percent. The shortest quartile holds 2,384 gold Ineffective units; the longest only 309.
+02_SLIDE_SPEC_5MIN.md:37 | 57,633 | caption: Test raw record 57,633 → row_idx 47,059 · Position · "Facial action coding system" · gold Ineffective
+02_SLIDE_SPEC_5MIN.md:37 | 47,059 | caption: Test raw record 57,633 → row_idx 47,059 · Position · "Facial action coding system" · gold Ineffective
+02_SLIDE_SPEC_5MIN.md:44 | 47,059 | - demo_nguoi1.py ①: trace row_idx 47,059 → RF probabilities
+02_SLIDE_SPEC_5MIN.md:63 | 23.3% | callout: RF finds 23.3% of Ineffective units in the shortest essays but 0.6% (2 of 309) in the longest. Inferred, not tested: no re-training without the length feature yet
+02_SLIDE_SPEC_5MIN.md:63 | 309 | callout: RF finds 23.3% of Ineffective units in the shortest essays but 0.6% (2 of 309) in the longest. Inferred, not tested: no re-training without the length feature yet

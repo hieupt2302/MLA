@@ -1,0 +1,7 @@
+9 slides: source text, captions, callouts, tables and footers checked.
+Speaker notes: slide sections, DEMO append and DO stage directions checked.
+DOCX: all section headings, spoken paragraphs and stage directions preserved.
+All shape bounds are inside 16:9 slides. All image references now resolved.
+27 total 1920x1080 fallback PNGs visually reviewed across all decks.
+LIMITATION: fallback previews approximate PPTX geometry; they are not Office renders.
+PowerPoint preview export and Word visual QA blocked by COM 0x80070520 (no logon session).

@@ -1,0 +1,11 @@
+Nguoi_3_TestGovernance_LOPO_Ladder: 251 tokens; 248 verified; 3 unverified occurrences.
+
+UNVERIFIED — absent from approved evidence
+File:line | Number | Context
+01_SCRIPT_EN.md:3 | 1,050 | Target length about 7:30, about 1,050 spoken words. Lines starting with `>` are stage directions; do not read them aloud.
+02_SLIDE_SPEC.md:80 | 0.464 | | Summer projects | 0.464 | 0.438 |
+02_SLIDE_SPEC_5MIN.md:65 | 0.464 | | Summer projects | 0.464 | 0.438 |
+
+UNVERIFIED — also present in runbook expected output (demo-derived candidates)
+File:line | Number | Context
+(none)

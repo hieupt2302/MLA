@@ -1,0 +1,12 @@
+Nguoi_2_DeBERTa_Context_Threshold: 271 tokens; 267 verified; 4 unverified occurrences.
+
+UNVERIFIED — absent from approved evidence
+File:line | Number | Context
+01_SCRIPT_EN.md:3 | 1,050 | Target length about 7:30, about 1,050 spoken words. Lines starting with `>` are stage directions; do not read them aloud.
+01_SCRIPT_EN.md:81 | 76.5 | I should also correct my own first version here. In week eleven I first reported 76.5 percent recall at theta 0.10 and said case 8 would be caught. The correct value was 73.0 percent, and it only held for the first Level 1 run. For the locked model, case 8 is flagged only if theta is 0.058 or lower.
+02_SLIDE_SPEC.md:86 | 76.5% | - Corrected: recall at θ = 0.10 is 73.0% (first run), not 76.5%; case 8 not flagged by the locked model
+01_SCRIPT_EN_5MIN.md:49 | 76.5 | I also have to correct my own first version: I first reported 76.5 percent recall at 0.10 and said case 8 would be caught. The correct value was 73.0 percent, for the first Level 1 run only. For the locked model, case 8, at 0.058, is not flagged. This tool should help teachers decide what to read first, not grade students automatically. Thank you.
+
+UNVERIFIED — also present in runbook expected output (demo-derived candidates)
+File:line | Number | Context
+(none)
